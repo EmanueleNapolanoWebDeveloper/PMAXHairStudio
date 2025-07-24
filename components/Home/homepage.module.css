@@ -1,0 +1,196 @@
+
+
+/* title scissors */
+
+.scissorsTitle{
+  position: relative;
+  z-index: 2;
+}
+
+.scissorsTitle:after{
+  content: "";
+  position: absolute;
+  width: 25vw;
+  height: 2px;
+  left: 130px;
+  top: 50%;
+  z-index: 1;
+  background-color: white;
+}
+
+.scissorsTitle:before{
+  content: "";
+  position: absolute;
+  width: 25vw;
+  height: 2px;
+  right: 130px;
+  top: 50%;
+  z-index: 1;
+  background-color: white;
+}
+
+/* scissorTitle red */
+.scissorsTitleRed{
+  position: relative;
+  z-index: 2;
+}
+
+.scissorsTitleRed:after{
+  content: "";
+  position: absolute;
+  width: 25vw;
+  height: 2px;
+  left: 130px;
+  top: 50%;
+  z-index: 1;
+  background-color: darkred;
+}
+
+.scissorsTitleRed:before{
+  content: "";
+  position: absolute;
+  width: 25vw;
+  height: 2px;
+  right: 130px;
+  top: 50%;
+  z-index: 1;
+  background-color: darkred;
+}
+
+/* background Intro Home */
+.backgroundIntroHome {
+  position: relative;
+  background: url('/assets/backgrounds/backIntroHome.webp');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0; 
+}
+
+.backgroundIntroHome::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background-color: rgba(0, 0, 0, 0.8); 
+  z-index: 1;
+}
+
+.backgroundIntroHome > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* background services Home */
+.backgroundServicesHome {
+  position: relative;
+  background: url('/assets/backgrounds/backServicesHome.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0; /* assicura che il contenuto stia sopra */
+}
+
+.backgroundServicesHome::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 1;
+}
+
+.backgroundServicesHome > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* background staffs Home */
+.backgroundStaffsHome {
+  position: relative;
+  background: url('/assets/backgrounds/backStaffsHome.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0; /* assicura che il contenuto stia sopra */
+}
+
+.backgroundStaffsHome::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 1;
+}
+
+.backgroundStaffsHome > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* background testimonials */
+.backgroundTestimonialsHome {
+  position: relative;
+  background: url('/assets/backgrounds/saloon.jpg');
+  background-position: bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0; 
+}
+
+.backgroundTestimonialsHome::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background-color: rgba(0, 0, 0, 0.8); 
+  z-index: 1;
+}
+
+.backgroundTestimonialsHome > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* back partners */
+.backgroundPartnerssHome {
+  position: relative;
+  background: url('/assets/backgrounds/backPartners.webp');
+  background-position: bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0; 
+}
+
+.backgroundPartnerssHome::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background-color: rgba(241, 240, 240, 0.898); 
+  z-index: 1;
+}
+
+.backgroundPartnerssHome > * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* card services */
+.cardHoverEffect {
+  position: relative;
+  overflow: hidden;
+}
+
+.cardHoverEffect::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background-color: black; /* red-600 */
+  transition: width 0.4s ease-in-out;
+}
+
+.cardHoverEffect:hover::after {
+  width: 100%;
+}
+
