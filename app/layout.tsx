@@ -84,7 +84,7 @@ export default function RootLayout({
           }}
         />
         <Script
-          id="iubenda-autoblock"
+          id="iubenda-autoblocking"
           strategy="beforeInteractive"
           src="https://cs.iubenda.com/autoblocking/4175108.js"
         />
@@ -94,6 +94,7 @@ export default function RootLayout({
           src="https://cdn.iubenda.com/cs/iubenda_cs.js"
           charSet="UTF-8"
         />
+        {/* ⬆️ Fine snippet Iubenda */}
       </head>
       <body
         suppressHydrationWarning

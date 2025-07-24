@@ -40,35 +40,39 @@ export const metadata: Metadata = {
 
 
 export default function Gallery() {
-    return (
-        <TransitionOptions>
+  return (
+    <TransitionOptions>
 
-            <section className='min-h-screen flex flex-wrap gap-3 py-[7rem]'>
+      <section className='min-h-screen flex flex-wrap gap-3 py-[7rem]'>
 
-                <div className="w-screen flex flex-col items-center justify-center">
-                    <h2 className="text-center text-[3rem] md:text-[5rem] font-extralight text-red-600 tracking-widest uppercase">P-GALLERY</h2>
-                    {/* Icona forbici centrata */}
-                    <div className={`${styles.scissorsTitleRed}`}>
-                        <Image
-                            src="/assets/logos/iconSpazzola.png"
-                            alt="forbici"
-                            width={60}
-                            height={30}
-                            style={{ transform: 'rotate(35deg)' }}
-                        />
-                    </div>
-                </div>
-                {galleries.map((photo, index) => {
-                    return (
-                        <Image
-                            key={index}
-                            src={photo}
-                            width={200}
-                            height={200}
-                            alt={`Photo ${index}`} />
-                    )
-                })}
-            </section>
-        </TransitionOptions>
-    )
+        <div className="w-screen flex flex-col items-center justify-center">
+          <h2 className="text-center text-[3rem] md:text-[5rem] font-extralight text-red-600 tracking-widest uppercase">P-GALLERY</h2>
+          {/* Icona forbici centrata */}
+          <div className={`${styles.scissorsTitleRed}`}>
+            <Image
+              src="/assets/logos/iconSpazzola.png"
+              alt="forbici"
+              width={60}
+              height={30}
+              style={{ transform: 'rotate(35deg)' }}
+            />
+          </div>
+        </div>
+
+        <div className='h-full w-full flex flex-wrap items-center justify-center'>
+          {galleries.map((photo, index) => {
+            return (
+              <Image
+                key={index}
+                src={photo}
+                width={180}
+                height={180}
+                alt={`Photo ${index}`} />
+            )
+          })}
+        </div>
+
+      </section>
+    </TransitionOptions>
+  )
 }
