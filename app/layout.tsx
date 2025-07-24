@@ -66,11 +66,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="it">
-      <head />
-      <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
-      >
+      <head>
         {/* Script Iubenda */}
         <Script
           id="iubenda-config"
@@ -98,6 +94,12 @@ export default function RootLayout({
           src="https://cdn.iubenda.com/cs/iubenda_cs.js"
           charSet="UTF-8"
         />
+      </head>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
+      >
+
 
         {/* Contenuto del sito */}
         <Navbar />
