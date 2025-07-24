@@ -1,3 +1,5 @@
+'use client'
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Oswald } from "next/font/google";
 import "./globals.css";
@@ -5,6 +7,8 @@ import { Toaster } from 'react-hot-toast'
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppCTA from "@/components/CTA";
+import Script from "next/script";
+import Head from "next/head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,14 +23,14 @@ const geistMono = Geist_Mono({
 const playfairDisplay = Playfair_Display({
   variable: '--font-playfair-display',
   subsets: ["latin"],
-})
+});
 
 const oswald = Oswald({
   variable: '--font-oswald',
   subsets: ["latin"],
-})
+});
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "P-Max Hair Studio | Taglio & Stile per Uomo a Napoli",
   description: "Scopri l'eccellenza del grooming maschile da P-Max Hair Studio. Tagli di capelli, barba, trattamenti e stile personalizzato a Napoli.",
   keywords: ["barbiere Napoli", "P-Max Hair Studio", "barber shop", "taglio uomo", "barba", "parrucchiere uomo Napoli", "taglio sfumato", "stile capelli"],
@@ -79,17 +83,47 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}>
+    <html lang="it">
+      <Head>
+        {/* Script Iubenda: configurazione e caricamento */}
+        <Script
+          id="iubenda-config"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var _iub = _iub || [];
+              _iub.csConfiguration = {
+                siteId: 4175108,
+                cookiePolicyId: 97126684,
+                lang: "it",
+                storage: { useSiteId: true }
+              };
+            `,
+          }}
+        />
+        <Script
+          id="iubenda-autoblock"
+          strategy="beforeInteractive"
+          src="https://cs.iubenda.com/autoblocking/4175108.js"
+        />
+        <Script
+          id="iubenda-loader"
+          strategy="beforeInteractive"
+          src="https://cdn.iubenda.com/cs/iubenda_cs.js"
+          charSet="UTF-8"
+        />
+      </Head>
+
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
+      >
         <Navbar />
         {children}
         <Footer />
-
         <Toaster position="bottom-center" reverseOrder={false} />
         <WhatsAppCTA />
-
       </body>
-
     </html>
   );
 }

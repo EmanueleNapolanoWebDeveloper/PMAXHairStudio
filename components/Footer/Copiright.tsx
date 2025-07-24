@@ -6,7 +6,7 @@ export default function Copyright() {
   const currentYear: number = new Date().getFullYear()
 
   return (
-    <section className="col-span-3 h-[3rem] bg-slate-800 flex items-center justify-center gap-4 text-sm text-gray-300">
+    <section className="col-span-3 min-h-[3rem] bg-slate-800 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-300 py-2">
       <div className="flex items-center gap-2 text-[0.6rem]">
         <p>&copy; {currentYear} P-MAX Hair-Studio di Polverino Massimo</p>
         <span>|</span>
