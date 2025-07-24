@@ -1,36 +1,19 @@
-'use client'
-
-import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Oswald } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppCTA from "@/components/CTA";
 import Script from "next/script";
-import Head from "next/head";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Font
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const playfairDisplay = Playfair_Display({ variable: "--font-playfair-display", subsets: ["latin"] });
+const oswald = Oswald({ variable: "--font-oswald", subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const playfairDisplay = Playfair_Display({
-  variable: '--font-playfair-display',
-  subsets: ["latin"],
-});
-
-const oswald = Oswald({
-  variable: '--font-oswald',
-  subsets: ["latin"],
-});
-
-const metadata: Metadata = {
+// ✅ Metadata corretto per App Router
+export const metadata = {
   title: "P-Max Hair Studio | Taglio & Stile per Uomo a Napoli",
   description: "Scopri l'eccellenza del grooming maschile da P-Max Hair Studio. Tagli di capelli, barba, trattamenti e stile personalizzato a Napoli.",
   keywords: ["barbiere Napoli", "P-Max Hair Studio", "barber shop", "taglio uomo", "barba", "parrucchiere uomo Napoli", "taglio sfumato", "stile capelli"],
@@ -77,15 +60,18 @@ const metadata: Metadata = {
   },
 };
 
+// ✅ Layout corretto con script iubenda caricati in modo conforme
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="it">
-      <Head>
-        {/* Script Iubenda: configurazione e caricamento */}
+      <head />
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
+      >
+        {/* Script Iubenda */}
         <Script
           id="iubenda-config"
           strategy="beforeInteractive"
@@ -112,12 +98,8 @@ export default function RootLayout({
           src="https://cdn.iubenda.com/cs/iubenda_cs.js"
           charSet="UTF-8"
         />
-      </Head>
 
-      <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
-      >
+        {/* Contenuto del sito */}
         <Navbar />
         {children}
         <Footer />
