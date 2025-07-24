@@ -21,7 +21,7 @@ export default function ImageSlideShow({images, time} : SlideProps) {
         }, time)
 
         return () => clearTimeout(timer)
-    }, [currentImage, length])
+    }, [currentImage, length , time])
 
     return (
         
@@ -36,7 +36,7 @@ export default function ImageSlideShow({images, time} : SlideProps) {
                             src={image}
                             alt={`Slide ${index + 1}`}
                             fill
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: 'contain' }}
                             priority={index === currentImage}
                         />
                     </div>

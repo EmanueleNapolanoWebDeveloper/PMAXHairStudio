@@ -1,22 +1,10 @@
 import Image from "next/image"
 import style from './aboutus.module.css'
 import styles from '../../components/Home/homepage.module.css'
+import { choises } from "@/lib/datas"
 
 
-const choises = [
-    {
-        image: "/assets/photos/fotosection1.jpg",
-        title: "Esperienza autentica, stile personale"
-    },
-    {
-        image: "/assets/photos/fotosection3.jpg",
-        title: "Ambiente street, accoglienza vera"
-    },
-    {
-        image: "/assets/photos/fotosection4.jpg",
-        title: "Tagli curati, dettagli che parlano"
-    }
-]
+
 
 
 
@@ -26,7 +14,7 @@ export default function WhyChoose() {
 
             <div className=" w-full flex flex-col items-center justify-center pb-6">
                 {/* Titolo */}
-                <h2 className="text-center text-[4rem] font-light text-red-800">Perchè Sceglierci?</h2>
+                <h2 className="text-center text-[4rem] font-extralight text-red-800 uppercase">Perchè Sceglierci?</h2>
 
                 {/* Icona forbici centrata */}
                 <div className={styles.scissorsTitle}>

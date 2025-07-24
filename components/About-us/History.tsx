@@ -9,12 +9,12 @@ export default function History() {
         <section className="min-h-screen bg-black max-w-screen grid grid-cols-2">
             <div className=" w-full col-span-2 flex flex-col items-center justify-center pb-6">
                 {/* Titolo */}
-                <h2 className="text-center text-[4rem] font-light text-red-800 uppercase">P-Max History</h2>
+                <h2 className="text-center text-[4rem] font-extralight text-red-800 uppercase">P-Max History</h2>
 
                 {/* Icona forbici centrata */}
                 <div className={styles.scissorsTitle}>
                     <Image
-                        src="/assets/iconScissors_white.png"
+                        src="/assets/logos/iconScissors_white.png"
                         alt="forbici"
                         width={40}
                         height={24}
@@ -53,7 +53,7 @@ export default function History() {
 
             <div className="col-span-2 lg:col-span-1 w-full flex flex-col items-center justify-center gap-3 rounded-3xl">
                 <Image
-                    src={'/assets/puteca.png'}
+                    src={'/assets/gallery/photos/puteca.png'}
                     alt="Negozio P-Max"
                     width={550}
                     height={550}

@@ -31,7 +31,7 @@ export default function Saloon() {
             
             <div className=" w-full h-auto p-3 flex flex-col items-center justify-center pb-6">
                 {/* Titolo */}
-                <h2 className="text-center text-[4rem] font-light text-white uppercase">P-MAX Saloon</h2>
+                <h2 className="text-center text-[4rem] font-extralight text-white uppercase">P-MAX Saloon</h2>
 
                 {/* Icona forbici centrata */}
                 <div className={styles.scissorsTitle}>

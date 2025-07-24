@@ -13,7 +13,7 @@ export default function Staffs() {
                 {/* Icona forbici centrata */}
                 <div className={styles.scissorsTitle}>
                     <Image
-                        src="/assets/rasoio.png"
+                        src="/assets/logos/rasoio.png"
                         alt="forbici"
                         width={60}
                         height={24}
@@ -27,7 +27,7 @@ export default function Staffs() {
             <div className="w-full flex flex-wrap items-center justify-center ">
                 <div className="h-[30rem] w-[18rem] backdrop-brightness-50 relative p-3 rounded-2xl">
                         <Image
-                            src={"/assets/fotoMassimoAI.png"}
+                            src={"/assets/gallery/photos/fotoMassimoAI.png"}
                             alt="Massimo Polverino"
                             fill
                             className="rounded-2xl z-2" />

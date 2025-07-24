@@ -54,7 +54,7 @@ export default function ServicesSection() {
 
             {/* title */}
             <div className="w-screen flex flex-col items-center justify-center">
-                <h2 className="text-center text-[4rem] font-light text-red-600">I Nostri Trattamenti</h2>
+                <h2 className="text-center text-[4rem] font-extralight text-red-600">I Nostri Trattamenti</h2>
                 {/* Icona forbici centrata */}
                 <div className={`${styles.scissorsTitleRed} p-5`}>
                     <Image

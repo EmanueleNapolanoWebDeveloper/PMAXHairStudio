@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { useState, useEffect } from 'react'
-import ImageSlideShow from "./ImageSlideShow"
 import styles from './homepage.module.css'
 import { testImages } from '@/lib/datas'
 
@@ -76,7 +75,7 @@ export default function IntroHome() {
 
                 <div className="flex flex-col gap-2 text-center lg:text-start text-[1.2rem]">
                     <p>Il punto di riferimento per l’uomo che vuole distinguersi.</p>
-                    <p> Da P-Max non offriamo solo un semplice taglio, ma un'esperienza pensata su misura per te: un ambiente moderno e accogliente, strumenti professionali e mani esperte al tuo servizio.</p>
+                    <p> Da P-Max non offriamo solo un semplice taglio, ma un&apos;esperienza pensata su misura per te: un ambiente moderno e accogliente, strumenti professionali e mani esperte al tuo servizio.</p>
                     <p>Che tu voglia uno stile classico, un fade moderno o una barba perfettamente scolpita, troverai attenzione al dettaglio, passione per il mestiere e una cura autentica per il tuo look.</p>
                 </div>
             </div>

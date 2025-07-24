@@ -4,7 +4,6 @@ import styles from './homepage.module.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { recensioni } from '@/lib/datas'
 import { useState, useEffect } from 'react'
-import TransitionOptions from '../UI/TransitionOptions'
 
 export default function Testimonials() {
     const [current, setCurrent] = useState(0)

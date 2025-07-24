@@ -1,4 +1,3 @@
-import HeroSection from "@/components/About-us/HeroSection";
 import History from "@/components/About-us/History";
 import Saloon from "@/components/About-us/Saloon";
 import WhyChoose from "@/components/About-us/whyChose";
