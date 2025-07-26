@@ -40,7 +40,7 @@ export default function HeroSection() {
                             width={350}
                             height={350}
                             priority
-                            className={`z-10 mb-8 lg:mb-4 transition-all duration-700 ease-out ${styles.animateslideInLeft} 'opacity-0 -translate-x-[50px]'
+                            className={`z-10 mt-10 lg:mb-4 transition-all duration-700 ease-out ${styles.animateslideInLeft} 'opacity-0 -translate-x-[50px]'
                                 }`}
                         />
                     </div>

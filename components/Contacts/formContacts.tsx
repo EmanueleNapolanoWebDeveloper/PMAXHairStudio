@@ -28,7 +28,7 @@ const FormContacts = () => {
         setIsLoading(true)
 
         try {
-            const res = await fetch('/api/contacts', {
+            const res = await fetch('/api/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

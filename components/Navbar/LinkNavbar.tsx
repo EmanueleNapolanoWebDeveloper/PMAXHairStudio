@@ -16,7 +16,9 @@ const LinkNav = [
     { label: "Chi Siamo", path: "/about-us" },
     { label: "Servizi", path: "/servizi" },
     { label: "Gallery", path: "/gallery" },
-    { label: "Contatti", path: "/contatti" }
+    { label: "Contatti", path: "/contatti" },
+    { label: "Login", path: "/login" }
+
 ]
 
 
@@ -57,6 +59,9 @@ export default function LinkMenuDesktop() {
                         </li>
                     )
                 })}
+                <li>
+                    <button type="button" onClick={() => {signOut()}}>Logout</button>
+                </li>
             </ul>
         </div>
     )
