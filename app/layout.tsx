@@ -1,14 +1,13 @@
-import { Geist, Geist_Mono, Playfair_Display, Oswald } from "next/font/google";
+import { Playfair_Display, Oswald } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
-import WhatsAppCTA from "@/components/CTA";
+import Navbar from "@/components/Layout/Navbar/Navbar";
+import WhatsAppCTA from "@/components/Layout/CTA";
 import Script from "next/script";
+import { AuthProvider } from "./store/AuthContext";
+
 
 // Font
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const playfairDisplay = Playfair_Display({ variable: "--font-playfair-display", subsets: ["latin"] });
 const oswald = Oswald({ variable: "--font-oswald", subsets: ["latin"] });
 
@@ -96,19 +95,18 @@ export default function RootLayout({
         />
         {/* ⬆️ Fine snippet Iubenda */}
       </head>
-      <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
-      >
-
-
-        {/* Contenuto del sito */}
-        <Navbar />
-        {children}
-        <Footer />
-        <Toaster position="bottom-center" reverseOrder={false} />
-        <WhatsAppCTA />
-      </body>
+      <AuthProvider>
+        <body
+          suppressHydrationWarning
+          className={` ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
+        >
+          {/* Contenuto del sito */}
+          <Navbar />
+          {children}
+          <Toaster position="bottom-center" reverseOrder={false} />
+          <WhatsAppCTA />
+        </body>
+      </AuthProvider>
     </html>
   );
 }
