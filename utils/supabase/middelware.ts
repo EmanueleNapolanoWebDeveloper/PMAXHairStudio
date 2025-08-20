@@ -2,13 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 
 export async function updateSession(request) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const pathname = request.nextUrl.pathname
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
@@ -16,19 +14,27 @@ export async function updateSession(request) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
         },
       },
     }
   )
 
-  // refreshing the auth token
-  await supabase.auth.getUser()
+  // Prendi la sessione corrente
+  const { data: { session } } = await supabase.auth.getSession()
 
-  return supabaseResponse
+  // Se c'è utente loggato
+  if (session?.user) {
+    // Controlla reg_complete dalla tabella public_users
+    const { data: profile, error } = await supabase
+      .from('public_users')
+      .select('reg_complete')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (!error && profile && !profile.reg_complete && pathname !== '/complete-registration') {
+      return NextResponse.redirect(new URL('/complete-registration', request.url))
+    }
+  }
+
+  return NextResponse.next()
 }

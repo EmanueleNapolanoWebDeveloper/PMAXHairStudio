@@ -46,7 +46,7 @@ export default function Register() {
 
     if (password !== pass_confirm) {
       setError('Le password non coincidono')
-      return
+      return 
     }
 
     setLoading(true)

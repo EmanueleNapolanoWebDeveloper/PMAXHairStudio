@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CompleteRegistration } from '@/app/(Auth)/complete_registration/action'
+import { CompleteRegistration } from '@/app/(Auth)/complete-registration/action'
+import { use } from 'react'
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
         console.log('Body ricevuto:', body)
 
-        const { user, name, surname, phone } = body
+        const { user, name, surname, phone, email } = body
 
-        if (!user || !user.id || !user.email || !name || !surname || !phone) {
-            console.log('Dati mancanti nel body')
+        if (!user || !user.id || !name || !surname || !phone || !email) {
+            console.log('Dati mancanti nel body',body)
             return NextResponse.json({ error: 'Dati mancanti' }, { status: 400 })
         }
 
-        const result = await CompleteRegistration({ user, name, surname, phone })
+        const result = await CompleteRegistration({ user, name, surname , email: user?.email || email, phone: user?.phone || phone })
 
         console.log('Result da CompleteRegistration:', result)
 

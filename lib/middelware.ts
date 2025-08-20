@@ -1,8 +1,8 @@
-import { updateSession } from '@/utils/supabase/middleware'
+import { updateSession } from '@/utils/supabase/middelware'
 
 export async function middleware(request) {
 
-  const publicPaths = ['/', '/services', '/login', '/about-us','/contatti'];
+  const publicPaths = ['/', '/services', '/login', '/about-us', '/contact-us',  '/reservation','/complete-registration'];
 
   const pathname = request.nextUrl.pathname
 

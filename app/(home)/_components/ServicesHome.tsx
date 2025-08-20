@@ -82,7 +82,7 @@ export default function ServicesHome() {
                                 <p className="text-center text-[1.3rem]">{service.description}</p>
                             </div>
                             <div className='h-[3.5rem] bg-red-900 w-full p-2 flex items-center justify-center'>
-                                <Link href={"/servizi"} key={index}>
+                                <Link href={"/services"} key={index}>
                                     <button type='button'>
                                         Scopri di più
                                     </button>
