@@ -1,4 +1,11 @@
-export default function SummaryReservation() {
+export type SummaryReservationType = {
+    barber: string;
+    services: string[];
+    date: string;
+    time: string;
+}
+
+export default function SummaryReservation({ barber, services, date, time }: SummaryReservationType) {
     return (
         <div className="bg-gray-100 rounded-lg p-4 text-black">
             <h3 className="font-bold mb-2">Riepilogo</h3>
