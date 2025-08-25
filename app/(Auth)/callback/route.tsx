@@ -37,7 +37,6 @@ export async function GET(request : Request) {
     // PASSO CRUCIALE: scambia il codice temporaneo con una sessione di login vera
     // Questo conferma l'identità dell'utente e crea la sessione
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    console.log("DATA:", data)
     console.log("ERROR:", error)
 
     // Se lo scambio è andato a buon fine (nessun errore)

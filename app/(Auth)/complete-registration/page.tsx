@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
-import { createClient } from '@/utils/supabase/client'
 import { toast } from 'react-hot-toast'
+import { CompleteRegistration } from './action'
+import { createClient } from '@/utils/supabase/client'
 import { useAuth } from '@/app/store/AuthContext'  // AGGIUNTA: import del context
 
 export default function CompleteProfile() {
@@ -28,8 +29,8 @@ export default function CompleteProfile() {
             } else {
                 setUser(user)
                 // Inizializza il form con i dati dell'utente se disponibili
-                setForm(prev => ({ 
-                    ...prev, 
+                setForm(prev => ({
+                    ...prev,
                     phone: user.phone || '',
                     email: user.email || ''
                 }))
@@ -55,6 +56,14 @@ export default function CompleteProfile() {
 
         const { name, surname, phone, email } = form
 
+        // Validazione telefono (formato italiano +39, spazi opzionali)
+        const phoneRegex = /^\+39\s?\d{3}\s?\d{3}\s?\d{4}$/
+        if (!phoneRegex.test(phone)) {
+            setError("Inserisci un numero di telefono valido (es. +39 123 456 7890)")
+            setSaving(false)
+            return
+        }
+
         // Validazione dei campi
         if (!name || !surname || !phone || !email) {
             setError('Compila tutti i campi')
@@ -77,47 +86,26 @@ export default function CompleteProfile() {
             return
         }
 
-        try {
-            // CAMBIATO: Chiamata diretta a Supabase invece dell'API route
-            const supabase = createClient()
-            
-            const { data, error: supabaseError } = await supabase
-                .from('public_users')
-                .insert({
-                    auth_user_id: user.id,
-                    name: name,
-                    surname: surname,
-                    phone: phone,
-                    email: email,
-                    reg_complete: true,
-                    role: 'customer'  // o quello che vuoi come default
-                })
-                .select()
-                .single()
+        const res = await CompleteRegistration({
+            userID: user.id,
+            data: form
+        })
 
-            if (supabaseError) {
-                throw new Error(supabaseError.message)
-            }
+        setSaving(false)
 
-            console.log('✅ Profilo salvato:', data)
-
-            setSuccess("Profilo completato con successo!")
-            toast.success("Benvenuto!")
-
-            // AGGIUNTA: Aggiorna il context
-            await refreshProfile()
-            
-            // Ritardo prima del redirect per permettere all'utente di vedere il messaggio
-            setTimeout(() => {
-                router.push("/")
-            }, 1000)
-
-        } catch (err: any) {
-            console.error("❌ Errore nel salvataggio:", err)
-            setError(err.message || 'Errore imprevisto')
-        } finally {
+        if (!res.success) {
+            setError(res.error.message)
             setSaving(false)
+        } else {
+            refreshProfile()
+            setSuccess('Profilo completato con successo')
+            toast.success('Profilo completato con successo')
+            setTimeout(() => {
+                router.push('/')
+            }, 1500)
         }
+
+
     }
 
     if (loading) {

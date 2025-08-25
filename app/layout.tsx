@@ -1,8 +1,6 @@
-import { Playfair_Display, Oswald } from "next/font/google";
+import { Playfair_Display, Oswald, Exo, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Navbar from "@/components/Layout/Navbar/Navbar";
-import WhatsAppCTA from "@/components/Layout/CTA";
 import Script from "next/script";
 import { AuthProvider } from "./store/AuthContext";
 
@@ -10,7 +8,8 @@ import { AuthProvider } from "./store/AuthContext";
 // Font
 const playfairDisplay = Playfair_Display({ variable: "--font-playfair-display", subsets: ["latin"] });
 const oswald = Oswald({ variable: "--font-oswald", subsets: ["latin"] });
-
+const exo = Exo({ variable: "--font-exo", subsets: ["latin"], weight: ["100", "200", "300","400", "500", "600", "700", "800", "900"] });
+const cormorantGaramond = Cormorant_Garamond({ variable: "--font-cormorant-garamond", subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
 // ✅ Metadata corretto per App Router
 export const metadata = {
   title: "P-Max Hair Studio | Taglio & Stile per Uomo a Napoli",
@@ -98,13 +97,11 @@ export default function RootLayout({
       <AuthProvider>
         <body
           suppressHydrationWarning
-          className={` ${playfairDisplay.variable} ${oswald.variable} antialiased overflow-x-hidden`}
+          className={` ${playfairDisplay.variable} ${oswald.variable} ${exo.variable} ${cormorantGaramond.variable} antialiased overflow-x-hidden`}
         >
           {/* Contenuto del sito */}
-          <Navbar />
           {children}
           <Toaster position="bottom-center" reverseOrder={false} />
-          <WhatsAppCTA />
         </body>
       </AuthProvider>
     </html>

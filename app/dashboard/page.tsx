@@ -1,6 +1,6 @@
 export default function Dashboard(){
     return (
-        <main className="h-screen bg-slate-800">
+        <main className="h-full w-full bg-slate-200">
                 <h1>DASHBOARD</h1>
         </main>
     )

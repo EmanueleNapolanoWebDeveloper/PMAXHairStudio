@@ -1,13 +1,43 @@
+@keyframes slideInRightToLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
 
+  100% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animateslideInRightToLeft {
+  animation: slideInRightToLeft 1s ease-out forwards;
+}
+
+.animatefadeIn {
+  animation: fadeIn 0.7s ease-out forwards;
+}
 
 /* title scissors */
 
-.scissorsTitle{
+.scissorsTitle {
   position: relative;
   z-index: 2;
 }
 
-.scissorsTitle:after{
+.scissorsTitle:after {
   content: "";
   position: absolute;
   width: 25vw;
@@ -18,7 +48,7 @@
   background-color: white;
 }
 
-.scissorsTitle:before{
+.scissorsTitle:before {
   content: "";
   position: absolute;
   width: 25vw;
@@ -30,12 +60,12 @@
 }
 
 /* scissorTitle red */
-.scissorsTitleRed{
+.scissorsTitleRed {
   position: relative;
   z-index: 2;
 }
 
-.scissorsTitleRed:after{
+.scissorsTitleRed:after {
   content: "";
   position: absolute;
   width: 25vw;
@@ -46,7 +76,7 @@
   background-color: darkred;
 }
 
-.scissorsTitleRed:before{
+.scissorsTitleRed:before {
   content: "";
   position: absolute;
   width: 25vw;
@@ -64,18 +94,18 @@
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 0; 
+  z-index: 0;
 }
 
 .backgroundIntroHome::before {
   content: "";
   position: absolute;
-  inset: 0; 
-  background-color: rgba(0, 0, 0, 0.8); 
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
-.backgroundIntroHome > * {
+.backgroundIntroHome>* {
   position: relative;
   z-index: 2;
 }
@@ -87,18 +117,19 @@
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 0; /* assicura che il contenuto stia sopra */
+  z-index: 0;
+  /* assicura che il contenuto stia sopra */
 }
 
 .backgroundServicesHome::before {
   content: "";
   position: absolute;
-  inset: 0; 
-  background-color: rgba(0, 0, 0, 0.5); 
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
-.backgroundServicesHome > * {
+.backgroundServicesHome>* {
   position: relative;
   z-index: 2;
 }
@@ -110,18 +141,19 @@
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 0; /* assicura che il contenuto stia sopra */
+  z-index: 0;
+  /* assicura che il contenuto stia sopra */
 }
 
 .backgroundStaffsHome::before {
   content: "";
   position: absolute;
-  inset: 0; 
-  background-color: rgba(0, 0, 0, 0.5); 
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
-.backgroundStaffsHome > * {
+.backgroundStaffsHome>* {
   position: relative;
   z-index: 2;
 }
@@ -133,18 +165,18 @@
   background-position: bottom;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 0; 
+  z-index: 0;
 }
 
 .backgroundTestimonialsHome::before {
   content: "";
   position: absolute;
-  inset: 0; 
-  background-color: rgba(0, 0, 0, 0.8); 
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
   z-index: 1;
 }
 
-.backgroundTestimonialsHome > * {
+.backgroundTestimonialsHome>* {
   position: relative;
   z-index: 2;
 }
@@ -156,18 +188,18 @@
   background-position: bottom;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 0; 
+  z-index: 0;
 }
 
 .backgroundPartnerssHome::before {
   content: "";
   position: absolute;
-  inset: 0; 
-  background-color: rgba(241, 240, 240, 0.898); 
+  inset: 0;
+  background-color: rgba(241, 240, 240, 0.898);
   z-index: 1;
 }
 
-.backgroundPartnerssHome > * {
+.backgroundPartnerssHome>* {
   position: relative;
   z-index: 2;
 }
@@ -186,7 +218,8 @@
   left: 0;
   height: 3px;
   width: 0%;
-  background-color: black; /* red-600 */
+  background-color: black;
+  /* red-600 */
   transition: width 0.4s ease-in-out;
 }
 
@@ -194,3 +227,17 @@
   width: 100%;
 }
 
+/* WELCOME */
+.barberGradient {
+  background: linear-gradient(90deg, #1e3a8a, #ffffff, #dc2626);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: barberGradient 3s linear infinite;
+}
+
+@keyframes barberGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

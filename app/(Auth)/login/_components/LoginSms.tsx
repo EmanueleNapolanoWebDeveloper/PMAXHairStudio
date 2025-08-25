@@ -1,66 +1,76 @@
 "use client"
 
 import { useState } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { sendOTP, verifyOTP } from "../actions"
+import toast from "react-hot-toast"
 
 export default function LoginSMS() {
-    const supabase = createClient()
-    const [phone, setPhone] = useState("")
-    const [otp, setOtp] = useState("")
+    const [phone, setPhone] = useState<string | null>(null)
+    const [otp, setOtp] = useState<string | null>(null)
     const [step, setStep] = useState<"send" | "verify">("send")
     const [loading, setLoading] = useState(false)
 
-    async function sendOTP() {
-        setLoading(true)
-        const { error } = await supabase.auth.signInWithOtp({
-            phone,
-            options: { shouldCreateUser: true },
-        })
-        console.log('Inviato');
+    async function handleSendOTP() {
 
+
+        const phoneRegex = /^\+39\s?\d{3}\s?\d{3}\s?\d{4}$/
+        if (!phoneRegex.test(phone!)) {
+            setPhone('')
+            toast.error("Inserisci un numero di telefono valido")
+            return
+        }
+
+        setLoading(true)
+        const res = await sendOTP(phone)
         setLoading(false)
 
-        if (error) {
-            alert(error.message)
+        if (!res.success) {
+            toast.error(res.message)
         } else {
             setStep("verify")
         }
     }
 
-    async function verifyOTP() {
+    async function handleVerifyOTP() {
+
+        if (otp.length !== 6) {
+            setOtp('')
+            toast.error("Inserisci un codice di accesso valido")
+
+            return
+        }
+
         setLoading(true)
-        const { error } = await supabase.auth.verifyOtp({
-            phone,
-            token: otp,
-            type: "sms",
-        })
+        const res = await verifyOTP({ phone, otp })
         setLoading(false)
 
-        if (error) {
-            alert(error.message)
+        if (!res.success) {
+            toast.error(res.message)
         } else {
-            window.location.href = "/" // reindirizza dopo login
+            toast.success(res.message)
         }
     }
+
+
 
     return (
         <div className="flex flex-col gap-6 max-w-md mx-auto p-8 bg-white rounded-3xl shadow-lg border border-gray-200">
             {step === "send" && (
                 <>
-                    <h2 className="text-2xl font-bold text-gray-800 text-center">Login via SMS</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 text-center">Accedi tramite SMS</h2>
                     <p className="text-gray-500 text-sm text-center">
                         Inserisci il tuo numero per ricevere il codice di accesso.
                     </p>
                     <input
                         type="tel"
-                        placeholder="+39 333 1234567"
+                        placeholder="+393331234567"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 placeholder-gray-400 transition"
                     />
                     <button
-                        onClick={sendOTP}
-                        disabled={loading}
+                        onClick={handleSendOTP}
+                        disabled={loading || !phone}
                         className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50"
                     >
                         {loading ? "Invio..." : "Invia OTP"}
@@ -83,7 +93,7 @@ export default function LoginSMS() {
                     />
                     <button
                         onClick={verifyOTP}
-                        disabled={loading}
+                        disabled={loading || !otp}
                         className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors duration-200 disabled:opacity-50"
                     >
                         {loading ? "Verifico..." : "Verifica OTP"}

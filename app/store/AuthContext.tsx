@@ -5,16 +5,6 @@ import { createClient } from "@/utils/supabase/client"
 import { User, Session } from "@supabase/supabase-js"
 import { useRouter, usePathname } from "next/navigation"
 
-type AuthContextType = {
-  user: User | null
-  loading: boolean
-  session: Session | null
-  profile: ProfileType | null
-  signOut: () => Promise<void>
-  refreshProfile: () => Promise<void>  // AGGIUNTA: funzione per aggiornare il profilo
-  updateProfile: (profileData: Partial<ProfileType>) => void  // AGGIUNTA: per update diretto
-}
-
 export type ProfileType = {
   id: string
   name: string
@@ -26,195 +16,128 @@ export type ProfileType = {
   reg_complete: boolean
 }
 
+type AuthContextType = {
+  user: User | null
+  session: Session | null
+  profile: ProfileType | null
+  loading: boolean
+  signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
+  updateProfile: (data: Partial<ProfileType>) => void
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
+  const supabase = createClient()
 
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<ProfileType | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
-  // Funzione per controllare il profilo utente
-  const checkUserProfile = async (currentUser: User) => {
+  /** Recupera il profilo dal DB e aggiorna lo state */
+  const fetchProfile = async (currentUser: User) => {
     try {
-      // Prende i dati dalla tabella public_users
       const { data, error } = await supabase
-        .from('public_users')
-        .select('*')
-        .eq('auth_user_id', currentUser.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
         .single()
 
-      if (error && error.code === 'PGRST116') {
-        // Profilo non esiste - primo accesso
-        console.log('Profilo non trovato - primo accesso')
-        setProfile(null)
-        return false
-      } else if (data) {
-        // Profilo esiste - salva nel state
-        setProfile(data)
-        return true
-      }
-      
-      return false
-    } catch (error) {
-      console.log('Errore controllo profilo:', error)
+      if (error && error.code !== "PGRST116") throw error
+      setProfile(data ?? null)
+      return data ?? null
+    } catch (err) {
+      console.error("Errore fetch profilo:", err)
       setProfile(null)
-      return false
+      return null
     }
   }
 
-  // AGGIUNTA: Funzione pubblica per aggiornare il profilo
+  /** Aggiorna solo il context senza toccare DB */
+  const updateProfile = (data: Partial<ProfileType>) => {
+    if (!profile) return
+    setProfile({ ...profile, ...data })
+  }
+
+  /** Aggiorna il profilo dal DB */
   const refreshProfile = async () => {
-    if (!user) {
-      console.log('Nessun utente loggato per refresh profilo')
-      return
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('public_users')
-        .select('*')
-        .eq('auth_user_id', user.id)
-        .single()
-
-      if (error && error.code === 'PGRST116') {
-        console.log('Profilo non trovato durante refresh')
-        setProfile(null)
-      } else if (data) {
-        console.log('Profilo aggiornato:', data)
-        setProfile(data)
-      }
-    } catch (error) {
-      console.error('Errore refresh profilo:', error)
-    }
+    if (!user) return
+    await fetchProfile(user)
   }
 
-  // AGGIUNTA: Funzione per update diretto del profilo (più veloce)
-  const updateProfile = (profileData: Partial<ProfileType>) => {
-    if (profile) {
-      setProfile({
-        ...profile,
-        ...profileData
-      })
-    }
-  }
-
-  // Funzione per gestire i redirect
-  const handleAuthRedirect = async (currentUser: User | null, event: string) => {
-    // Pagine dove non fare redirect automatici
-    const authPages = ['/login', '/register', '/complete-registration', '/auth/callback']
-    const isOnAuthPage = authPages.some(page => pathname?.startsWith(page))
-
-    // Se non è loggato
-    if (!currentUser) {
-      // Reset profile quando non loggato
-      setProfile(null)
-      // Solo reindirizza se non è già in una pagina di auth o homepage
-      if (!isOnAuthPage && pathname === '/reservation') {
-        router.push('/')
-      }
-      return
-    }
-
-    // Utente loggato - controlla se ha completato registrazione
-    const hasCompleteReg = await checkUserProfile(currentUser)
-    console.log(hasCompleteReg, pathname);
-    
-
-    // Primo accesso o registrazione non completata
-    if (!hasCompleteReg && pathname !== '/complete-registration') {
-      console.log('Reindirizzo a complete-registration')
-      router.push('/complete-registration')
-    }
-    // Registrazione già completata ma si trova in complete-registration
-    else if (hasCompleteReg && pathname === '/complete-registration') {
-      console.log('Registrazione già completata, reindirizzo a homepage')
-      router.push('/')
-    }
-    // Utente registrato che va in login o register
-    else if (hasCompleteReg && (pathname === '/login' || pathname === '/register')) {
-      console.log('Utente già loggato, reindirizzo a homepage')
-      router.push('/')
-    }
-  }
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      // Prende la sessione corrente
-      const { data } = await supabase.auth.getSession()
-      const currentUser = data.session?.user ?? null
-      
-      setUser(currentUser)
-      setSession(data.session ?? null)
-      
-      // Se c'è un utente, controlla il profilo
-      if (currentUser) {
-        await checkUserProfile(currentUser)
-      }
-      
-      setLoading(false)
-    }
-
-    fetchSession()
-
-    // Ascolta i cambiamenti di stato dell'autenticazione
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth event:', event)
-
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      setSession(session ?? null)
-
-      if (event === 'INITIAL_SESSION') {
-        setLoading(false)
-        if (currentUser) {
-          await handleAuthRedirect(currentUser, event)
-        }
-      } else if (event === 'SIGNED_IN') {
-        await handleAuthRedirect(currentUser, event)
-      } else if (event === 'SIGNED_OUT') {
-        setProfile(null)  // Reset profile al logout
-        router.push('/')
-      } else if (event === 'TOKEN_REFRESHED') {
-        setSession(session ?? null)
-      } else if (event === 'USER_UPDATED') {
-        setUser(session?.user ?? null)
-        if (currentUser) {
-          await checkUserProfile(currentUser)
-        }
-      }
-    })
-
-    // Cleanup della subscription
-    return () => {
-      subscription?.unsubscribe()
-    }
-  }, [])
-
+  /** Logout centralizzato */
   const signOut = async () => {
     try {
       await supabase.auth.signOut()
       setUser(null)
       setSession(null)
-      setProfile(null)  // Reset profile
-    } catch (error) {
-      console.error('Errore durante logout:', error)
+      setProfile(null)
+      router.push("/")
+    } catch (err) {
+      console.error("Errore logout:", err)
     }
   }
 
+  /** Gestisce redirect automatici */
+  const handleRedirect = async (currentUser: User | null) => {
+    const authPages = ["/login", "/register", "/complete-registration", "/auth/callback"]
+    const isAuthPage = authPages.some(page => pathname?.startsWith(page))
+
+    if (!currentUser) {
+      setProfile(null)
+      if (!isAuthPage && pathname !== "/") router.push("/")
+      return
+    }
+
+    const prof = await fetchProfile(currentUser)
+
+    if (!prof?.reg_complete && pathname !== "/complete-registration") {
+      router.push("/complete-registration")
+    } else if (prof?.reg_complete && pathname === "/complete-registration") {
+      router.push("/")
+    } else if (prof?.reg_complete && (pathname === "/login" || pathname === "/register")) {
+      router.push("/")
+    }
+  }
+
+  useEffect(() => {
+    const init = async () => {
+      const { data } = await supabase.auth.getSession()
+      const currentUser = data.session?.user ?? null
+      setUser(currentUser)
+      setSession(data.session ?? null)
+
+      if (currentUser) await handleRedirect(currentUser)
+      setLoading(false)
+    }
+
+    init()
+
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      setSession(session ?? null)
+
+      if (event === "SIGNED_OUT") setProfile(null)
+      if (currentUser) await handleRedirect(currentUser)
+    })
+
+    return () => subscription?.unsubscribe()
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      session, 
-      profile, 
-      signOut, 
-      refreshProfile,  // AGGIUNTA
-      updateProfile    // AGGIUNTA
+    <AuthContext.Provider value={{
+      user,
+      session,
+      profile,
+      loading,
+      signOut,
+      refreshProfile,
+      updateProfile
     }}>
       {children}
     </AuthContext.Provider>
@@ -223,8 +146,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth deve essere usato dentro <AuthProvider>")
-  }
+  if (!context) throw new Error("useAuth deve essere usato dentro <AuthProvider>")
   return context
 }

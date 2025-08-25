@@ -2,14 +2,9 @@
 
 import { getUser } from "@/actions"
 import Logout from "@/app/(Auth)/signout/_components/Logout"
-import Link from "next/link"
+import LinksNavbar from "./_components/LinksNavbar"
 import { usePathname } from "next/navigation"
 
-type LinkNavbarProps = {
-  path: string
-  label: string
-  active: boolean
-}
 
 const LinkNav = [
   { label: "Home", path: "/" },
@@ -19,22 +14,7 @@ const LinkNav = [
   { label: "Contatti", path: "/contact-us" },
 ]
 
-export function LinkNavbar({ path, label, active }: LinkNavbarProps) {
-  return (
-    <Link
-      href={path}
-      className={`relative md:text-xs lg:text-base xl:text-lg font-semibold px-4 py-2 transition-all duration-300 group text-white`}
-    >
-      {label}
-      <span
-        className={`absolute left-0 -bottom-1 h-0.5 bg-[#8B0000] drop-shadow-[0_0_8px_rgba(139,0,0,0.8)] transition-all duration-300 
-        ${active ? "w-full" : "w-0 group-hover:w-full"}`}
-      ></span>
-    </Link>
-  )
-}
-
-export default function LinkMenuDesktop({user} : {user : string}) {
+export default function LinkMenuDesktop({ user }: { user: string | null }) {
   const pathName = usePathname()
 
   return (
@@ -44,7 +24,7 @@ export default function LinkMenuDesktop({user} : {user : string}) {
           const active = pathName === item.path
           return (
             <li key={item.label} className="flex flex-col items-center justify-center">
-              <LinkNavbar
+              <LinksNavbar
                 path={item.path}
                 active={active}
                 label={item.label}
@@ -54,10 +34,10 @@ export default function LinkMenuDesktop({user} : {user : string}) {
         })}
         <li>
           {!user ?
-            <LinkNavbar path={'/login'} label="Accedi" active={ pathName === "/login" } />
+            <LinksNavbar path={'/login'} label="Accedi" active={pathName === "/login"} />
             :
             <Logout />
-        }
+          }
         </li>
       </ul>
     </div>

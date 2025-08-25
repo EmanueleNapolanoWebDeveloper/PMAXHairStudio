@@ -1,87 +1,94 @@
 'use client'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
 
+import { useState, useEffect, useCallback } from 'react'
+import LogoPM from './_components/Logo'
 import { Menu } from 'lucide-react'
 
-import Logo from '@/public/assets/logos/P-MaxLogoNoBg.png'
-import LinkMenuDesktop from "./LinkNavbar";
+import LinkMenuDesktop from "./LinkNavbar"
 import ContainerNavMobile from './ContainerNavMobile'
 import { useAuth } from '@/app/store/AuthContext'
 
-
-
 export default function Navbar() {
+  const [isMounted, setIsMounted] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
-    const [isMounted, setIsMounted] = useState(false)
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(false)
+  const { user, signOut, loading } = useAuth()
 
-      const { user, signOut, loading } = useAuth() // 👈 usa context
+  // Toggle sidebar
+  const handleClick = useCallback(() => {
+    setIsSidebarOpen(prev => !prev)
+  }, [])
 
-    function handleClick() {
-        setIsSidebarOpen((prev) => !prev);
-    }
+  // Mount check per mobile menu
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-    useEffect(() => {
-        setIsMounted(true)
-    }, [])
+  // Scroll listener ottimizzato
+  useEffect(() => {
+    let ticking = false
 
-    useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 150) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 150)
+          ticking = false
+        })
+        ticking = true
       }
     }
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-    
-    if (loading) return null
 
+  if (loading) {
+    // Skeleton di fallback per ridurre layout shift
     return (
-        <>
-            <nav
-                className={`
-        w-screen grid grid-cols-2 h-[7rem] fixed top-0 left-0 z-[99] transition-all duration-500 
-        ${isScrolled ? 'bg-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}
-      `}>
-                {/* logo */}
-                <div className="col-span-1 flex items-center justify-start relative">
-                <div className="relative w-[10rem] h-[6rem]">
-                    <Image
-                        src={Logo}
-                        fill
-                        alt="P-Max Logo" />
-                </div>
-            </div>
-
-            {/* Menù Link */}
-            <div className=" col-span-1 flex items-center justify-end p-2 w-full">
-
-                {/* toggle Button for mobile */}
-                <div className="lg:hidden">
-                    <button
-                        onClick={handleClick}
-                        aria-label="Apri menu di navigazione"
-                        aria-controls="mobile-menu">
-                        <Menu />
-                    </button>
-                </div>
-
-                {/* Link Menù DESKTOP*/}
-                <LinkMenuDesktop user={user}/>
-            </div>
-
-        </nav >
-
-        {
-            isMounted &&
-            <ContainerNavMobile toggleMenu={isSidebarOpen} onSelect={handleClick} />
-}
-        </>
+      <nav className="w-screen h-[7rem] fixed top-0 left-0 z-[99] bg-gray-100/50 flex items-center justify-center">
+        <div className="animate-pulse w-32 h-6 bg-gray-300 rounded"></div>
+      </nav>
     )
+  }
+
+  return (
+    <>
+      <nav
+        className={`
+          w-screen grid grid-cols-2 h-[7rem] fixed top-0 left-0 z-[99] transition-all duration-500
+          ${isScrolled ? 'bg-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}
+        `}
+      >
+        {/* Logo */}
+        <div className="col-span-1 flex items-center justify-start relative">
+          <LogoPM />
+        </div>
+
+        {/* Menù link */}
+        <div className="col-span-1 flex items-center justify-end p-2 w-full">
+          {/* toggle mobile */}
+          <div className="lg:hidden">
+            <button
+              onClick={handleClick}
+              aria-label="Apri menu di navigazione"
+              aria-controls="mobile-menu"
+              aria-expanded={isSidebarOpen}
+              className="p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+            >
+              <Menu />
+            </button>
+          </div>
+
+          {/* desktop menu */}
+          <LinkMenuDesktop user={user} />
+        </div>
+      </nav>
+
+      {/* mobile menu */}
+      {isMounted && (
+        <ContainerNavMobile toggleMenu={isSidebarOpen} onSelect={handleClick} />
+      )}
+    </>
+  )
 }

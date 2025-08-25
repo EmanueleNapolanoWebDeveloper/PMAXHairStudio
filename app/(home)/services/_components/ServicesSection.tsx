@@ -1,7 +1,7 @@
 import style from './servizi.module.css'
 import styles from '@/app/(home)/_components/homepage.module.css'
 import Image from 'next/image'
-import ImageSlideShow from '../../_components/ImageSlideShow'
+import ImageSlideShow from '../../(homepage)/_components/ImageSlideShow'
 import { services } from '@/lib/datas'
 
 type TraitmentProps = {

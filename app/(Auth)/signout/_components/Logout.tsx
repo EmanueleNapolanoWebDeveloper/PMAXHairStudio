@@ -1,25 +1,39 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
-import toast from 'react-hot-toast'
+import { useAuth } from '@/app/store/AuthContext'
+import { toast } from 'react-hot-toast'
 
 export default function Logout() {
+  const { signOut } = useAuth()
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/') // o la home se preferisci
-    toast.success('Ti sei sloggato!')
+    if (loading) return
+    setLoading(true)
+
+    try {
+      await signOut()
+      toast.success('Logout effettuato!')
+      router.replace('/login') // Redirect alla login
+    } catch (err) {
+      console.error('Errore durante il logout:', err)
+      toast.error('Si è verificato un errore durante il logout.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <button
       onClick={handleLogout}
-      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+      disabled={loading}
+      className={`bg-red-600 text-white px-4 py-2 rounded transition 
+        hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      Logout
+      {loading ? 'Uscita in corso...' : 'Logout'}
     </button>
   )
 }

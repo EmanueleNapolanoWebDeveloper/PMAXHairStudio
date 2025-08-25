@@ -1,5 +1,5 @@
 import Image from "next/image"
-import styles from './homepage.module.css'
+import styles from '../../homepage.module.css'
 import { partners } from '@/lib/datas'
 
 

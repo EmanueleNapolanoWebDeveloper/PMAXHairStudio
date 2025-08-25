@@ -1,5 +1,5 @@
 import styles from './_components/contacts.module.css'
-import style from '@/app/(home)/_components/homepage.module.css'
+import style from '@/app/(home)/(homepage)/homepage.module.css'
 import Image from 'next/image'
 import type { Metadata } from "next";
 import { MapPin, Phone, Mail } from 'lucide-react'

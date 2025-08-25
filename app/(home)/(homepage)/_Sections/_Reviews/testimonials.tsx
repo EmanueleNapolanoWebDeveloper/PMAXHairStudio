@@ -1,6 +1,6 @@
 'use client'
 
-import styles from './homepage.module.css'
+import styles from '../../homepage.module.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { recensioni } from '@/lib/datas'
 import { useState, useEffect } from 'react'
