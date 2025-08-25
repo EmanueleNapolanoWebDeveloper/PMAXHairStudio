@@ -1,6 +1,4 @@
 import styles from './_components/servizi.module.css'
-import ServicesSection from '@/app/(home)/services/_components/ServicesSection'
-import Partners from '@/app/(home)/(homepage)/_components/partners'
 import type { Metadata } from "next";
 import TransitionOptions from '@/components/UI/TransitionOptions'
 
@@ -55,9 +53,7 @@ export default function Services() {
                 </section>
 
                 {/* prices */}
-                <ServicesSection />
-
-                <Partners />
+              
 
             </TransitionOptions>
         </main>

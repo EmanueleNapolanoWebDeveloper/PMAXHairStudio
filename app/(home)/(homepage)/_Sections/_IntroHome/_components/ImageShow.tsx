@@ -35,7 +35,7 @@ export default function ImageShow() {
                     fill
                     alt="Card background"
                     className="z-0 w-full h-full object-cover"
-                    src={testImages[10]} />
+                    src={testImages[6]} />
             </Card>
             <Card isFooterBlurred className="w-full h-full col-span-12 sm:col-span-5">
                 <CardHeader className="absolute z-10 bottom-15 flex-col items-start">
@@ -65,13 +65,13 @@ export default function ImageShow() {
             </Card>
             <Card isFooterBlurred className="w-full h-full col-span-12 sm:col-span-7">
                 <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                    <p className="text-[2.7rem] text-slate-900/70 uppercase font-bold">professionalità</p>
+                    <p className="text-[2.7rem] text-slate-900/70 uppercase font-bold">fiducia</p>
                 </CardHeader>
                 <Image
                     fill
                     alt="Relaxing app background"
                     className="z-0 w-full h-full object-cover"
-                    src={testImages[4]} />
+                    src={testImages[2]} />
                 <CardFooter className="absolute bg-black/90 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                     <div className="flex grow gap-2 items-center">
                         <div className="flex flex-col">

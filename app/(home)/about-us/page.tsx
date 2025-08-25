@@ -1,7 +1,7 @@
 import History from "@/app/(home)/about-us/_components/History";
 import Saloon from "@/app/(home)/about-us/_components/Saloon";
 import WhyChoose from "@/app/(home)/about-us/_components/whyChose";
-import Staffs from "@/app/(home)/(homepage)/_components/Staffs";
+import Staffs from "@/app/(home)/(homepage)/_Sections/_Staffs/Staffs";
 import type { Metadata } from "next";
 import TransitionOptions from "@/components/UI/TransitionOptions";
 
@@ -59,9 +59,7 @@ export default function AboutUs() {
             </TransitionOptions>
 
             {/* staff */}
-            <TransitionOptions>
-                <Staffs />
-            </TransitionOptions>
+            
 
             {/* saloon */}
             <TransitionOptions>

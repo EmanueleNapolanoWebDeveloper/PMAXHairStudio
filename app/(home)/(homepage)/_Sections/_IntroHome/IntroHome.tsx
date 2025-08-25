@@ -6,7 +6,7 @@ import ImageShow from './_components/ImageShow'
 
 export default function IntroHome() {
     return (
-        <section className="min-h-screen grid grid-cols-2 p-3 bg-white">
+        <section className="min-h-screen grid grid-cols-2 bg-white">
 
             {/* Images section */}
             <div className="col-span-2 lg:col-span-1 flex flex-wrap h-full">

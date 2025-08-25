@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image"
-import styles from '@/app/(home)/_components/homepage.module.css'
+import styles from '@/app/(home)/(homepage)/homepage.module.css'
 
 
 export default function History() {

@@ -4,7 +4,7 @@ import LogoPM from '@/public/assets/logos/P-MaxLogoNoBg.png'
 
 export default function Logo(){
     return (
-        <div className="relative w-[8rem] h-[5rem]">
+        <div className="relative w-[10rem] h-[5rem]">
             <Image
                 src={LogoPM} //Logo
                 fill

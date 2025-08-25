@@ -4,6 +4,7 @@ import { getUser } from "@/actions"
 import Logout from "@/app/(Auth)/signout/_components/Logout"
 import LinksNavbar from "./_components/LinksNavbar"
 import { usePathname } from "next/navigation"
+import AuthButton from "./_components/AuthButton"
 
 
 const LinkNav = [
@@ -33,11 +34,7 @@ export default function LinkMenuDesktop({ user }: { user: string | null }) {
           )
         })}
         <li>
-          {!user ?
-            <LinksNavbar path={'/login'} label="Accedi" active={pathName === "/login"} />
-            :
-            <Logout />
-          }
+            <AuthButton />
         </li>
       </ul>
     </div>

@@ -1,6 +1,6 @@
 import Image from "next/image"
 import style from './aboutus.module.css'
-import styles from '@/app/(home)/_components/homepage.module.css'
+import styles from '@/app/(home)/(homepage)/homepage.module.css'
 import { choises } from "@/lib/datas"
 
 

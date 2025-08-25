@@ -43,14 +43,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  if (loading) {
-    // Skeleton di fallback per ridurre layout shift
-    return (
-      <nav className="w-screen h-[7rem] fixed top-0 left-0 z-[99] bg-gray-100/50 flex items-center justify-center">
-        <div className="animate-pulse w-32 h-6 bg-gray-300 rounded"></div>
-      </nav>
-    )
-  }
 
   return (
     <>
