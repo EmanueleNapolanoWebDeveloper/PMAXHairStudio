@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/store/AuthContext';
 import { ro } from 'react-day-picker/locale';
+import Link from 'next/link';
 export default function AuthButton() {
     // Simula lo stato di autenticazione - sostituisci con la tua logica
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -104,17 +105,21 @@ export default function AuthButton() {
                     {/* Menu Items */}
                     <div className="py-2">
                         {/* Profilo */}
-                        <button
-                            className="w-full flex items-center gap-3 px-4 py-3 text-left
-                                     hover:bg-gray-50 transition-colors duration-200"
-                            onClick={() => {
-                                setIsDropdownOpen(false);
-                                // Aggiungi logica per il profilo
-                            }}
+                        <Link
+                            href="/area-personale"                           
                         >
-                            <User className="w-5 h-5 text-gray-600" />
-                            <span className="text-gray-700 font-medium">Il mio profilo</span>
-                        </button>
+                            <button
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left
+                                     hover:bg-gray-50 transition-colors duration-200"
+                                onClick={() => {
+                                    setIsDropdownOpen(false);
+                                    // Aggiungi logica per il profilo
+                                }}
+                            >
+                                <User className="w-5 h-5 text-gray-600" />
+                                <span className="text-gray-700 font-medium">Il mio profilo</span>
+                            </button>
+                        </Link>
 
                         {/* Impostazioni */}
                         <button
