@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Plus, Filter } from 'lucide-react';
-import { getBarber } from '../action';
+import { deleteReservation, getBarber } from '../action';
 
 const ReservationPanoramics = ({ reservations }) => {
 
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(false);
+  const [localReservation, setLocalReservations] = useState(reservations);
 
-  const filteredReservations = reservations.filter(res =>
+  const filteredReservations = localReservation.filter(res =>
     filter === 'all' ? true : res.status === filter
   );
 
@@ -34,6 +36,13 @@ const ReservationPanoramics = ({ reservations }) => {
       case 'pending': return 'Prenotato';
       default: return status;
     }
+  };
+
+  const handleCancelReservation = async (reservationId) => {
+    setLoading(true);
+    await deleteReservation(reservationId);
+    setLocalReservations(localReservation.filter(res => res.id !== reservationId));
+    setLoading(false);
   };
 
   return (
@@ -128,6 +137,19 @@ const ReservationPanoramics = ({ reservations }) => {
                   </p>
                 </div>
               </div>
+
+              {reservation.status === 'pending' &&
+                <div className='w-full flex items-center'>
+                  <button
+                    onClick={() => handleCancelReservation(reservation.id)}
+                    disabled={loading}
+                    type="button"
+                    className='w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 hover:shadow-md'>
+                    {loading ? 'Sto annullando' : 'Annulla prenotazione'}
+                  </button>
+                </div>
+              }
+
             </div>
           ))}
         </div>

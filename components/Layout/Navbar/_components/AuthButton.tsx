@@ -106,7 +106,7 @@ export default function AuthButton() {
                     <div className="py-2">
                         {/* Profilo */}
                         <Link
-                            href="/area-personale"                           
+                            href="/area-personale"
                         >
                             <button
                                 className="w-full flex items-center gap-3 px-4 py-3 text-left
@@ -121,18 +121,24 @@ export default function AuthButton() {
                             </button>
                         </Link>
 
-                        {/* Impostazioni */}
-                        <button
-                            className="w-full flex items-center gap-3 px-4 py-3 text-left
+                        {/* Dashboard */}
+                        {profile.role === 'employee' &&
+                            <Link
+                                href="/dashboard"
+                            >
+                                <button
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left
                                      hover:bg-gray-50 transition-colors duration-200"
-                            onClick={() => {
-                                setIsDropdownOpen(false);
-                                // Aggiungi logica per le impostazioni
-                            }}
-                        >
-                            <Settings className="w-5 h-5 text-gray-600" />
-                            <span className="text-gray-700 font-medium">Impostazioni</span>
-                        </button>
+                                    onClick={() => {
+                                        setIsDropdownOpen(false);
+                                        // Aggiungi logica per le impostazioni
+                                    }}
+                                >
+                                    <Settings className="w-5 h-5 text-gray-600" />
+                                    <span className="text-gray-700 font-medium">DashBoard</span>
+                                </button>
+                            </Link>
+                        }
 
                         {/* Divider */}
                         <div className="my-2 border-t border-gray-200"></div>

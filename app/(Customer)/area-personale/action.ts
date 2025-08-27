@@ -30,10 +30,10 @@ export async function getBarber(id: string) {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-    .from('profiles')
-    .select('name')
-    .eq('id', id)
-    .single()
+        .from('profiles')
+        .select('name')
+        .eq('id', id)
+        .single()
 
     if (error) {
         console.log('Errore recupero barbiere:', error)
@@ -48,13 +48,34 @@ export async function getUserReservations(id: string) {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-    .from('reservations')
-    .select('*')
-    .eq('customer_id', id)
+        .from('reservations')
+        .select('*')
+        .eq('customer_id', id)
 
     if (error) {
         console.log(error)
     }
 
     return (data)
+}
+
+export async function deleteReservation(id: string) {
+
+    console.log('id ricevuto:', id);
+    
+
+    const supabase = await createClient()
+
+    const { error } = await supabase
+        .from('reservations')
+        .delete()
+        .eq('id', id)
+        .select()
+
+    if (error) {
+        console.log(error)
+        return
+    }
+
+    return
 }

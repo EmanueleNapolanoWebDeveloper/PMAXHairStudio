@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js"
 import { ProfileType } from "@/app/store/AuthContext"
 import Image from "next/image"
 import Logo from '@/public/assets/logos/P-MaxLogoNoBg.png'
+import Link from "next/link"
 
 
 type DashNavbarProps = {
@@ -63,18 +64,34 @@ export default function DashNavbar({ user, profile, onLogout }: DashNavbarProps)
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
-                            <button
-                                onClick={onLogout}
-                                className="w-full text-left px-4 py-2 hover:bg-red-600 hover:text-white transition"
-                            >
-                                Logout
-                            </button>
+                        <div className="absolute right-0 mt-2 w-48 h-[8rem] bg-white border rounded-md shadow-lg z-50">
+                            <ul className="flex flex-col h-full items-center justify-around">
+                                <li className="w-full h-full flex items-center justify-center text-[1.4rem]">
+                                    <Link
+                                        href="/"
+                                        className="w-full text-left px-4 py-2 text-black hover:bg-red-600 hover:text-white transition">
+                                        <button
+                                            type="button" >
+
+                                            Home
+                                        </button>
+                                    </Link>
+                                </li>
+                                <li className="w-full h-full flex items-center justify-center text-[1.4rem]">
+                                    <button
+                                        onClick={onLogout}
+                                        className="w-full text-left px-4 py-2 text-black hover:bg-red-600 hover:text-white transition"
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                            </ul>
+
                         </div>
                     )}
                 </div>
 
-            </div>
-        </nav>
+            </div >
+        </nav >
     )
 }

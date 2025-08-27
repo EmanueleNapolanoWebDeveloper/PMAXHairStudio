@@ -5,7 +5,6 @@ import styles from './navbar.module.css'
 
 const LinkNav = [
     { label: "Home", path: "/" },
-    { label: "Chi Siamo", path: "/about-us" },
     { label: "Servizi", path: "/services" },
     { label: "Prenota", path: "/reservation" },
     { label: "Contatti", path: "/contact-us" }

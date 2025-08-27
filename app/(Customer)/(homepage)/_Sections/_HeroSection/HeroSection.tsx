@@ -4,7 +4,7 @@ import Image from "next/image"
 
 export default function HeroSection() {
   return (
-    <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative bg-black">
+    <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative bg-black/30">
       {/* LEFT SIDE */}
       <HeroLeft />
 

@@ -1,123 +1,150 @@
-"use client";
+'use client'
+import { Clock, User, Scissors, Calendar, Plus, Phone, MapPin, Car } from 'lucide-react';
+import TopHeader from './_components/TopHeader';
+import DateHeader from './_components/DateHeader';
+import ReservationSlot from './_components/ReservationSlot';
+import CardStats from './_components/CardStats';
+import { getAppointments } from './action';
+import { useAuth } from '@/app/store/AuthContext';
+import { useEffect, useState } from 'react';
+import TimeLine from './_components/TimeLine';
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/app/store/AuthContext";
-import { getEmployeeReservation } from "./action";
-import ReservationCard  from "./_components/reservationcard";
-import { User, Scissors, CheckCircle, Clock, XCircle } from "lucide-react";
-
-interface Appointment {
+export type Appointments = {
     id: number;
-    date: string;        // YYYY-MM-DD
-    start_time: string;  // HH:mm
-    end_time: string;    // HH:mm
-    customer_id: string;
-    service: string;
-    status: "confirmed" | "pending" | "in_progress" | "completed" | "denied";
+    start_time: string;
+    end_time: string;
+    customer: {
+        id: string;
+        name: string;
+        surname: string;
+        phone: string;
+    };
+    services: string[];
+    phone: string;
+    price: number;
+    status: string;
+    barber_id: string;
+    date : Date;
 }
 
-export default function DailyCalendar({ employeeId, day }: { employeeId: string; day: string }) {
-    const { user } = useAuth();
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [tab, setTab] = useState<"morning" | "afternoon">("morning");
+export type Customer = {
+    id: string;
+    name: string;
+    surname: string;
+    phone: string;
+}
 
-    const slotHeight = 32; // altezza di mezz'ora
+const BarberCalendar = () => {
+    const [barber, setBarber] = useState<Customer | null>(null);
+    const [appointments, setAppointments] = useState<Appointments[]>([]); // ✅ Tipizzazione corretta
+    const [profiles, setProfiles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null); // ✅ Tipizzazione correttaù
+    const [selectedDate, setSelectedDate] = useState(new Date())
+
+
+    //   hook
+    const { user, profile } = useAuth();
 
     useEffect(() => {
-        if (!user) {
-            console.error("Utente non autenticato.");
-            return;
-        };
+        setBarber(profile ?? null);
+    }, [profile]);
 
-        const fetchAppointments = async () => {
+
+    useEffect(() => {
+
+        const fetchAppointment = async () => {
             try {
-                const data = await getEmployeeReservation(user.id);
+                setLoading(true);
+                setError(null);
 
-                setAppointments(data || []);
+                if (!user?.id) {
+                    setAppointments([]); // 
+                    return;
+                }
+
+                const appointmentsFetched: Appointments[] = await getAppointments(user.id);
+
+                if (!appointmentsFetched || appointmentsFetched.length === 0) {
+                    console.log('Non ci sono appuntamenti');
+                    setAppointments([]);
+                    return;
+                }
+
+                setAppointments(appointmentsFetched);
+
             } catch (err) {
-                console.error("Errore caricamento appuntamenti:", err);
+                console.log('Errore nel caricamento degli appuntamenti:', err);
+                setError(err instanceof Error ? err.message : 'Errore sconosciuto');
+                setAppointments([]);
+            } finally {
+                setLoading(false);
             }
-        };
-
-        fetchAppointments();
-    }, [user, day]);
-
-
-    const getStatusStyles = (status: Appointment["status"]) => {
-        switch (status) {
-            case "confirmed": return { color: "bg-green-100 text-green-700", icon: <CheckCircle className="w-4 h-4" /> };
-            case "pending": return { color: "bg-yellow-100 text-yellow-700", icon: <Clock className="w-4 h-4" /> };
-            case "in_progress": return { color: "bg-orange-100 text-orange-700", icon: <Clock className="w-4 h-4" /> };
-            case "completed": return { color: "bg-blue-100 text-blue-700", icon: <CheckCircle className="w-4 h-4" /> };
-            case "denied": return { color: "bg-red-100 text-red-700", icon: <XCircle className="w-4 h-4" /> };
         }
-    };
 
-    // Funzione helper per creare array di mezz'ora
-    const generateSlots = (start: number, end: number) => {
-        const slots: string[] = [];
-        for (let h = start; h <= end; h++) {
-            slots.push(`${h.toString().padStart(2, '0')}:00`);
-            slots.push(`${h.toString().padStart(2, '0')}:30`);
-        }
-        return slots;
+
+        fetchAppointment();
+        // ✅ Rimuovi console.log qui (appointments sarà sempre vuoto al primo render)
+    }, [user?.id]); // ✅ Safe navigation nella dipendenza
+
+
+
+
+
+    // ✅ Gestione error state
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-red-500 mb-4">
+                        <Clock className="h-12 w-12 mx-auto mb-2" />
+                        <p className="text-lg font-medium">Ops! Qualcosa è andato storto</p>
+                        <p className="text-sm text-gray-600 mt-1">{error}</p>
+                    </div>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                        Ricarica pagina
+                    </button>
+                </div>
+            </div>
+        );
     }
 
-    const morningSlots = generateSlots(8, 14);   // 08:00 - 12:30
-    const afternoonSlots = generateSlots(14, 20);// 13:00 - 20:30
-    const displayedSlots = tab === "morning" ? morningSlots : afternoonSlots;
+    function handleDateSelect (data : Date){
+        setSelectedDate((prev) => data);
+    }
+
+    // Calcoli dopo il caricamento
+    const totalEarnings = appointments
+        .filter(apt => apt.status === 'confirmed')
+        .reduce((sum, apt) => sum + (apt.price || 0), 0);
+
+    const nextAppointment = appointments.find(apt => apt.status === 'confirmed');
+
 
     return (
-        <div className="overflow-x-auto">
-            {/* Tab selezione */}
-            <div className="flex gap-2 mb-4 border-b">
-                <button
-                    className={`px-4 py-2 ${tab === "morning" ? "border-b-2 border-blue-500 font-semibold" : "text-gray-500"}`}
-                    onClick={() => setTab("morning")}
-                >
-                    Mattina
-                </button>
-                <button
-                    className={`px-4 py-2 ${tab === "afternoon" ? "border-b-2 border-blue-500 font-semibold" : "text-gray-500"}`}
-                    onClick={() => setTab("afternoon")}
-                >
-                    Pomeriggio
-                </button>
-            </div>
+        <div className="min-h-screen bg-gray-50">
+            {/* Top Header */}
+            <TopHeader barber={barber} />
 
-            <div className="flex gap-4 relative">
-                {/* Colonna orari */}
-                <div className="flex flex-col w-20 text-gray-600 text-sm">
-                    {displayedSlots.map(slot => (
-                        <div key={slot} className="h-16 border-t border-gray-200 flex items-start px-1">
-                            {slot}
-                        </div>
-                    ))}
-                </div>
+            <div className="max-w-6xl mx-auto px-4 py-6">
+                {/* Date Header */}
+                <DateHeader nextAppointment={nextAppointment} selectedDate={selectedDate} setSelectedData={handleDateSelect} />
 
-                {/* Colonna appuntamenti */}
-                <div className="flex-1 relative">
-                    {appointments
-                        .filter(a => a.date === day)
-                        .filter(a => {
-                            const hour = parseInt(a.start_time.split(":")[0]);
-                            return tab === "morning" ? hour >= 8 && hour <= 14 : hour >= 14 && hour <= 20;
-                        })
-                        .map(a => (
-                            <ReservationCard
-                                key={a.id}
-                                client={a.client}
-                                service={a.service}
-                                status={a.status}
-                                start_time={a.start_time}
-                                end_time={a.end_time}
-                                slotHeight={slotHeight}
-                                tab={tab}
-                            />
-                        ))}
+                {/* Timeline */}
+                <TimeLine appointment={appointments} date={selectedDate}/>
 
+                    {/* Bottom Stats */}
+                <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <CardStats appointments={appointments} icon={User} status={'confirmed'} />
+                    <CardStats appointments={appointments} icon={Clock} status={'pending'} />
+                    <CardStats appointments={appointments} icon={Calendar} status={'free'} />
                 </div>
             </div>
         </div>
     );
-}
+};
+
+export default BarberCalendar;
