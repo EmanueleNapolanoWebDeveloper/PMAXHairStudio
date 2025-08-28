@@ -11,7 +11,6 @@ const LinkNav = [
   { label: "Home", path: "/" },
   { label: "Servizi", path: "/services" },
   { label: "Prenota", path: "/reservation" },
-  { label: "Contatti", path: "/contact-us" },
 ]
 
 export default function LinkMenuDesktop({ user }: { user: string | null }) {

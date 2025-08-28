@@ -1,13 +1,16 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getEmployees, EmployeeProfile } from '../actions'
+import { Reservation } from '@/lib/types/homepage'
 
 export type BarberChoiseProps = {
   barber: EmployeeProfile | null
   onChange: (value: EmployeeProfile) => void
+  reservationsLvlDwn: Reservation[]
+  setReservations: ((value: any[]) => void | undefined)
 }
 
-export default function BarberChoise({ barber, onChange }: BarberChoiseProps) {
+export default function BarberChoise({ barber, onChange, reservationsLvlDwn, setReservations }: BarberChoiseProps) {
   const [barbers, setBarbers] = useState<EmployeeProfile[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -18,10 +21,24 @@ export default function BarberChoise({ barber, onChange }: BarberChoiseProps) {
       .finally(() => setLoading(false))
   }, [])
 
+
   const handleSelect = (id: string) => {
     const selectedBarber = barbers.find(b => b.id === id) || null
     onChange(selectedBarber)
+
+    if (!selectedBarber) {
+      setReservations([])
+      return
+    }
+
+    // filtriamo le prenotazioni del barber selezionato
+    const filteredReservations = reservationsLvlDwn
+      .filter(r => r.barber_id === selectedBarber.id)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    setReservations(filteredReservations)
+    console.log(filteredReservations)
   }
+
 
   return (
     <div>

@@ -5,6 +5,8 @@ import FlipText from "@/components/UI/FlipText"
 import { texts } from "@/lib/datas"
 import { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
+import ReservationForm from "@/app/(Customer)/reservation/_components/ReservationForm"
+import ReservationModal from "@/components/Layout/ReservationModal"
 
 interface Profile {
   id?: string
@@ -50,22 +52,10 @@ export default function HeroUserSection() {
   )
 
   return (
-    <div className="text-center mt-4 relative z-10">
-      {isLogged ? (
-        <>
-          <h2 className="text-3xl md:text-3xl font-semibold text-white">
-            Benvenuto, {userName}
-          </h2>
-          <ActionButton href="/reservation" label="PRENOTA UN APPUNTAMENTO" />
-        </>
-      ) : (
-        <>
-          <div className="mb-4">
-            <FlipText texts={texts} />
-          </div>
-          <ActionButton href="/login" label="ACCEDI PER PRENOTARE" />
-        </>
-      )}
+    <div className="text-center mt-4 ">
+
+      <ReservationModal />
+
     </div>
   )
 }

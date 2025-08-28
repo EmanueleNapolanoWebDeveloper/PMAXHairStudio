@@ -1,27 +1,24 @@
-"use client"
+'use client'
+import { Reservation } from "@/lib/types/homepage"
 import { useState } from "react"
 import { DayPicker, Matcher } from "react-day-picker"
 import "react-day-picker/dist/style.css"
 
 const FESTIVALS = [
-  "2025-01-01", // Capodanno
-  "2025-01-06", // Epifania
-  "2025-04-25", // Festa della Liberazione
-  "2025-05-01", // Festa dei lavoratori
-  "2025-06-02", // Festa della Repubblica
-  "2025-08-15", // Ferragosto
-  "2025-11-01", // Ognissanti
-  "2025-12-08", // Immacolata
-  "2025-12-25", // Natale
-  "2025-12-26"  // Santo Stefano
+  "2025-01-01", "2025-01-06", "2025-04-25", "2025-05-01",
+  "2025-06-02", "2025-08-15", "2025-11-01", "2025-12-08",
+  "2025-12-25", "2025-12-26"
 ].map(d => new Date(d))
 
 export type DataChoiseType = {
   date: string
   onChange: (date: string) => void
+  setTimeResBarber: (timeResBarber: Reservation[]) => void
+  resBarber: Reservation[]
+  barberId?: string
 }
 
-export default function DataChoise({ date, onChange }: DataChoiseType) {
+export default function DataChoise({ date, onChange, setTimeResBarber, resBarber, barberId }: DataChoiseType) {
   const [selected, setSelected] = useState<Date | undefined>(
     date ? new Date(date) : undefined
   )
@@ -34,7 +31,22 @@ export default function DataChoise({ date, onChange }: DataChoiseType) {
       const yyyy = day.getFullYear()
       const mm = String(day.getMonth() + 1).padStart(2, "0")
       const dd = String(day.getDate()).padStart(2, "0")
-      onChange(`${yyyy}-${mm}-${dd}`)
+      const formattedDate = `${yyyy}-${mm}-${dd}`
+      onChange(formattedDate)
+
+      console.log(formattedDate);
+      // filtro prenotazioni per barbiere e data
+      if (barberId) {
+
+
+        const filteredReservations = resBarber
+          .filter(r => r.barber_id === barberId && r.date === formattedDate)
+          .map(r => ({ start_time: r.start_time, end_time: r.end_time }))
+        console.log('filteredReservations', filteredReservations);
+        setTimeResBarber(filteredReservations)
+      } else {
+        setTimeResBarber([])
+      }
     }
   }
 
@@ -52,11 +64,7 @@ export default function DataChoise({ date, onChange }: DataChoiseType) {
           mode="single"
           selected={selected}
           onSelect={handleSelect}
-          disabled={[
-            { before: today },
-            disableWeekDays,
-            ...FESTIVALS
-          ]}
+          disabled={[{ before: today }, disableWeekDays, ...FESTIVALS]}
           className="bg-white text-black p-2 rounded-lg"
           captionLayout="dropdown"
           modifiersClassNames={{
@@ -64,11 +72,7 @@ export default function DataChoise({ date, onChange }: DataChoiseType) {
             disabled: "text-gray-400 cursor-not-allowed",
             today: "border border-black"
           }}
-          footer={
-            selected
-              ? `Selezionato: ${selected.toLocaleDateString()}`
-              : "Seleziona una data"
-          }
+          footer={selected ? `Selezionato: ${selected.toLocaleDateString()}` : "Seleziona una data"}
         />
       </div>
     </div>

@@ -1,0 +1,20 @@
+export type Profile = {
+    id?: string
+    name?: string
+    surname?: string
+    email?: string
+    phone?: string
+    role?: string
+}
+
+export type Reservation = {
+    id: string
+    customer_id: string
+    barber_id: string
+    date: string
+    start_time: string
+    end_time: string
+    services : string[]
+    status?: string
+    total_price?: number
+}
