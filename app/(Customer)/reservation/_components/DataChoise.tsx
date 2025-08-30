@@ -1,5 +1,6 @@
 'use client'
 import { Reservation } from "@/lib/types/homepage"
+import { s } from "framer-motion/client"
 import { useState, useEffect } from "react"
 import { DayPicker, Matcher } from "react-day-picker"
 import "react-day-picker/dist/style.css"
@@ -16,12 +17,35 @@ export type DataChoiseType = {
   setTimeResBarber: (timeResBarber: Reservation[]) => void
   resBarber: Reservation[]
   barberId?: string
+  setIsWorkingDay: (d: Date) => boolean | Date
 }
 
-export default function DataChoise({ date, onChange, setTimeResBarber, resBarber, barberId }: DataChoiseType) {
+export default function DataChoise({ date, onChange, setTimeResBarber, resBarber, barberId, setIsWorkingDay }: DataChoiseType) {
   const [selected, setSelected] = useState<Date | undefined>(
     date ? new Date(date) : undefined
   )
+
+   // Funzione per verificare se un giorno è feriale
+  const isWorkingDay = (d: Date) => {
+    const day = d.getDay()
+    const isWeekend = day === 0 || day === 1 // domenica/lunedì
+    const isFestival = FESTIVALS.some(f => f.toDateString() === d.toDateString())
+    return !isWeekend && !isFestival
+  }
+
+  useEffect(() => {
+    setIsWorkingDay(isWorkingDay(selected || new Date()))
+  }),[setIsWorkingDay]
+
+
+  // Trova il prossimo giorno feriale a partire da today o date
+  const getNextWorkingDay = (fromDate: Date) => {
+    const d = new Date(fromDate)
+    while (!isWorkingDay(d)) {
+      d.setDate(d.getDate() + 1)
+    }
+    return d
+  }
 
   const filterReservations = (barberId: string, date: string) => {
     const filtered = resBarber
@@ -40,7 +64,7 @@ export default function DataChoise({ date, onChange, setTimeResBarber, resBarber
   const today = new Date()
 
   const handleSelect = (day: Date | undefined) => {
-    if (!day) return
+    if (!day || !isWorkingDay(day)) return
 
     setSelected(day)
     const yyyy = day.getFullYear()

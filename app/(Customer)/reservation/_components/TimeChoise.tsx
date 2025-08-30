@@ -14,12 +14,13 @@ type TimeChoiceProps = {
   time: string
   onChange: (t: string) => void
   timeSlots?: ReservationSlot[]
+  isWorkingDay: boolean
 }
 
-export default function TimeChoice({ barber, date, time, onChange, timeSlots }: TimeChoiceProps) {
+export default function TimeChoice({ barber, date, time, onChange, timeSlots, isWorkingDay }: TimeChoiceProps) {
   const [activeTab, setActiveTab] = useState<'morning' | 'afternoon'>('morning')
 
-  if (!barber || !date) {
+  if (!barber || !date || !isWorkingDay) {
     return (
       <div className="max-w-md mx-auto p-6 text-center border rounded-lg border-gray-300 bg-gray-50">
         <p className="text-gray-500 mb-2">

@@ -8,6 +8,7 @@ import { getAppointments } from './action';
 import { useAuth } from '@/app/store/AuthContext';
 import { useEffect, useState } from 'react';
 import TimeLine from './_components/TimeLine';
+import { Profile } from '@/lib/types/homepage';
 
 export type Appointments = {
     id: number;
@@ -27,15 +28,9 @@ export type Appointments = {
     date : Date;
 }
 
-export type Customer = {
-    id: string;
-    name: string;
-    surname: string;
-    phone: string;
-}
 
 const BarberCalendar = () => {
-    const [barber, setBarber] = useState<Customer | null>(null);
+    const [barber, setBarber] = useState<Profile | null>(null);
     const [appointments, setAppointments] = useState<Appointments[]>([]); // ✅ Tipizzazione corretta
     const [profiles, setProfiles] = useState([]);
     const [loading, setLoading] = useState(true);

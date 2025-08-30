@@ -49,6 +49,7 @@ export default function ReservationPage() {
   const [time, setTime] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
+  const [isWorkingDay, setIsWorkingDay] = useState(true)
 
   // hooks
   const { profile } = useAuth()
@@ -185,6 +186,7 @@ export default function ReservationPage() {
             setTimeResBarber={setTimeResBarber}
             resBarber={barberRes}
             barberId={barber?.id}
+            setIsWorkingDay={setIsWorkingDay}
           />
           <TimeChoise
             time={time}
@@ -192,6 +194,8 @@ export default function ReservationPage() {
             barber={barber}
             date={date}
             timeSlots={timeResBarber}
+            isWorkingDay={isWorkingDay}
+
           />
           <SummaryReservation
             barber={barber}
