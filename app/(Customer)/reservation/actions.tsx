@@ -1,4 +1,5 @@
 "use server"
+import { Profile } from "@/lib/types/homepage";
 import { createClient } from "@/utils/supabase/server"
 
 export type Service = { id: number; title: string; time: number; price: number }
@@ -45,7 +46,30 @@ export async function createReservation({ barber_id, date, start_time, services 
     endTime = `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`
   }
 
+  // --- LOGICA PER EVITARE SOVRAPPOSIZIONI ---
   try {
+    const { data: existingReservations } = await supabase
+      .from("reservations")
+      .select("start_time, end_time")
+      .eq("barber_id", barber_id)
+      .eq("date", date)
+
+    if (existingReservations) {
+      const hasOverlap = existingReservations.some((r: any) => {
+        const existingSlots = generateTimeSlots(r.start_time,
+          (parseInt(r.end_time.split(":")[0]) * 60 + parseInt(r.end_time.split(":")[1])) -
+          (parseInt(r.start_time.split(":")[0]) * 60 + parseInt(r.start_time.split(":")[1]))
+        )
+        // verifica se almeno uno slot coincide
+        return durationArray.some(slot => existingSlots.includes(slot))
+      })
+
+      if (hasOverlap) {
+        return { error: "Il tuo servizio si sovrappone con una prenotazione esistente. Riprova con un altro orario." }
+      }
+    }
+
+    // --- INSERIMENTO PRENOTAZIONE ---
     const { data, error } = await supabase
       .from("reservations")
       .insert([{
@@ -58,6 +82,7 @@ export async function createReservation({ barber_id, date, start_time, services 
         total_price: totalPrice
       }])
       .select()
+
     if (error) return { error }
     return { data }
   } catch (err: any) {
@@ -65,14 +90,15 @@ export async function createReservation({ barber_id, date, start_time, services 
   }
 }
 
+
 export async function getEmployees(): Promise<EmployeeProfile[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
-    .from<EmployeeProfile>("profiles")
+    .from<Profile>("profiles")
     .select("*")
     .eq("role", "employee")
   if (error) return []
-  return data || []
+  return data 
 }
 
 export async function getServices(): Promise<Service[]> {
@@ -83,4 +109,18 @@ export async function getServices(): Promise<Service[]> {
     .order("title", { ascending: true })
   if (error) return []
   return data || []
+}
+
+export async function getReservations() {
+  const supabase = await createClient();
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase.from('reservations').select('*');
+
+    return data
+  } catch (error) {
+    console.log(error);
+    return []
+  }
+  
 }

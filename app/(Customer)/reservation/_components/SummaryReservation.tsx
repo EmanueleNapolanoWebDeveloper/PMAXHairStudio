@@ -1,8 +1,8 @@
-import { EmployeeProfile } from "../actions"
+import { Profile } from "../actions"
 import { Service } from "./ServicesChoise"
 
 export type SummaryReservationType = {
-  barber: EmployeeProfile | null
+  barber: Profile | null
   services: Service[]
   date: string
   time: string

@@ -18,3 +18,11 @@ export type Reservation = {
     status?: string
     total_price?: number
 }
+
+export type Service = {
+  id: number
+  title: string
+  time: number // minuti come number
+  price: number
+  category: string
+}

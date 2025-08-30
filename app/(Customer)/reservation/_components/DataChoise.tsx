@@ -1,6 +1,6 @@
 'use client'
 import { Reservation } from "@/lib/types/homepage"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DayPicker, Matcher } from "react-day-picker"
 import "react-day-picker/dist/style.css"
 
@@ -23,34 +23,37 @@ export default function DataChoise({ date, onChange, setTimeResBarber, resBarber
     date ? new Date(date) : undefined
   )
 
+  const filterReservations = (barberId: string, date: string) => {
+    const filtered = resBarber
+      .filter(r => r.barber_id === barberId && r.date === date)
+      .map(r => ({ start_time: r.start_time, end_time: r.end_time }))
+    setTimeResBarber(filtered)
+  }
+
+  // ✅ filtro solo quando barberId o date cambiano
+  useEffect(() => {
+    if (barberId && date) {
+      filterReservations(barberId, date)
+    }
+  }, [barberId, date, resBarber])  
+
   const today = new Date()
 
   const handleSelect = (day: Date | undefined) => {
+    if (!day) return
+
     setSelected(day)
-    if (day) {
-      const yyyy = day.getFullYear()
-      const mm = String(day.getMonth() + 1).padStart(2, "0")
-      const dd = String(day.getDate()).padStart(2, "0")
-      const formattedDate = `${yyyy}-${mm}-${dd}`
-      onChange(formattedDate)
+    const yyyy = day.getFullYear()
+    const mm = String(day.getMonth() + 1).padStart(2, "0")
+    const dd = String(day.getDate()).padStart(2, "0")
+    const formattedDate = `${yyyy}-${mm}-${dd}`
+    onChange(formattedDate)
 
-      console.log(formattedDate);
-      // filtro prenotazioni per barbiere e data
-      if (barberId) {
-
-
-        const filteredReservations = resBarber
-          .filter(r => r.barber_id === barberId && r.date === formattedDate)
-          .map(r => ({ start_time: r.start_time, end_time: r.end_time }))
-        console.log('filteredReservations', filteredReservations);
-        setTimeResBarber(filteredReservations)
-      } else {
-        setTimeResBarber([])
-      }
+    if (barberId) {
+      filterReservations(barberId, formattedDate)
     }
   }
 
-  // Matcher per disabilitare domenica e lunedì
   const disableWeekDays: Matcher = (date) => {
     const day = date.getDay()
     return day === 0 || day === 1

@@ -1,64 +1,73 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { getEmployees, EmployeeProfile } from '../actions'
-import { Reservation } from '@/lib/types/homepage'
+import { Profile, Reservation } from '@/lib/types/homepage'
 
 export type BarberChoiseProps = {
-  barber: EmployeeProfile | null
-  onChange: (value: EmployeeProfile) => void
-  reservationsLvlDwn: Reservation[]
-  setReservations: ((value: any[]) => void | undefined)
+  employees: Profile[] | null
+  selecetedEmployee: Profile | null
+  setBarber: (value: Profile | null) => void
+  reservations: Reservation[]
+  setReservations: (value: Reservation[]) => void
+  loading: boolean
 }
 
-export default function BarberChoise({ barber, onChange, reservationsLvlDwn, setReservations }: BarberChoiseProps) {
-  const [barbers, setBarbers] = useState<EmployeeProfile[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getEmployees()
-      .then(setBarbers)
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
-
+export default function BarberChoise({
+  selecetedEmployee,
+  setBarber,
+  employees,
+  reservations,
+  setReservations,
+  loading
+}: BarberChoiseProps) {
 
   const handleSelect = (id: string) => {
-    const selectedBarber = barbers.find(b => b.id === id) || null
-    onChange(selectedBarber)
+    const selectedBarber = employees?.find(b => b.id === id) || null
+    setBarber(selectedBarber)
 
     if (!selectedBarber) {
       setReservations([])
       return
     }
 
-    // filtriamo le prenotazioni del barber selezionato
-    const filteredReservations = reservationsLvlDwn
+    const filteredReservations = reservations
       .filter(r => r.barber_id === selectedBarber.id)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     setReservations(filteredReservations)
-    console.log(filteredReservations)
   }
 
+  console.log('selecetedEmployee', selecetedEmployee);
+  
 
   return (
     <div>
       <label className="block text-black font-semibold mb-2">
         Scegli il barbiere
       </label>
-      <select
-        value={barber?.id || ''}
-        onChange={(e) => handleSelect(e.target.value)}
-        disabled={loading}
-        className="w-full border rounded-lg p-2 text-black"
-        required
-      >
-        <option value="">-- Seleziona --</option>
-        {barbers.map(b => (
-          <option key={b.id} value={b.id}>
-            {b.name} {b.surname}
-          </option>
-        ))}
-      </select>
+
+      {loading ? (
+        <div className="flex flex-col gap-2">
+          {/* skeleton per la select */}
+          <div className="h-10 w-full bg-white rounded-lg animate-pulse shadow-md shadow-red-300"></div>
+
+          {/* testo animato */}
+          <p className="text-sm font-medium text-red-600 animate-pulse">
+            Stiamo caricando i dati...
+          </p>
+        </div>
+      ) : (
+        <select
+          value={selecetedEmployee?.id || ''}
+          onChange={(e) => handleSelect(e.target.value)}
+          className="w-full border rounded-lg p-2 text-black"
+          required
+        >
+          <option value="">-- Seleziona --</option>
+          {employees?.map(e => (
+            <option key={e.id} value={e.id}>
+              {e.name} {e.surname}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   )
 }

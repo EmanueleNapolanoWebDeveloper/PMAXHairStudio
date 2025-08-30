@@ -1,39 +1,61 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { getServices } from '../actions'
-
-export type Service = {
-  id: number
-  title: string
-  time: number // minuti come number
-  price: number
-  category: string
-}
+import { Service } from '@/lib/types/homepage'
 
 export type ServicesChoiceProps = {
-  services: Service[]
-  onToggle: (service: Service) => void
+  services: Service[];
+  onToggle: (service: Service) => void;
+  loading: boolean;
+  setActiveTab: (tab: string) => void;
+  allServices: Service[];
+  activeTab: string;
 }
 
-export default function ServicesChoice({ services, onToggle }: ServicesChoiceProps) {
-  const [availableServices, setAvailableServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('')
+export default function ServicesChoice({ 
+  services, 
+  onToggle, 
+  loading, 
+  setActiveTab, 
+  activeTab, 
+  allServices 
+}: ServicesChoiceProps) {
 
-  useEffect(() => {
-    getServices()
-      .then((data: Service[]) => {
-        setAvailableServices(data)
-        if (data.length > 0) setActiveTab(data[0].category)
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false))
-  }, [])
+  if (loading) {
+    return (
+      <div className="w-full mx-auto animate-pulse">
+        <label className="block text-black font-semibold mb-3 text-lg">
+          Servizi disponibili
+        </label>
 
-  if (loading) return <p>Caricamento servizi...</p>
+        {/* Skeleton Tabs */}
+        <div className="flex gap-3 mb-4 border-b">
+          {[1, 2, 3].map(i => (
+            <div
+              key={i}
+              className="h-6 w-20 bg-gradient-to-r from-white via-red-200 to-white rounded"
+            ></div>
+          ))}
+        </div>
 
-  const categories = Array.from(new Set(availableServices.map(s => s.category)))
-  const filteredServices = availableServices.filter(s => s.category === activeTab)
+        {/* Skeleton bottoni servizi */}
+        <div className="grid grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div
+              key={i}
+              className="h-12 w-full rounded-xl bg-gradient-to-r from-white via-red-200 to-white"
+            ></div>
+          ))}
+        </div>
+
+        {/* Testo caricamento */}
+        <p className="mt-6 text-center text-red-600 font-semibold animate-pulse">
+          Stiamo caricando i dati ...
+        </p>
+      </div>
+    )
+  }
+
+  const categories = Array.from(new Set(allServices.map(s => s.category)))
+  const filteredServices = allServices.filter(s => s.category === activeTab)
 
   return (
     <div className="w-full mx-auto">
@@ -45,11 +67,13 @@ export default function ServicesChoice({ services, onToggle }: ServicesChoicePro
       <div className="flex gap-3 mb-4 border-b">
         {categories.map(cat => (
           <button
-          type= "button"
+            type="button"
             key={cat}
             onClick={() => setActiveTab(cat)}
             className={`pb-2 font-semibold transition ${
-              activeTab === cat ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'
+              activeTab === cat
+                ? 'border-b-2 border-black text-black'
+                : 'text-gray-500 hover:text-black'
             }`}
           >
             {cat}
@@ -80,7 +104,10 @@ export default function ServicesChoice({ services, onToggle }: ServicesChoicePro
 
       {services.length > 0 && (
         <p className="mt-4 text-base text-gray-700">
-          Hai scelto: <span className="font-semibold">{services.map(s => s.title).join(', ')}</span>
+          Hai scelto:{' '}
+          <span className="font-semibold">
+            {services.map(s => s.title).join(', ')}
+          </span>
         </p>
       )}
     </div>
