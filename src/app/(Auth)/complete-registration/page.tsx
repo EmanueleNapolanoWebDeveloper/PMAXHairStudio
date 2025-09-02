@@ -152,7 +152,7 @@ export default function CompleteProfile() {
     // ✅ Loading state migliorato
     if (isLoading) {
         return (
-            <main className="h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+            <main className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 px-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
                 <p className="text-gray-700">Caricamento dati profilo...</p>
             </main>

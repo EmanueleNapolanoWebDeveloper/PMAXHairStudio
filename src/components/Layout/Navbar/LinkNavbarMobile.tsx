@@ -3,32 +3,29 @@
 import Link from "next/link";
 import styles from './navbar.module.css'
 
-const LinkNav = [
-    { label: "Home", path: "/" },
-    { label: "Servizi", path: "/services" },
-    { label: "Prenota", path: "/reservation" },
-]
 
 type LinkMenuProps = {
     onSelect: () => void;
+    href: string,
+    key: string,
+    label: string
 }
 
-export default function LinkMenu({ onSelect }: LinkMenuProps) {
+export default function LinkMenu({ onSelect, href, key, label }: LinkMenuProps) {
     return (
-        <div className="w-full h-full">
-            <ul className="flex flex-col gap-4 mt-4 md:mt-0 items-center justify-center w-full h-full">
-                {LinkNav.map((items) => {
-                    return (
-                        <li key={items.label} className={styles.linkToggleMenu}>
-                            <Link href={items.path} className="relative text-white text-lg font-semibold px-4 py-2 transition-colors duration-300 hover:text-red-400"
-                                onClick={onSelect}>
-                                {items.label}
-                            </Link>
-                        </li>
-                    )
-                })}
+        <div className="flex flex-col gap-4 w-full h-full items-center justify-center px-6 py-4">
+            <Link
+                key={key}
+                href={href}
+                onClick={onSelect}
+                className="w-full text-center text-white font-semibold text-lg 
+                     py-3 rounded-xl transition-all duration-300 
+                     hover:bg-red-600 hover:scale-105 hover:shadow-lg 
+                     bg-gradient-to-r from-black/80 to-black/60 border border-red-500"
+            >
+                {label}
+            </Link>
 
-            </ul>
         </div>
     )
 }

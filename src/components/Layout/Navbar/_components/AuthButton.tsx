@@ -122,9 +122,28 @@ export default function AuthButton() {
                         </Link>
 
                         {/* Dashboard */}
+                        {profile.role === 'admin' &&
+                            <Link
+                                href="/admin-dash"
+                            >
+                                <button
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left
+                                     hover:bg-gray-50 transition-colors duration-200"
+                                    onClick={() => {
+                                        setIsDropdownOpen(false);
+                                        // Aggiungi logica per le impostazioni
+                                    }}
+                                >
+                                    <Settings className="w-5 h-5 text-gray-600" />
+                                    <span className="text-gray-700 font-medium">DashBoard</span>
+                                </button>
+                            </Link>
+                        }
+
+                        {/* Dashboard */}
                         {profile.role === 'employee' &&
                             <Link
-                                href="/dashboard"
+                                href="/staff-dash"
                             >
                                 <button
                                     className="w-full flex items-center gap-3 px-4 py-3 text-left

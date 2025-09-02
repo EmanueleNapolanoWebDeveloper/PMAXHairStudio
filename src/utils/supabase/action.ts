@@ -27,12 +27,14 @@ export async function updateSession(request: NextRequest) {
 
   }
 
-  if (
-    !profile &&
-    request.nextUrl.pathname.startsWith('/area-personale') ||
-    request.nextUrl.pathname.startsWith('/staff-dash') ||
-    request.nextUrl.pathname.startsWith('/admin-dash')
-  ) {
+  if (request.nextUrl.pathname.startsWith('/admin-dash') && (!profile && profile.role !== 'admin')) {
+    // no user, potentially respond by redirecting the user to the login page
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (request.nextUrl.pathname.startsWith('/staff-dash') && (!profile && profile.role !== 'employee')) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
@@ -50,6 +52,7 @@ export async function updateSession(request: NextRequest) {
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
+
 
 
 

@@ -26,7 +26,7 @@ type GalleryImage = {
 
 export default function Saloon() {
     return (
-        <section className="min-h-screen w-full flex flex-col items-center justify-around bg-gradient-to-b from-white to-black py-16 px-4">
+        <section className="min-h-screen w-full flex flex-col items-center justify-around bg-white px-4 py-3">
             <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center pb-12">
                 <h2 className="text-center text-4xl md:text-6xl font-bold text-black uppercase mb-4 tracking-wide">
                     P-MAX <span className="text-red-600">Saloon</span>

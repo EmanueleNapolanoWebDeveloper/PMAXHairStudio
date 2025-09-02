@@ -48,7 +48,7 @@ export default function Navbar() {
     <>
       <nav
         className={`
-          w-screen grid grid-cols-2 h-[7rem] fixed top-0 left-0 z-[99] transition-all duration-500
+          w-screen grid grid-cols-2 h-[7rem] fixed top-0 left-0 z-[50] transition-all duration-500
           ${isScrolled ? 'bg-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}
         `}
       >

@@ -43,7 +43,7 @@ const staffMembers: StaffMember[] = [
 
 export default function VintageStaffs() {
     return (
-        <section className="min-h-screen bg-gradient-to-b from-black via-black/50 to-red-900 py-20 px-4">
+        <section className="min-h-screen bg-red-900 py-20 px-4">
             {/* Header Section */}
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-20">

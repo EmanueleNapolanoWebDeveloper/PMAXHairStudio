@@ -26,15 +26,7 @@ export default function HeroLeft() {
 
       {/* Logo & User Section */}
       <div className="h-[50vh] w-full flex flex-col items-center justify-center">
-        <div className="h-[7rem] w-full flex items-center justify-center">
-          <Image
-            src="/assets/logos/P-MaxLogoNoBg.png"
-            alt="Logo P-MAX HAIR STUDIO"
-            width={350}
-            height={350}
-            className={`z-10 mt-10 lg:mb-4 transition-all duration-700 ease-out ${styles.animateslideInLeft}`}
-          />
-        </div>
+        
 
         <div className="w-full flex justify-center mt-4">
           <HeroUserSection />
