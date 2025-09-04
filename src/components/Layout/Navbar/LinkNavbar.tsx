@@ -1,10 +1,6 @@
 'use client'
-
-import { getUser } from "@/actions"
-import Logout from "@/src/app/(Auth)/signout/_components/Logout"
 import LinksNavbar from "./_components/LinksNavbar"
 import { usePathname } from "next/navigation"
-import AuthButton from "./_components/AuthButton"
 
 
 const LinkNav = [
@@ -13,7 +9,7 @@ const LinkNav = [
   { label: "Prenota", path: "/reservation" },
 ]
 
-export default function LinkMenuDesktop({ user }: { user: string | null }) {
+export default function LinkMenuDesktop() {
   const pathName = usePathname()
 
   return (
@@ -31,9 +27,6 @@ export default function LinkMenuDesktop({ user }: { user: string | null }) {
             </li>
           )
         })}
-        <li>
-            <AuthButton />
-        </li>
       </ul>
     </div>
   )

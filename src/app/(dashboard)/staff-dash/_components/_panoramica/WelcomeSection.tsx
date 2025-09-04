@@ -1,20 +1,30 @@
-export default function WelcomeStaffSection() {
+'use client'
+
+import { useAuth } from "@/src/app/store/AuthContext"
+import { Reservation } from "@/src/lib/types"
+import next from "next"
+
+type WelcomeStaffSectionProps = {
+    todayAppointments: number}
+
+
+
+export default function WelcomeStaffSection({ todayAppointments }: WelcomeStaffSectionProps) {
+
+    const { profile } = useAuth();
+    
+
+
     return (
-        <div className="bg-gradient-to-r from-red-600 to-black rounded-lg p-6 text-white">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h3 className="text-2xl font-bold mb-2">Buongiorno, Antonio! 👋</h3>
-                    <p className="text-red-100">Oggi hai 6 appuntamenti programmati. Pronto per una grande giornata?</p>
-                </div>
-                <div className="hidden sm:block">
-                    <div className="text-right">
-                        <p className="text-sm text-red-200">Prossimo cliente</p>
-                        <p className="text-lg font-semibold">Luigi Bianchi</p>
-                        <p className="text-sm text-red-200">alle 10:00</p>
-                    </div>
+        <div className="bg-gradient-to-r from-red-600 to-black rounded-xl p-6 text-white shadow-md">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <div className="mb-4 sm:mb-0">
+                    <h3 className="text-xl sm:text-2xl font-bold mb-1">Buongiorno, {profile?.name} 👋</h3>
+                    <p className="text-red-100 text-sm sm:text-base">
+                        Oggi hai <span className="font-semibold">{todayAppointments}</span> appuntamenti programmati. Pronto per una grande giornata?
+                    </p>
                 </div>
             </div>
         </div>
-
     )
 }

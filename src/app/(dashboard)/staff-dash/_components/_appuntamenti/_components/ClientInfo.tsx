@@ -1,11 +1,10 @@
 'use client'
 
 import { Clock, User, Scissors, Calendar, Plus, Phone, MapPin, Car } from 'lucide-react';
-import { Customer } from '../../../appuntamenti/page';
-
+import { Profile } from '@/src/lib/types';
 
 type ClientInfoType = {
-    client: Customer;
+    client: Profile;
     services: string[];
     duration: number;
     price: number;
@@ -18,6 +17,9 @@ export default function ClientInfo({ client, services, duration,price,status }: 
     if(!client){
         return null;
     }
+
+    console.log('client:', client);
+    
 
     return (
         <div className='w-full flex flex-wrap items-center justify-between'>

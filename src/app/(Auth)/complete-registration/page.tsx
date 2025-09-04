@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAuth } from '@/src/app/store/AuthContext'
-import { CompleteRegistration, getUser } from '@/src/utils/actions'
+import { CompleteRegistration, getUser } from '@/src/lib/actions'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 interface FormData {
@@ -116,6 +116,9 @@ export default function CompleteProfile() {
         return errors
     }
 
+    console.log('Utente:', userData);
+    
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
 
@@ -196,7 +199,7 @@ export default function CompleteProfile() {
                             placeholder="Mario"
                             value={form.name}
                             onChange={handleChange}
-                            disabled={mutation.isLoading}
+                            disabled={mutation.isPending}
                             className={`w-full border rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${fieldErrors.name
                                     ? 'border-red-500 focus:ring-red-500'
                                     : 'border-gray-300 focus:ring-blue-500'
@@ -222,7 +225,7 @@ export default function CompleteProfile() {
                             placeholder="Rossi"
                             value={form.surname}
                             onChange={handleChange}
-                            disabled={mutation.isLoading}
+                            disabled={mutation.isPending}
                             className={`w-full border rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${fieldErrors.surname
                                     ? 'border-red-500 focus:ring-red-500'
                                     : 'border-gray-300 focus:ring-blue-500'
@@ -248,7 +251,7 @@ export default function CompleteProfile() {
                             placeholder="esempio@email.com"
                             value={form.email}
                             onChange={handleChange}
-                            disabled={mutation.isLoading}
+                            disabled={mutation.isPending || !!user?.email}
                             className={`w-full border rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${fieldErrors.email
                                     ? 'border-red-500 focus:ring-red-500'
                                     : 'border-gray-300 focus:ring-blue-500'
@@ -274,7 +277,7 @@ export default function CompleteProfile() {
                             placeholder="+39 123 456 7890"
                             value={form.phone}
                             onChange={handleChange}
-                            disabled={mutation.isLoading}
+                            disabled={mutation.isPending || !!user?.phone}
                             className={`w-full border rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${fieldErrors.phone
                                     ? 'border-red-500 focus:ring-red-500'
                                     : 'border-gray-300 focus:ring-blue-500'

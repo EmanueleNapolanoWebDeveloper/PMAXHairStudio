@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Plus, Filter } from 'lucide-react';
-import { deleteReservation, getBarber } from '../action';
+import { deleteReservation } from '@/src/lib/actions';
+import { Reservation } from '@/src/lib/types';
 
-const ReservationPanoramics = ({ reservations }) => {
+const ReservationPanoramics = ({ reservations } : Reservation) => {
 
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(false);
@@ -24,16 +25,16 @@ const ReservationPanoramics = ({ reservations }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-blue-100 text-blue-800';
+      case 'completato': return 'bg-green-100 text-green-800';
+      case 'prenotato': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'completed': return 'Completata';
-      case 'pending': return 'Prenotato';
+      case 'completato': return 'Completata';
+      case 'prenotato': return 'Prenotato';
       default: return status;
     }
   };
@@ -52,7 +53,7 @@ const ReservationPanoramics = ({ reservations }) => {
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-gray-500" />
           <div className="flex gap-2 flex-wrap">
-            {['all', 'pending', 'completed'].map(status => (
+            {['all', 'prenotato', 'completato'].map(status => (
               <button
                 key={status}
                 onClick={() => setFilter(status)}
@@ -93,7 +94,7 @@ const ReservationPanoramics = ({ reservations }) => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-800 text-lg">
-                      {new Date(reservation.date).toLocaleDateString('it-IT', {
+                      {new Date(reservation.data).toLocaleDateString('it-IT', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
@@ -127,18 +128,18 @@ const ReservationPanoramics = ({ reservations }) => {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-gray-400" />
                   <p className="text-sm text-gray-600">
-                    Barbiere : <span className="font-medium">{reservation.barber}</span>
+                    Barbiere : <span className="font-medium">{reservation.barber_id.name} {reservation.barber_id.surname}</span>
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Totale</p>
                   <p className="font-bold text-xl text-gray-800">
-                    €{reservation.total_price}
+                    €{reservation.amount}
                   </p>
                 </div>
               </div>
 
-              {reservation.status === 'pending' &&
+              {reservation.status === 'prenotato' &&
                 <div className='w-full flex items-center'>
                   <button
                     onClick={() => handleCancelReservation(reservation.id)}

@@ -1,4 +1,3 @@
-// page.tsx - Versione corretta con real-time funzionante
 'use client'
 import { useState, useMemo, useEffect } from 'react'
 import BarberChoise from './_components/BarberChoise'
@@ -6,7 +5,7 @@ import ServicesChoise from './_components/ServicesChoise'
 import DataChoise from './_components/DataChoise'
 import TimeChoise from './_components/TimeChoise'
 import SummaryReservation from './_components/SummaryReservation'
-import { createReservation, getReservations, getEmployees, getServices } from './actions'
+import { createLoggedReservation, getAllReservations, getEmployees, getServices } from '@/src/lib/actions'
 import { useAuth } from '@/src/app/store/AuthContext'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -36,25 +35,26 @@ export default function ReservationPage() {
   const [barberRes, setBarberRes] = useState<Reservation[]>([])
   const [timeResBarber, setTimeResBarber] = useState<TimeSlot[]>([])
   const [selectedServices, setSelectedServices] = useState<Service[]>([])
-  const [activeTab, setActiveTab] = useState('')
+  const [activeTab, setActiveTab] = useState('Barba')
   const [date, setDate] = useState(getToday())
   const [time, setTime] = useState('')
+  const [note, setNote] = useState<string>('')
   const [isWorkingDay, setIsWorkingDay] = useState(true)
 
   // Queries
   const reservationsQuery = useQuery({
     queryKey: ['reservations'],
-    queryFn: getReservations,
+    queryFn: () => getAllReservations(),
   })
 
   const employeesQuery = useQuery({
     queryKey: ['employees'],
-    queryFn: getEmployees
+    queryFn: () => getEmployees()
   })
 
   const servicesQuery = useQuery({
     queryKey: ['services'],
-    queryFn: getServices,
+    queryFn: () => getServices(),
     onSuccess: (data) => {
       if (data.length > 0) setActiveTab(data[0].category)
     }
@@ -62,7 +62,7 @@ export default function ReservationPage() {
 
   // Mutation per creare prenotazione
   const createReservationMutation = useMutation({
-    mutationFn: createReservation,
+    mutationFn: createLoggedReservation,
     onSuccess: () => {
       toast.success('Prenotazione creata con successo!')
       // ✅ Invalida le query per aggiornare i dati
@@ -106,39 +106,37 @@ export default function ReservationPage() {
       barber_id: barber.id,
       services: selectedServices,
       date,
-      start_time: time
+      start_time: time,
+      note: note,
     })
   }
 
   const isFormValid = barber && selectedServices.length > 0 && date && time
 
   // ✅ Setup Real-time subscriptions - VERSIONE CORRETTA
+  // Setup Real-time subscriptions - VERSIONE CORRETTA
   useEffect(() => {
     let channel: any = null
 
     const setupRealtime = async () => {
       try {
-        const supabase = await createClient()
+        const supabase = createClient() // Rimosso await - createClient() è sincrono
 
         console.log('🔄 Configurazione real-time in corso...')
 
         channel = supabase
-          .channel('public:reservations', {
-            config: {
-              broadcast: { self: false }, // Non ricevere i propri aggiornamenti
-            }
-          })
+          .channel('reservations_channel') // Nome univoco per il canale
           .on(
             'postgres_changes',
             {
               event: 'INSERT',
               schema: 'public',
-              table: 'reservations'
+              table: 'appuntamenti'
             },
             (payload) => {
               console.log('📥 Nuova prenotazione ricevuta:', payload.new)
 
-              // Aggiorna la cache delle reservations
+              // Aggiorna la cache delle reservations con la query key corretta
               queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) => {
                 const exists = oldData.some(r => r.id === payload.new.id)
                 if (exists) return oldData
@@ -146,7 +144,7 @@ export default function ReservationPage() {
                 return [...oldData, payload.new as Reservation]
               })
 
-              // Aggiorna anche lo stato locale se necessario
+              // Aggiorna lo stato locale se necessario
               setBarberRes(prev => {
                 const exists = prev.some(r => r.id === payload.new.id)
                 if (exists) return prev
@@ -154,7 +152,7 @@ export default function ReservationPage() {
                 // Se la nuova prenotazione è dello stesso barbiere, aggiungila
                 if (barber && payload.new.barber_id === barber.id) {
                   return [...prev, payload.new as Reservation].sort(
-                    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+                    (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()
                   )
                 }
                 return prev
@@ -166,11 +164,12 @@ export default function ReservationPage() {
             {
               event: 'UPDATE',
               schema: 'public',
-              table: 'reservations'
+              table: 'appuntamenti'
             },
             (payload) => {
               console.log('📝 Prenotazione aggiornata:', payload.new)
 
+              // Usa la query key corretta
               queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) =>
                 oldData.map(r => r.id === payload.new.id ? payload.new as Reservation : r)
               )
@@ -185,11 +184,12 @@ export default function ReservationPage() {
             {
               event: 'DELETE',
               schema: 'public',
-              table: 'reservations'
+              table: 'appuntamenti'
             },
             (payload) => {
               console.log('🗑️ Prenotazione eliminata:', payload.old)
 
+              // Usa la query key corretta
               queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) =>
                 oldData.filter(r => r.id !== payload.old.id)
               )
@@ -198,12 +198,15 @@ export default function ReservationPage() {
             }
           )
           .subscribe((status) => {
+            console.log('Real-time status:', status)
             if (status === 'SUBSCRIBED') {
               console.log('✅ Real-time subscriptions attive!')
             } else if (status === 'CHANNEL_ERROR') {
               console.error('❌ Errore nella subscription real-time')
             } else if (status === 'TIMED_OUT') {
               console.warn('⏰ Timeout nella subscription real-time')
+            } else if (status === 'CLOSED') {
+              console.log('🔌 Canale real-time chiuso')
             }
           })
 
@@ -212,23 +215,27 @@ export default function ReservationPage() {
       }
     }
 
-    setupRealtime()
+    // Configura real-time solo se i dati iniziali sono caricati
+    if (reservationsQuery.data) {
+      setupRealtime()
+    }
 
     // Cleanup function
     return () => {
       if (channel) {
         console.log('🔌 Chiusura canale real-time')
         channel.unsubscribe()
+        channel = null
       }
     }
-  }, [queryClient, barber?.id]) // ✅ Aggiorna quando cambia il barbiere
+  }, [queryClient, barber?.id, reservationsQuery.data])
 
   // ✅ Aggiorna barberRes quando cambiano le reservations o il barbiere selezionato
   useEffect(() => {
     if (barber && reservationsQuery.data) {
       const filteredReservations = reservationsQuery.data
         .filter(r => r.barber_id === barber.id)
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
 
       setBarberRes(filteredReservations)
     } else {
@@ -253,6 +260,7 @@ export default function ReservationPage() {
       </section>
     )
   }
+
 
   return (
     <section className="min-h-screen py-5">
@@ -297,6 +305,29 @@ export default function ReservationPage() {
             isWorkingDay={isWorkingDay}
           />
 
+          <div>
+            <div className="w-full">
+              <label
+                htmlFor="note"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Note
+              </label>
+              <textarea
+                id="note"
+                name="note"
+                rows={4}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Aggiungi eventuali note sulla prenotazione..."
+                className="w-full rounded-lg border border-gray-300 shadow-sm p-3 text-sm text-gray-900 
+                   focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+              />
+              <p className="mt-2 text-xs text-gray-500">
+                Queste note saranno visibili solo allo staff.
+              </p>
+            </div>
+          </div>
           <SummaryReservation
             barber={barber}
             services={selectedServices}

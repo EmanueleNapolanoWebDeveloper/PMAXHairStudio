@@ -2,7 +2,7 @@
 
 
 import { Scissors, Plus } from 'lucide-react';
-import { Customer } from '../../../appuntamenti/page';
+import { Customer } from '../Reservations';
 
 
 export default function TopHeader({ barber }: Customer) {

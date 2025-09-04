@@ -2,13 +2,18 @@
 
 import { Clock, User, Scissors, Calendar, Plus, Phone, MapPin } from 'lucide-react';
 import ClientInfo from './ClientInfo';
+import { Reservation } from '@/src/lib/types';
 
 type ReservationSlotType = {
-    appointment: any;
+    appointment: Reservation;
     appointmentsLenght: number;
 }
 
 export default function ReservationSlot({ appointment, appointmentsLenght }: ReservationSlotType) {
+
+
+    console.log('appointment in ReservationSlot:', appointment);
+    
 
     return (
         <>
@@ -22,8 +27,8 @@ export default function ReservationSlot({ appointment, appointmentsLenght }: Res
 
             {/* Timeline Line */}
             <div className="flex-shrink-0 flex flex-col items-center mr-6">
-                <div className={`w-3 h-3 rounded-full border-2 ${appointment.status === 'confirmed' ? 'bg-green-500 border-green-500' :
-                    appointment.status === 'pending' ? 'bg-yellow-500 border-yellow-500' :
+                <div className={`w-3 h-3 rounded-full border-2 ${appointment.status === 'confermato' ? 'bg-green-500 border-green-500' :
+                    appointment.status === 'prenotato' ? 'bg-yellow-500 border-yellow-500' :
                         'bg-gray-300 border-gray-300'
                     }`}></div>
                 
@@ -39,8 +44,8 @@ export default function ReservationSlot({ appointment, appointmentsLenght }: Res
                         </div>
                     </div>
                 ) : (
-                    <div className={`bg-white rounded-lg shadow-sm border-l-4 p-6 ${appointment.status === 'confirmed' ? 'border-l-green-500' :
-                        appointment.status === 'pending' ? 'border-l-yellow-500' : 'border-l-gray-300'
+                    <div className={`bg-white rounded-lg shadow-sm border-l-4 p-6 ${appointment.status === 'confermato' ? 'border-l-green-500' :
+                        appointment.status === 'prenotato' ? 'border-l-yellow-500' : 'border-l-gray-300'
                         }`}>
                         <div className="flex items-start justify-between">
                             <div className="flex flex-wrap items-start space-x-4 w-full">
@@ -51,10 +56,10 @@ export default function ReservationSlot({ appointment, appointmentsLenght }: Res
 
                                 {/* Client Info */}
                                 <ClientInfo
-                                    client={appointment.customer_id}
+                                    client={appointment.logged_id}
                                     services={appointment.services}
                                     duration={appointment.end_time - appointment.start_time}
-                                    price={appointment.total_price}
+                                    price={appointment.amount}
                                     status={appointment.status}
                                 />
                             </div>

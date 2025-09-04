@@ -1,5 +1,5 @@
 'use client'
-import { Service } from '@/lib/types/homepage'
+import { Service } from '@/src/lib/types'
 
 export type ServicesChoiceProps = {
   services: Service[];

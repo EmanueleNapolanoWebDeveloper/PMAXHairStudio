@@ -7,20 +7,21 @@ import { Menu } from 'lucide-react'
 import LinkMenuDesktop from "./LinkNavbar"
 import ContainerNavMobile from './ContainerNavMobile'
 import { useAuth } from '@/src/app/store/AuthContext'
+import AuthButton from './_components/AuthButton' // componente pulsante login/logout
 
 export default function Navbar() {
   const [isMounted, setIsMounted] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  const { user, signOut, loading } = useAuth()
+  const { user, signOut, loading, profile } = useAuth()
 
   // Toggle sidebar
   const handleClick = useCallback(() => {
     setIsSidebarOpen(prev => !prev)
   }, [])
 
-  // Mount check per mobile menu
+  // Mount check per client
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -42,7 +43,7 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
+ 
 
   return (
     <>
@@ -58,8 +59,8 @@ export default function Navbar() {
         </div>
 
         {/* Menù link */}
-        <div className="col-span-1 flex items-center justify-end p-2 w-full">
-          {/* toggle mobile */}
+        <div className="col-span-1 flex items-center justify-end p-2 w-full gap-4">
+          {/* Toggle mobile */}
           <div className="lg:hidden">
             <button
               onClick={handleClick}
@@ -72,12 +73,17 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* desktop menu */}
-          <LinkMenuDesktop user={user} />
+          {/* Desktop menu */}
+          <LinkMenuDesktop />
+
+          {/* Auth Button: mostra solo dopo mount e quando loading è false */}
+          {isMounted && (
+            <AuthButton user={user} signOut={signOut} loading={loading} profile={profile}/>
+          )}
         </div>
       </nav>
 
-      {/* mobile menu */}
+      {/* Mobile menu */}
       {isMounted && (
         <ContainerNavMobile toggleMenu={isSidebarOpen} onSelect={handleClick} />
       )}

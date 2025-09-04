@@ -20,6 +20,24 @@ export async function updateSession(request: NextRequest) {
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user?.id).single()
 
+  if((user && profile) && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
+  if((!user && !profile) && request.nextUrl.pathname.startsWith('/complete-registration')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
+  if ((user && !profile) && !request.nextUrl.pathname.startsWith('/complete-registration')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/complete-registration'
+    return NextResponse.redirect(url)
+  }
+
   if (!user && request.nextUrl.pathname.startsWith('/complete-registration')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
@@ -27,14 +45,28 @@ export async function updateSession(request: NextRequest) {
 
   }
 
-  if (request.nextUrl.pathname.startsWith('/admin-dash') && (!profile && profile.role !== 'admin')) {
+  if (request.nextUrl.pathname.startsWith('/area-personale') && !profile) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  if (request.nextUrl.pathname.startsWith('/staff-dash') && (!profile && profile.role !== 'employee')) {
+  if (request.nextUrl.pathname.startsWith('/area-personale') && (profile.role === 'employee' || profile.role === 'admin')) {
+    // no user, potentially respond by redirecting the user to the login page
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
+  if (request.nextUrl.pathname.startsWith('/admin-dash') && (!profile || profile.role !== 'admin')) {
+    // no user, potentially respond by redirecting the user to the login page
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (request.nextUrl.pathname.startsWith('/staff-dash') && (!profile || profile.role !== 'employee')) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'

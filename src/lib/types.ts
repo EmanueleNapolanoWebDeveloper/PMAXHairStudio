@@ -1,23 +1,45 @@
 export type Profile = {
-    id?: string
-    name?: string
-    surname?: string
-    email?: string
-    phone?: string
-    role?: string
-    reg_complete?: boolean
+  id?: string
+  name?: string
+  surname?: string
+  email?: string
+  phone?: string
+  role?: string
+  reg_complete?: boolean
 }
 
 export type Reservation = {
+  id: string
+  logged_id?: {
     id: string
-    customer_id: string
-    barber_id: string
-    date: string
-    start_time: string
-    end_time: string
-    services : string[]
-    status?: string
-    total_price?: number
+    name: string
+    surname: string
+    phone: string
+    email: string
+  }
+  guest_datas?:{
+    name: string
+    surname: string
+    phone: string
+    email: string
+  }
+  barber_id: {
+    id: string
+    name: string
+    surname: string
+    phone: string
+  }
+  data: string
+  start_time: string
+  end_time: string
+  services?: Service[]
+  status?: string
+  amount?: number
+  note?: string
+  discount?: number
+  paid?: boolean
+  payment_meth?: string
+  isGuest?: boolean
 }
 
 export type Service = {

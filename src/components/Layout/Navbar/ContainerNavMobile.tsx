@@ -100,9 +100,12 @@ export default function ContainerNavMobile({ onSelect, toggleMenu }: ContainerNa
                 {/* Navigation Links */}
                 <nav className="flex flex-col gap-2 px-5 py-6 text-lg font-medium">
                     {NAV_LINKS.map((link) => (
-                        <LinkNavbarMobile key={link.href} href={link.href} onSelect={onSelect} label={link.label} >
-                            {link.label}
-                        </LinkNavbarMobile>
+                        <div key={link.href}>
+                            <LinkNavbarMobile href={link.href} onSelect={onSelect} label={link.label} >
+                                {link.label}
+                            </LinkNavbarMobile>
+                        </div>
+
                     ))}
                 </nav>
 

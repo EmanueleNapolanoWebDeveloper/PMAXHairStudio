@@ -1,6 +1,6 @@
 'use client'
 
-import { Profile } from '@/lib/types/homepage'
+import { Profile } from '@/src/lib/types'
 import { useState } from 'react'
 
 export type ReservationSlot = {
@@ -50,7 +50,7 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
     return slots
   }
 
-  const morningSlots = generateSlots('08:30', '14:00')
+  const morningSlots = generateSlots('08:30', '13:30')
   const afternoonSlots = generateSlots('15:00', '20:00')
   const displayedSlots = activeTab === 'morning' ? morningSlots : afternoonSlots
 

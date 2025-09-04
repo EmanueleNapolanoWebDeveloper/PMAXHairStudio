@@ -1,7 +1,6 @@
 'use client'
-import { Reservation } from "@/lib/types/homepage"
-import { s } from "framer-motion/client"
-import { useState, useEffect } from "react"
+import { Reservation } from "@/src/lib/types"
+import { useState, useEffect, useCallback } from "react"
 import { DayPicker, Matcher } from "react-day-picker"
 import "react-day-picker/dist/style.css"
 
@@ -17,71 +16,86 @@ export type DataChoiseType = {
   setTimeResBarber: (timeResBarber: Reservation[]) => void
   resBarber: Reservation[]
   barberId?: string
-  setIsWorkingDay: (d: Date) => boolean | Date
+  setIsWorkingDay: (isWorking: boolean) => void // ✅ Fixed: boolean invece di function
 }
 
-export default function DataChoise({ date, onChange, setTimeResBarber, resBarber, barberId, setIsWorkingDay }: DataChoiseType) {
+export default function DataChoise({ 
+  date, 
+  onChange, 
+  setTimeResBarber, 
+  resBarber, 
+  barberId, 
+  setIsWorkingDay 
+}: DataChoiseType) {
+  
   const [selected, setSelected] = useState<Date | undefined>(
     date ? new Date(date) : undefined
   )
 
-   // Funzione per verificare se un giorno è feriale
-  const isWorkingDay = (d: Date) => {
+  // ✅ Funzione per verificare se un giorno è feriale
+  const isWorkingDay = useCallback((d: Date) => {
     const day = d.getDay()
     const isWeekend = day === 0 || day === 1 // domenica/lunedì
     const isFestival = FESTIVALS.some(f => f.toDateString() === d.toDateString())
     return !isWeekend && !isFestival
-  }
+  }, [])
 
+  // ✅ Aggiorna isWorkingDay quando selected cambia
   useEffect(() => {
-    setIsWorkingDay(isWorkingDay(selected || new Date()))
-  }),[setIsWorkingDay]
+    if (selected) {
+      setIsWorkingDay(isWorkingDay(selected))
+    }
+  }, [selected, setIsWorkingDay, isWorkingDay])
 
+  // ✅ Funzione per filtrare le prenotazioni
+  const filterReservations = useCallback((barberId: string, date: string) => {
+    const filtered = resBarber.filter(r => 
+      r.barber_id === barberId && r.data === date
+    )
+    setTimeResBarber(filtered)
+  }, [resBarber, setTimeResBarber])
 
-  // Trova il prossimo giorno feriale a partire da today o date
-  const getNextWorkingDay = (fromDate: Date) => {
+  // ✅ Filtro solo quando barberId o date cambiano
+  useEffect(() => {
+    if (barberId && date) {
+      filterReservations(barberId, date)
+    }
+  }, [barberId, date, filterReservations])
+
+  // ✅ Trova il prossimo giorno feriale a partire da today o date (se serve)
+  const getNextWorkingDay = useCallback((fromDate: Date) => {
     const d = new Date(fromDate)
     while (!isWorkingDay(d)) {
       d.setDate(d.getDate() + 1)
     }
     return d
-  }
-
-  const filterReservations = (barberId: string, date: string) => {
-    const filtered = resBarber
-      .filter(r => r.barber_id === barberId && r.date === date)
-      .map(r => ({ start_time: r.start_time, end_time: r.end_time }))
-    setTimeResBarber(filtered)
-  }
-
-  // ✅ filtro solo quando barberId o date cambiano
-  useEffect(() => {
-    if (barberId && date) {
-      filterReservations(barberId, date)
-    }
-  }, [barberId, date, resBarber])  
+  }, [isWorkingDay])
 
   const today = new Date()
 
-  const handleSelect = (day: Date | undefined) => {
+  // ✅ Handler per selezione data
+  const handleSelect = useCallback((day: Date | undefined) => {
     if (!day || !isWorkingDay(day)) return
-
+    
     setSelected(day)
+    
     const yyyy = day.getFullYear()
     const mm = String(day.getMonth() + 1).padStart(2, "0")
     const dd = String(day.getDate()).padStart(2, "0")
     const formattedDate = `${yyyy}-${mm}-${dd}`
+    
     onChange(formattedDate)
-
+    
     if (barberId) {
       filterReservations(barberId, formattedDate)
     }
-  }
+  }, [isWorkingDay, onChange, barberId, filterReservations])
 
-  const disableWeekDays: Matcher = (date) => {
+  // ✅ Matcher per disabilitare weekend
+  const disableWeekDays: Matcher = useCallback((date) => {
     const day = date.getDay()
     return day === 0 || day === 1
-  }
+  }, [])
 
   return (
     <div className="w-full">
@@ -91,7 +105,11 @@ export default function DataChoise({ date, onChange, setTimeResBarber, resBarber
           mode="single"
           selected={selected}
           onSelect={handleSelect}
-          disabled={[{ before: today }, disableWeekDays, ...FESTIVALS]}
+          disabled={[
+            { before: today }, 
+            disableWeekDays, 
+            ...FESTIVALS
+          ]}
           className="bg-white text-black p-2 rounded-lg"
           captionLayout="dropdown"
           modifiersClassNames={{
@@ -99,7 +117,11 @@ export default function DataChoise({ date, onChange, setTimeResBarber, resBarber
             disabled: "text-gray-400 cursor-not-allowed",
             today: "border border-black"
           }}
-          footer={selected ? `Selezionato: ${selected.toLocaleDateString()}` : "Seleziona una data"}
+          footer={
+            selected 
+              ? `Selezionato: ${selected.toLocaleDateString('it-IT')}`
+              : "Seleziona una data"
+          }
         />
       </div>
     </div>

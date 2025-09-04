@@ -28,11 +28,20 @@ export default function BarberChoise({
       return
     }
 
+    console.log('selected barber:', selectedBarber.id);
+    console.log('reservations:', reservations);
+    
+    
+
     const filteredReservations = reservations
       .filter(r => r.barber_id === selectedBarber.id)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      
+         console.log('res caricate nel componente:', filteredReservations);
     setReservations(filteredReservations)
   }
+
+ 
+
   
 
   return (

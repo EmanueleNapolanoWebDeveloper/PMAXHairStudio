@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server'
-import { updateSession } from '@/src/utils/supabase/action'
+import { updateSession } from '@/src/utils/supabase/actionMiddleware'
 
 export async function middleware(request: NextRequest) {
   console.log('request: ', request.nextUrl.clone().pathname);

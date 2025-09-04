@@ -4,7 +4,7 @@ import { Heart, MessageCircle } from "lucide-react";
 
 export default function RecentlyCustomers({ recentClients } : string[]) {
     return (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white rounded-lg shadow w-full">
             <div className="p-4 sm:p-6 border-b">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900">Clienti Recenti</h3>
             </div>

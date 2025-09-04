@@ -11,11 +11,10 @@ type LinkMenuProps = {
     label: string
 }
 
-export default function LinkMenu({ onSelect, href, key, label }: LinkMenuProps) {
+export default function LinkMenu({ onSelect, href, label }: LinkMenuProps) {
     return (
         <div className="flex flex-col gap-4 w-full h-full items-center justify-center px-6 py-4">
             <Link
-                key={key}
                 href={href}
                 onClick={onSelect}
                 className="w-full text-center text-white font-semibold text-lg 
