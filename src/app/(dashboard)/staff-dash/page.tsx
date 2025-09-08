@@ -16,6 +16,7 @@ import {
   CheckCircle,
   AlertCircle,
   X,
+  Info
 } from 'lucide-react'
 
 import StaffSideBar from './_components/SideBar'
@@ -28,6 +29,7 @@ import { Reservation } from '@/src/lib/types'
 import { useAuth } from '@/src/app/store/AuthContext'
 import { type User as SupabaseUser } from '@supabase/supabase-js'
 import ReservationFormForStaff from './_components/_addReservation/ReservationFormForStaff'
+import AddStaffReservation from './_components/_addReservation/_components/StaffFormReservation'
 
 // ==============================
 // Costanti comuni
@@ -36,12 +38,8 @@ const sidebarItems = [
   { id: 'dashboard', name: 'Panoramica', icon: BarChart3 },
   { id: 'my-appointments', name: 'Calendario Appuntamenti', icon: Calendar },
   { id: 'addReservation', name: 'Aggiungi Appuntamenti', icon: Clock },
-  { id: 'clients', name: 'I Miei Clienti', icon: UserCheck },
-  { id: 'performance', name: 'Le Mie Performance', icon: Target },
-  { id: 'earnings', name: 'I Miei Guadagni', icon: Euro },
-  { id: 'gallery', name: 'La Mia Gallery', icon: Camera },
+  { id: 'staff-notes', name: 'Staff Memo', icon: Info },
   { id: 'reviews', name: 'Le Mie Recensioni', icon: Star },
-  { id: 'training', name: 'Formazione', icon: BookOpen },
   { id: 'profile', name: 'Il Mio Profilo', icon: User },
 ]
 
@@ -203,7 +201,7 @@ const StaffDashboard = () => {
       case 'my-appointments':
         return <BarberCalendar reservations={safeReservations} />
       case 'addReservation':
-        return <ReservationFormForStaff />
+        return <AddStaffReservation  />
       default:
         return <PlaceholderContent name={currentSection?.name} icon={currentSection?.icon || Activity} />
     }

@@ -283,10 +283,14 @@ export default function ReservationPage() {
       <div className="bg-white rounded-2xl p-6 shadow-md max-w-3xl mx-auto mt-[7rem]">
         <h2 className="text-2xl font-bold text-center text-black mb-6">
           {profile ? (
-            <span>Benvenuto {profile.name}</span>
+            <>
+              <span>Benvenuto {profile.name}</span> <br />
+            </>
+
           ) : (
-            <span>Benvenuto</span>
-          )}
+            <>
+              <span>Benvenuto</span> <br />
+            </>)}
           Prenota il tuo appuntamento
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -315,6 +319,7 @@ export default function ReservationPage() {
           />
 
           <DataChoise
+            isStaff={false}
             date={date}
             onChange={setDate}
             setTimeResBarber={setTimeResBarber}

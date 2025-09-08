@@ -97,6 +97,15 @@ export async function fetchProfile(id: string) {
     return data
 }
 
+export async function fetchAllProfiles(){
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+    if (error) return []
+    return data
+}
+
 // EMPLOYEE
 export async function getEmployees(): Promise<Profile[]> {
     const supabase = await createClient()
@@ -161,11 +170,8 @@ export async function getStaffIDAppointments(barber_id: string) {
             status,
             note,
             amount,
-            discount,
             created_at,
-            guest_datas,
-            paid,
-            payment_meth
+            guest_datas
             `)
         .eq("barber_id", barber_id)
         .order("data", { ascending: true });

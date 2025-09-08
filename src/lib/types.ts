@@ -10,25 +10,14 @@ export type Profile = {
 
 export type Reservation = {
   id: string
-  logged_id?: {
-    id: string
-    name: string
-    surname: string
-    phone: string
-    email: string
-  }
+  logged_id?: Profile[]
   guest_datas?:{
     name: string
     surname: string
     phone: string
     email: string
   }
-  barber_id: {
-    id: string
-    name: string
-    surname: string
-    phone: string
-  }
+  barber_id: Profile[],
   data: string
   start_time: string
   end_time: string
@@ -36,9 +25,6 @@ export type Reservation = {
   status?: string
   amount?: number
   note?: string
-  discount?: number
-  paid?: boolean
-  payment_meth?: string
   isGuest?: boolean
 }
 

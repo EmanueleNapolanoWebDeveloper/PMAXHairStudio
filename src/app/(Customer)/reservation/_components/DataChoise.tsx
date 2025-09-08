@@ -11,6 +11,7 @@ const FESTIVALS = [
 ].map(d => new Date(d))
 
 export type DataChoiseType = {
+  isStaff: boolean
   date: string
   onChange: (date: string) => void
   setTimeResBarber: (timeResBarber: Reservation[]) => void
@@ -19,15 +20,16 @@ export type DataChoiseType = {
   setIsWorkingDay: (isWorking: boolean) => void // ✅ Fixed: boolean invece di function
 }
 
-export default function DataChoise({ 
-  date, 
-  onChange, 
-  setTimeResBarber, 
-  resBarber, 
-  barberId, 
-  setIsWorkingDay 
+export default function DataChoise({
+  isStaff,
+  date,
+  onChange,
+  setTimeResBarber,
+  resBarber,
+  barberId,
+  setIsWorkingDay
 }: DataChoiseType) {
-  
+
   const [selected, setSelected] = useState<Date | undefined>(
     date ? new Date(date) : undefined
   )
@@ -49,9 +51,21 @@ export default function DataChoise({
 
   // ✅ Funzione per filtrare le prenotazioni
   const filterReservations = useCallback((barberId: string, date: string) => {
-    const filtered = resBarber.filter(r => 
-      r.barber_id === barberId && r.data === date
-    )
+
+    let filtered : Reservation[];
+
+    // ✅ Filtra le prenotazioni per barberId e data se Staff
+    if (isStaff) {
+      filtered = resBarber.filter(r =>
+        r.barber_id['id'] === barberId && r.data === date
+      )
+    }else{
+      filtered = resBarber.filter(r =>
+        r.barber_id === barberId && r.data === date
+      )
+    }
+
+
     setTimeResBarber(filtered)
   }, [resBarber, setTimeResBarber])
 
@@ -76,16 +90,16 @@ export default function DataChoise({
   // ✅ Handler per selezione data
   const handleSelect = useCallback((day: Date | undefined) => {
     if (!day || !isWorkingDay(day)) return
-    
+
     setSelected(day)
-    
+
     const yyyy = day.getFullYear()
     const mm = String(day.getMonth() + 1).padStart(2, "0")
     const dd = String(day.getDate()).padStart(2, "0")
     const formattedDate = `${yyyy}-${mm}-${dd}`
-    
+
     onChange(formattedDate)
-    
+
     if (barberId) {
       filterReservations(barberId, formattedDate)
     }
@@ -106,8 +120,8 @@ export default function DataChoise({
           selected={selected}
           onSelect={handleSelect}
           disabled={[
-            { before: today }, 
-            disableWeekDays, 
+            { before: today },
+            disableWeekDays,
             ...FESTIVALS
           ]}
           className="bg-white text-black p-2 rounded-lg"
@@ -118,7 +132,7 @@ export default function DataChoise({
             today: "border border-black"
           }}
           footer={
-            selected 
+            selected
               ? `Selezionato: ${selected.toLocaleDateString('it-IT')}`
               : "Seleziona una data"
           }
