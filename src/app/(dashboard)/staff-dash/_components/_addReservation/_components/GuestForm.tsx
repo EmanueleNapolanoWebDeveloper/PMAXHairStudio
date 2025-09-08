@@ -1,12 +1,8 @@
 'use client'
 import { useState } from 'react'
+import { GuestType } from '@/src/lib/types'
 
-type GuestType = {
-    name: string
-    surname: string
-    phone: string
-    email: string
-}
+
 
 interface GuestFormProps {
     guest: GuestType

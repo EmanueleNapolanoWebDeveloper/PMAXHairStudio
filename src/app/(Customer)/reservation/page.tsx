@@ -5,14 +5,15 @@ import ServicesChoise from './_components/ServicesChoise'
 import DataChoise from './_components/DataChoise'
 import TimeChoise from './_components/TimeChoise'
 import SummaryReservation from './_components/SummaryReservation'
-import { createLoggedReservation, getAllReservations, getEmployees, getServices } from '@/src/lib/actions'
+import { createReservation, getAllReservations, getEmployees, getServices } from '@/src/lib/actions'
 import { useAuth } from '@/src/app/store/AuthContext'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import { Profile, Reservation, Service } from '@/src/lib/types'
+import { Profile, Reservation, Service, GuestType } from '@/src/lib/types'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
+import GuestForm from '../../(dashboard)/staff-dash/_components/_addReservation/_components/GuestForm'
 
 export default function ReservationPage() {
   const router = useRouter()
@@ -30,7 +31,13 @@ export default function ReservationPage() {
 
   type TimeSlot = { start_time: string; end_time: string }
 
-  // Stato interno
+  // States
+  const [guest, setGuest] = useState<GuestType | null>({
+    name: '',
+    surname: '',
+    phone: '',
+    email: ''
+  })
   const [barber, setBarber] = useState<Profile | null>(null)
   const [barberRes, setBarberRes] = useState<Reservation[]>([])
   const [timeResBarber, setTimeResBarber] = useState<TimeSlot[]>([])
@@ -47,6 +54,7 @@ export default function ReservationPage() {
     queryFn: () => getAllReservations(),
   })
 
+
   const employeesQuery = useQuery({
     queryKey: ['employees'],
     queryFn: () => getEmployees()
@@ -62,7 +70,7 @@ export default function ReservationPage() {
 
   // Mutation per creare prenotazione
   const createReservationMutation = useMutation({
-    mutationFn: createLoggedReservation,
+    mutationFn: createReservation,
     onSuccess: () => {
       toast.success('Prenotazione creata con successo!')
       // ✅ Invalida le query per aggiornare i dati
@@ -103,11 +111,19 @@ export default function ReservationPage() {
     if (!barber) return
 
     createReservationMutation.mutate({
+      logged_id: profile?.id,
+      guest_datas: {
+        name: guest?.name,
+        surname: guest?.surname,
+        phone: guest?.phone,
+        email: guest?.email
+      },
       barber_id: barber.id,
       services: selectedServices,
       date,
       start_time: time,
       note: note,
+      isGuest: profile ? false : true
     })
   }
 
@@ -266,9 +282,20 @@ export default function ReservationPage() {
     <section className="min-h-screen py-5">
       <div className="bg-white rounded-2xl p-6 shadow-md max-w-3xl mx-auto mt-[7rem]">
         <h2 className="text-2xl font-bold text-center text-black mb-6">
+          {profile ? (
+            <span>Benvenuto {profile.name}</span>
+          ) : (
+            <span>Benvenuto</span>
+          )}
           Prenota il tuo appuntamento
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* GUEST */}
+          {!profile && (
+            <GuestForm guest={guest} onGuestChange={setGuest} />
+          )}
+
           <BarberChoise
             selecetedEmployee={barber}
             employees={employeesQuery.data || []}
@@ -336,27 +363,20 @@ export default function ReservationPage() {
             totalPrice={totalPrice}
           />
 
-          {profile ? (
-            <button
-              type="submit"
-              disabled={!isFormValid || createReservationMutation.isPending}
-              className={`w-full py-3 rounded-lg transition ${!isFormValid || createReservationMutation.isPending
-                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                : 'bg-black text-white hover:bg-gray-800'
-                }`}
-            >
-              {createReservationMutation.isPending
-                ? 'Creando prenotazione...'
-                : 'Conferma Prenotazione'}
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className="block w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition text-center"
-            >
-              Accedi per prenotare
-            </Link>
-          )}
+
+          <button
+            type="submit"
+            disabled={!isFormValid || createReservationMutation.isPending}
+            className={`w-full py-3 rounded-lg transition ${!isFormValid || createReservationMutation.isPending
+              ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-gray-800'
+              }`}
+          >
+            {createReservationMutation.isPending
+              ? 'Creando prenotazione...'
+              : 'Conferma Prenotazione'}
+          </button>
+
         </form>
       </div>
     </section>

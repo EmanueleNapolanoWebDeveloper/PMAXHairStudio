@@ -49,3 +49,10 @@ export type Service = {
   price: number
   category: string
 }
+
+export type GuestType = {
+    name: string
+    surname: string
+    phone: string
+    email: string
+}

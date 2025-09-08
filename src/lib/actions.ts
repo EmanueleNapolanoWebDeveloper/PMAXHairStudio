@@ -1,7 +1,7 @@
 'use server'
 
 import { Profile, Reservation, Service } from "@/src/lib/types"
-import { createClient } from "@/src/utils/supabase/server"
+import { createClient } from "@/src/utils/supabase/client"
 
 
 // GET USER 
@@ -179,133 +179,34 @@ export async function getStaffIDAppointments(barber_id: string) {
 
 }
 
-// creare res per utenti loggati
-
-export async function createLoggedReservation({ barber_id, date, start_time, services, note }: Reservation) {
-
-    const supabase = await createClient()
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-
-    if (authError || !user) throw new Error("Utente non autenticato")
-
-    const totalPrice = services.reduce((acc, s) => acc + (s.price || 0), 0)
-    const totalDuration = services.reduce((acc, s) => acc + (s.time || 0), 0)
-
-    // Funzione helper per generare intervalli di tempo a step di 30 minuti
-    const generateTimeSlots = (start: string, totalMinutes: number, step = 30) => {
-        const [h, m] = start.split(":").map(Number)
-        const slots: string[] = []
-        let minutes = h * 60 + m
-        const endMinutes = minutes + totalMinutes
-
-        while (minutes < endMinutes) {
-            const hour = Math.floor(minutes / 60)
-            const minute = minutes % 60
-            slots.push(`${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`)
-            minutes += step
-        }
-        return slots
-    }
-
-    const durationArray = generateTimeSlots(start_time, totalDuration, 30)
-
-    // Calcolo orario di fine
-    const lastSlot = durationArray[durationArray.length - 1]
-    const [lastHour, lastMinute] = lastSlot.split(":").map(Number)
-    const endTotalMinutes = lastHour * 60 + lastMinute + 30
-    const endHour = Math.floor(endTotalMinutes / 60)
-    const endMinute = endTotalMinutes % 60
-    const endTime = `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`
-
-    // --- Controllo sovrapposizioni ---
-    const { data: existingReservations, error: fetchError } = await supabase
-        .from("appuntamenti")
-        .select("start_time, end_time")
-        .eq("barber_id", barber_id)
-        .eq("data", date)
-
-    if (fetchError) throw new Error("Errore nel recupero delle prenotazioni esistenti")
-
-    if (existingReservations && existingReservations.length > 0) {
-        const hasOverlap = existingReservations.some((r: any) => {
-            const existingSlots = generateTimeSlots(
-                r.start_time,
-                (parseInt(r.end_time.split(":")[0]) * 60 + parseInt(r.end_time.split(":")[1])) -
-                (parseInt(r.start_time.split(":")[0]) * 60 + parseInt(r.start_time.split(":")[1]))
-            )
-            return durationArray.some(slot => existingSlots.includes(slot))
-        })
-
-        if (hasOverlap) {
-            throw new Error("Il tuo servizio si sovrappone con una prenotazione esistente. Riprova con un altro orario.")
-        }
-    }
-
-    // --- Inserimento prenotazione ---
-    const { data, error: insertError } = await supabase
-        .from("appuntamenti")
-        .insert([{
-            logged_id: user.id,
-            guest_datas: {
-                name: '',
-                surname: '',
-                phone: '',
-                email: '',
-            },
-            barber_id,
-            data: date,
-            start_time,
-            end_time: endTime,
-            services: services.map(s => s.title),
-            amount: totalPrice,
-            discount: 0,
-            note: note,
-            status: 'prenotato'
-        }])
-        .select()
-
-    if (insertError) throw new Error(insertError.message)
-
-    return data
-}
 
 // EMPLOYEE - crea res anche per Guest
 
-export async function createStaffReservation({
+export async function createReservation({
+    logged_id,
     barber_id,
     date, // 🔥 RINOMINATO da 'data' a 'date' per evitare conflitti
     start_time,
     services,
     note = '',
-    discount = 0,
-    isGuest = false,
+    isGuest,
     guest_datas
 }: {
-    barber_id: string,
+    logged_id: Profile['id'],
+    barber_id: Profile['id'],
     date: string, // 🔥 Aggiornato tipo
     start_time: string,
     services: Service[],
     note?: string,
-    discount?: number,
     isGuest?: boolean,
     guest_datas?: {
-        name: string,
-        surname: string,
-        phone: string,
-        email: string
+        name: Profile['name'] | null,
+        surname: Profile['surname'] | null,
+        phone: Profile['phone'] | null,
+        email: Profile['email'] | null
     }
 }) {
     const supabase = await createClient();
-
-    // Controllo autenticazione
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    // Se non è guest ma non c'è utente loggato, errore
-    if (!isGuest && (authError || !user)) {
-        throw new Error("Utente non autenticato");
-    }
 
     // Se è guest ma non ci sono dati guest, errore
     if (isGuest && !guest_datas) {
@@ -406,7 +307,7 @@ export async function createStaffReservation({
     // --- Preparazione dati per inserimento ---
     const insertData = {
         // 🔥 LOGICA PRINCIPALE: logged_id vs guest_datas
-        logged_id: isGuest ? null : user?.id || null,
+        logged_id: isGuest ? null : logged_id || null,
         guest_datas: isGuest ? {
             name: guest_datas!.name.trim(),
             surname: guest_datas!.surname.trim(),
@@ -421,7 +322,6 @@ export async function createStaffReservation({
         end_time: endTime,
         services: services.map(s => s.title),
         amount: totalPrice,
-        discount: discount,
         note: note.trim(),
         status: 'prenotato'
     };
