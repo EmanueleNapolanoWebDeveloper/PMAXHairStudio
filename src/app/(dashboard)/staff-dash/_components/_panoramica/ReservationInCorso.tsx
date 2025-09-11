@@ -51,13 +51,22 @@ export default function InProgressReservation({
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, [reservations]);
-
   const getCustomerInfo = (reservation: Reservation) => {
-    if (!reservation) return { name: '', phone: '' };
-    return reservation.logged_id
-      ? { name: `${reservation.logged_id.name || ''} ${reservation.logged_id.surname || ''}`.trim(), phone: reservation.logged_id.phone || '' }
-      : { name: reservation.guest_datas?.name || 'Cliente ospite', phone: reservation.guest_datas?.phone || '' };
+    if (reservation.logged_id) {
+      return {
+        name: `${reservation.logged_id?.name || ''} ${reservation.logged_id?.surname || ''}`.trim() || 'Cliente registrato',
+        phone: reservation.logged_id?.phone || ''
+      };
+    } else {
+      let guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : '';
+      return {
+        name: guest.name || 'Cliente ospite',
+        surname: guest.surname || '',
+        phone: guest.phone || ''
+      };
+    }
   };
+
 
   const handleCompleteAppointment = async () => {
     if (!inProgressAppointment) return;
@@ -100,9 +109,6 @@ export default function InProgressReservation({
           </div>
           Appuntamento in Corso
         </h3>
-        <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" /> da {elapsedTime}
-        </div>
       </div>
 
       {/* Orario e cliente */}
@@ -113,7 +119,7 @@ export default function InProgressReservation({
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 text-gray-900 font-semibold mb-1">
-            <User className="w-4 h-4 text-gray-600" /> {customerInfo.name}
+            <User className="w-4 h-4 text-gray-600" /> {customerInfo.name} {customerInfo.surname}
           </div>
           {customerInfo.phone && (
             <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">

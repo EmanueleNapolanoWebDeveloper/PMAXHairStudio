@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   Calendar,
+  Home,
   Star,
   BarChart3,
   Clock,
@@ -19,23 +20,25 @@ import HeaderDash from './_components/HeaderDash'
 import DashboardContent from './_components/_panoramica/DashboardContent'
 import BarberCalendar from './_components/_appuntamenti/Reservations'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getStaffIDAppointments, fetchReviewsForStaffID } from '@/src/lib/actions'
+import { getStaffIDAppointments, fetchReviewsForStaffID, fetchAllReviews } from '@/src/lib/actions'
 import { Reservation } from '@/src/lib/types'
 import { useAuth } from '@/src/app/store/AuthContext'
 import { createClient } from '@/src/utils/supabase/client'
 import AddStaffReservation from './_components/_addReservation/_components/StaffFormReservation'
 import StaffNotes from './_components/_staffMemo/StaffMemo'
 import ActivityReviews from './_components/_StaffReviews.tsx/StaffReviews'
+import MonthlyDashboard from './_components/_managing/Managing'
 
 // ==============================
 // Costanti comuni
 // ==============================
 const sidebarItems = [
-  { id: 'dashboard', name: 'Panoramica', icon: BarChart3 },
+  { id: 'dashboard', name: 'Panoramica', icon: Home },
   { id: 'my-appointments', name: 'Calendario Appuntamenti', icon: Calendar },
   { id: 'addReservation', name: 'Aggiungi Appuntamenti', icon: Clock },
   { id: 'staff-notes', name: 'Note dello STAFF', icon: Info },
   { id: 'reviews', name: 'Recensioni P-Max', icon: Star },
+  { id: 'managing', name: 'Panoramica Attività', icon: BarChart3 },
   { id: 'profile', name: 'Il Mio Profilo', icon: User },
 ]
 
@@ -117,6 +120,16 @@ const StaffDashboard = () => {
   } = useQuery({
     queryKey: ['reviews', user?.id],
     queryFn: () => fetchReviewsForStaffID(user?.id),
+    enabled: !!user?.id
+  })
+
+   const { data: allReviews = [],
+    isLoading: isLoadingAllReviews,
+    isError: isErrorAllReviews,
+    error: errorAllReviews,
+  } = useQuery({
+    queryKey: ['all_reviews', user?.id],
+    queryFn: () => fetchAllReviews(),
     enabled: !!user?.id
   })
 
@@ -248,8 +261,10 @@ const StaffDashboard = () => {
         return <AddStaffReservation reservations={safeReservations} />
       case 'staff-notes':
         return <StaffNotes />
-        case 'reviews':
-        return <ActivityReviews />
+      case 'reviews':
+        return <ActivityReviews allReviews={allReviews} />
+      case 'managing':
+        return <MonthlyDashboard />
       default:
         return (
           <PlaceholderContent

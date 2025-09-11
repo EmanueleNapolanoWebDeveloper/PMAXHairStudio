@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Reservation } from '@/src/lib/types';
-import { Clock, User, Scissors, Calendar, Phone, AlertCircle, CheckCircle } from 'lucide-react';
-import { updateReservationStatus } from '@/src/lib/actions';
+import { Clock, User, Scissors, Calendar, Phone, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { updateReservationStatus, deleteReservation } from '@/src/lib/actions';
+import next from 'next';
+import { div } from 'framer-motion/client';
 
 interface NextAppointmentProps {
   reservations?: Reservation[];
@@ -62,9 +64,11 @@ export default function NextAppointment({
         phone: reservation.logged_id?.phone || ''
       };
     } else {
+      let guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : '';
       return {
-        name: reservation.guest_datas?.name || 'Cliente ospite',
-        phone: reservation.guest_datas?.phone || ''
+        name: guest.name || 'Cliente ospite',
+        surname: guest.surname || '',
+        phone: guest.phone || ''
       };
     }
   };
@@ -95,6 +99,20 @@ export default function NextAppointment({
     }
   };
 
+  const handleCancelAppointment = async () => {
+    if (!nextAppointment) return;
+    setIsUpdating(true);
+
+    try {
+      await deleteReservation(nextAppointment.id);
+      if (onRefreshData) onRefreshData();
+    } catch (error) {
+      console.error('Errore nell\'annullare l\'appuntamento:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
   // 🟦 Nessun appuntamento
   if (!nextAppointment) {
     return (
@@ -110,6 +128,7 @@ export default function NextAppointment({
 
   const customerInfo = getCustomerInfo(nextAppointment);
 
+
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
       {/* Header */}
@@ -117,9 +136,6 @@ export default function NextAppointment({
         <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <Clock className="w-5 h-5 text-blue-600" /> Prossimo Appuntamento
         </h3>
-        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-          tra {timeUntilNext}
-        </div>
       </div>
 
       {/* Orario e cliente */}
@@ -131,7 +147,7 @@ export default function NextAppointment({
 
         <div className="flex-1">
           <div className="flex items-center gap-2 text-gray-900 font-semibold mb-1">
-            <User className="w-4 h-4 text-gray-600" /> {customerInfo.name}
+            <User className="w-4 h-4 text-gray-600" /> {customerInfo.name} {customerInfo.surname}
           </div>
           {customerInfo.phone && (
             <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
@@ -170,13 +186,12 @@ export default function NextAppointment({
       <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
         <div className="flex items-center gap-2">
           <div
-            className={`w-2 h-2 rounded-full ${
-              nextAppointment.status === 'in_corso'
-                ? 'bg-green-500'
-                : nextAppointment.status === 'prenotato'
+            className={`w-2 h-2 rounded-full ${nextAppointment.status === 'in_corso'
+              ? 'bg-green-500'
+              : nextAppointment.status === 'prenotato'
                 ? 'bg-blue-500'
                 : 'bg-gray-500'
-            }`}
+              }`}
           />
           <span className="text-sm text-gray-600 capitalize">
             {nextAppointment.status === 'in_corso' ? 'In corso' : 'Prenotato'}
@@ -184,21 +199,47 @@ export default function NextAppointment({
         </div>
 
         {nextAppointment.status === 'prenotato' && (
-          <button
-            onClick={handleStartAppointment}
-            disabled={isUpdating}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium text-sm transition-all duration-300"
-          >
-            {isUpdating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Avviando...
-              </>
-            ) : (
-              <>
-                <CheckCircle className="w-4 h-4" /> Inizia
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-3 mt-4">
+            {/* Bottone Avvio */}
+            <button
+              onClick={handleStartAppointment}
+              disabled={isUpdating}
+              className={`
+      flex items-center gap-2 px-5 py-2.5
+      rounded-lg font-medium text-sm transition-all duration-300
+      shadow-sm
+      ${isUpdating
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 active:scale-95 text-white"
+                }
+    `}
+            >
+              {isUpdating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Avviando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" /> Inizia
+                </>
+              )}
+            </button>
+
+            {/* Bottone Annulla */}
+            <button
+              onClick={handleCancelAppointment}
+              type="button"
+              className="
+      flex items-center gap-2 px-5 py-2.5
+      rounded-lg font-medium text-sm transition-all duration-300
+      bg-red-500 text-white hover:bg-red-600 active:scale-95
+      shadow-sm
+    "
+            >
+              <X className="w-4 h-4" /> Annulla
+            </button>
+          </div>
         )}
       </div>
     </div>

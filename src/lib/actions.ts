@@ -453,8 +453,48 @@ export async function addReview({ customer, reservation_id, rating, comment }: R
     }
 }
 
+export async function fetchAllReviews() {
+    const supabase = await createClient()
 
-export async function fetchReviews(reservationId: string) {
+    try {
+        const { data, error } = await supabase.from('reviews')
+            .select(`
+             id,            
+            customer(
+            id,
+            name,
+            surname,
+            phone,
+            email),
+            appuntamenti : reservation_id(
+                id,
+                data,
+                barber_id,
+                logged_id,
+                start_time,
+                end_time,
+                services,
+                status,
+                note,
+                amount,
+                created_at
+            ),
+            rating,
+            comment,
+            created_at
+            `)
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+}
+
+
+export async function fetchReviewsFromReservation(reservationId: string) {
     const supabase = await createClient()
 
     try {
@@ -590,8 +630,6 @@ export async function fetchAllMemos(id: string) {
 export async function deleteNote(id: number) {
     const supabase = await createClient()
 
-    console.log('id passato', id);
-    
 
     try {
         const { error } = await supabase.from('staffnotes').delete().eq('id', id)
@@ -599,13 +637,13 @@ export async function deleteNote(id: number) {
         if (error) throw error
 
         console.log('Nota eliminata con successo');
-        
+
         return
     } catch (error: any) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
-    
+
 }
 
 

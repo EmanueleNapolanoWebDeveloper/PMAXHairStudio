@@ -82,7 +82,6 @@ const StaffNotes = () => {
 
         const setupRealtime = async () => {
             try {
-                console.log('🔄 Configurazione realtime per user:', user.id)
 
                 channel = supabase
                     .channel('staffnotes-changes')
@@ -94,7 +93,6 @@ const StaffNotes = () => {
                             table: 'staffnotes'
                         },
                         (payload) => {
-                            console.log('📡 Realtime event:', payload)
 
                             // Ricarica i dati quando c'è un cambiamento
                             queryClient.invalidateQueries({
@@ -110,12 +108,7 @@ const StaffNotes = () => {
                             }
                         }
                     )
-                    .subscribe((status) => {
-                        console.log('🔗 Realtime status:', status)
-                        if (status === 'SUBSCRIBED') {
-                            console.log('✅ Realtime attivo!')
-                        }
-                    })
+                    .subscribe()
 
             } catch (error) {
                 console.error('❌ Errore setup realtime:', error)
