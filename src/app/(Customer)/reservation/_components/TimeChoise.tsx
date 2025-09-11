@@ -56,6 +56,22 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
 
   // Controlla se uno slot è disponibile
   const isSlotAvailable = (slot: string) => {
+
+    const today = new Date()
+    const selectedDate = new Date(date)
+    const isToday = today.toDateString() === selectedDate.toDateString()
+
+    // Se è oggi, controlla se lo slot è nel passato
+    if (isToday) {
+      const now = new Date()
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+
+      // Se lo slot è già passato, disabilitalo
+      if (slot < currentTime) {
+        return false
+      }
+    }
+    
     if (!timeSlots || timeSlots.length === 0) return true
     const slotTime = slot + ':00' // aggiungiamo secondi
     return !timeSlots.some(res => slotTime >= res.start_time && slotTime < res.end_time)
@@ -70,22 +86,20 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
         <button
           type="button"
           onClick={() => setActiveTab('morning')}
-          className={`flex-1 py-2 font-semibold text-center transition ${
-            activeTab === 'morning'
+          className={`flex-1 py-2 font-semibold text-center transition ${activeTab === 'morning'
               ? 'border-b-2 border-black text-black'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           Mattina
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('afternoon')}
-          className={`flex-1 py-2 font-semibold text-center transition ${
-            activeTab === 'afternoon'
+          className={`flex-1 py-2 font-semibold text-center transition ${activeTab === 'afternoon'
               ? 'border-b-2 border-black text-black'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           Pomeriggio
         </button>
@@ -101,13 +115,12 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
               type="button"
               onClick={() => onChange(t)}
               disabled={!available}
-              className={`p-2 rounded-lg border text-black transition ${
-                time === t
+              className={`p-2 rounded-lg border text-black transition ${time === t
                   ? 'bg-black text-white border-black shadow'
                   : available
                     ? 'bg-white border-gray-300 hover:bg-gray-100'
                     : 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
-              }`}
+                }`}
             >
               {t}
             </button>

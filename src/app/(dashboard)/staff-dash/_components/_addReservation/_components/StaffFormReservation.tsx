@@ -16,7 +16,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
 import CustomerSearchBar from './LoggedSearchBar'
 
-export default function AddStaffReservation() {
+export default function AddStaffReservation({reservations}: {reservations: Reservation[]}) {
     const router = useRouter()
     const queryClient = useQueryClient()
     const { user, profile, refreshProfile } = useAuth()
@@ -51,32 +51,8 @@ export default function AddStaffReservation() {
     const [note, setNote] = useState<string>('')
     const [isWorkingDay, setIsWorkingDay] = useState(true)
 
-    // ✅ Query per tutte le prenotazioni (non solo dello staff loggato)
-    const allReservationsQuery = useQuery({
-        queryKey: ['all-reservations'],
-        queryFn: async () => {
-            // Fetch di tutte le prenotazioni per avere una vista completa
-            const supabase = createClient()
-            const { data, error } = await supabase
-                .from('appuntamenti')
-                .select('*')
-                .order('data', { ascending: true })
-            
-            if (error) throw error
-            return data || []
-        },
-        refetchInterval: 30000, // Refetch ogni 30 secondi
-        staleTime: 10000, // Considera i dati freschi per 10 secondi
-    })
 
     // Query per le prenotazioni dello staff loggato
-    const reservationsQuery = useQuery({
-        queryKey: ['reservations', user?.id],
-        queryFn: () => getStaffIDAppointments(user?.id),
-        enabled: !!user?.id,
-        refetchInterval: 30000,
-        staleTime: 10000,
-    })
 
     const customersQuery = useQuery({
         queryKey: ['customers'],
@@ -142,60 +118,21 @@ export default function AddStaffReservation() {
     })
 
     // ✅ Realtime subscription ottimizzata
-    useEffect(() => {
-        if (!user?.id) return
-
-        const supabase = createClient()
-        console.log("🔌 Avvio subscription realtime per tutti gli appuntamenti")
-        
-        const channel = supabase
-            .channel('all_reservations_channel')
-            .on(
-                'postgres_changes',
-                { 
-                    event: '*', 
-                    schema: 'public', 
-                    table: 'appuntamenti'
-                },
-                (payload) => {
-                    console.log("🔄 Evento realtime ricevuto:", payload.eventType, payload)
-                    
-                    // ✅ Invalida tutte le query di prenotazioni
-                    queryClient.invalidateQueries({ queryKey: ['reservations'] })
-                    queryClient.invalidateQueries({ queryKey: ['all-reservations'] })
-                    queryClient.invalidateQueries({ queryKey: ['staff-appointments'] })
-                    
-                    // ✅ Refresh immediato per aggiornamenti critici
-                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                        queryClient.refetchQueries({ queryKey: ['reservations', user.id] })
-                    }
-                }
-            )
-            .subscribe((status) => {
-                console.log("📡 Status subscription:", status)
-            })
-
-        return () => {
-            console.log("🔌 Chiudo subscription realtime")
-            channel.unsubscribe()
-        }
-    }, [user?.id, queryClient])
+    
 
     // ✅ Aggiorna barberRes quando cambiano i dati
     useEffect(() => {
-        if (!reservationsQuery.data || !user?.id) {
+        if (!reservations || !user?.id) {
             setBarberRes([])
             return
         }
-        
-        console.log("📊 Aggiornamento prenotazioni barbiere:", reservationsQuery.data.length)
-        
-        const filteredReservations: Reservation[] = reservationsQuery.data
+                
+        const filteredReservations: Reservation[] = reservations
             .filter(r => r.barber_id['id'] === user.id)
             .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
 
         setBarberRes(filteredReservations)
-    }, [reservationsQuery.data, user?.id])
+    }, [reservations, user?.id])
 
     // ✅ Aggiorna slot disponibili
     useEffect(() => {
@@ -282,7 +219,7 @@ export default function AddStaffReservation() {
     }, [user?.id, selectedServices, date, time, isGuestBooking, guest, selectedCustomer])
 
     // Loading states
-    if (reservationsQuery.isLoading || employeesQuery.isLoading || servicesQuery.isLoading) {
+    if (reservations.isLoading || employeesQuery.isLoading || servicesQuery.isLoading) {
         return (
             <section className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
@@ -291,7 +228,7 @@ export default function AddStaffReservation() {
         )
     }
 
-    if (reservationsQuery.isError || employeesQuery.isError || servicesQuery.isError) {
+    if (reservations.isError || employeesQuery.isError || servicesQuery.isError) {
         return (
             <section className="min-h-screen flex items-center justify-center">
                 <p className="text-red-600">Errore durante il caricamento dei dati.</p>
@@ -314,16 +251,6 @@ export default function AddStaffReservation() {
                     Prenota appuntamento - {barber.name} {barber.surname}
                 </h2>
 
-                {/* Indicatore di stato connessione */}
-                <div className="mb-4 flex justify-center">
-                    <div className={`px-3 py-1 rounded-full text-xs ${
-                        allReservationsQuery.isFetching 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-green-100 text-green-800'
-                    }`}>
-                        {allReservationsQuery.isFetching ? 'Sincronizzazione...' : 'Aggiornato'}
-                    </div>
-                </div>
 
                 {/* Toggle tipo prenotazione */}
                 <div className="mb-6 flex justify-center">

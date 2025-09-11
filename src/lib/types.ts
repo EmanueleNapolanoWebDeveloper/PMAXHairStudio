@@ -9,23 +9,30 @@ export type Profile = {
 }
 
 export type Reservation = {
-  id: string
-  logged_id?: Profile[]
-  guest_datas?:{
+  id: number
+  barber_id: {
+    id: string
     name: string
     surname: string
-    phone: string
     email: string
-  }
-  barber_id: Profile[],
+    phone: string
+  } | null
+  logged_id?: {
+    id: string
+    name: string
+    surname: string
+    email: string
+    phone: string
+  } | null
+  guest_datas?: string // ⚠️ viene salvato come stringa JSON
+  services: string[]
   data: string
   start_time: string
   end_time: string
-  services?: Service[]
-  status?: string
-  amount?: number
+  amount: number
   note?: string
-  isGuest?: boolean
+  status: "prenotato" | "completato" | "in_corso" | "confermato" | "annullato"
+  created_at: string
 }
 
 export type Service = {
@@ -41,4 +48,28 @@ export type GuestType = {
     surname: string
     phone: string
     email: string
+}
+
+export type Reviews ={
+  customer: string
+  reservation_id: number
+  rating: number
+  comment: string
+}
+
+export type StaffNotes = {
+  id : number
+  author : {
+    id : string
+    name : string
+    surname : string
+    email : string
+    phone : string
+  }
+  title : string
+  content : string
+  note_date : string
+  time : string
+  reference : string
+  priority : string
 }

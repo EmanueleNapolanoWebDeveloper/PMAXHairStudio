@@ -2,10 +2,10 @@
 
 import { useAuth } from "@/src/app/store/AuthContext"
 import { Reservation } from "@/src/lib/types"
-import next from "next"
 
 type WelcomeStaffSectionProps = {
-    todayAppointments: number}
+    todayAppointments: number | undefined
+}
 
 
 

@@ -3,6 +3,7 @@
 import { Clock, User, Scissors, Calendar, Plus, Phone, MapPin } from 'lucide-react';
 import ClientInfo from './ClientInfo';
 import { Reservation } from '@/src/lib/types';
+import { deleteReservation } from '@/src/lib/actions';
 
 type ReservationSlotType = {
     appointment: Reservation;
@@ -11,9 +12,6 @@ type ReservationSlotType = {
 
 export default function ReservationSlot({ appointment, appointmentsLenght }: ReservationSlotType) {
 
-
-    console.log('appointment in ReservationSlot:', appointment);
-    
 
     return (
         <>
@@ -27,47 +25,33 @@ export default function ReservationSlot({ appointment, appointmentsLenght }: Res
 
             {/* Timeline Line */}
             <div className="flex-shrink-0 flex flex-col items-center mr-6">
-                <div className={`w-3 h-3 rounded-full border-2 ${appointment.status === 'confermato' ? 'bg-green-500 border-green-500' :
-                    appointment.status === 'prenotato' ? 'bg-yellow-500 border-yellow-500' :
-                        'bg-gray-300 border-gray-300'
-                    }`}></div>
-                
+                <div className={`w-3 h-3 rounded-full border-2 ${appointment.status === 'completato' ? 'bg-green-500 border-green-500' :
+                    appointment.status === 'prenotato' ? 'bg-yellow-500 border-yellow-500' : appointment.status === 'annullato' && 'bg-red-500 border-red-500'}`}></div>
+
             </div>
 
             {/* Content */}
             <div className="flex-1 pb-8">
-                {appointment.status === 'free' ? (
-                    <div className="bg-white border-2 border-dashed border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors cursor-pointer">
-                        <div className="flex items-center justify-center text-gray-400 space-x-2">
-                            <Plus className="w-5 h-5" />
-                            <span className="font-medium">Slot Disponibile</span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className={`bg-white rounded-lg shadow-sm border-l-4 p-6 ${appointment.status === 'confermato' ? 'border-l-green-500' :
-                        appointment.status === 'prenotato' ? 'border-l-yellow-500' : 'border-l-gray-300'
+                <div className={`bg-white rounded-lg shadow-sm border-l-4 p-6
+                         ${appointment.status === 'completato' && 'border-l-green-500'} 
+                        ${appointment.status === 'prenotato' ? 'border-l-yellow-500' : 'border-l-gray-300'}
+                        ${appointment.status === 'annullato' && 'border-l-red-500'}
                         }`}>
-                        <div className="flex items-start justify-between">
-                            <div className="flex flex-wrap items-start space-x-4 w-full">
-                                {/* Avatar */}
-                                <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-white font-semibold">
-                                    {appointment.avatar}
-                                </div>
+                    <div className="flex items-start justify-between">
+                        <div className="flex flex-wrap items-start space-x-4 w-full">
 
-                                {/* Client Info */}
-                                <ClientInfo
-                                    client={appointment.logged_id}
-                                    services={appointment.services}
-                                    duration={appointment.end_time - appointment.start_time}
-                                    price={appointment.amount}
-                                    status={appointment.status}
-                                />
-                            </div>
-
-
+                            {/* Client Info */}
+                            <ClientInfo
+                                client={appointment.logged_id || JSON.parse(appointment.guest_datas)}
+                                services={appointment.services}
+                                note={appointment.note}
+                                price={appointment.amount}
+                                status={appointment.status}
+                                onDelete={() => deleteReservation(appointment.id)}
+                            />
                         </div>
                     </div>
-                )}
+                </div>
             </div>
         </>
 

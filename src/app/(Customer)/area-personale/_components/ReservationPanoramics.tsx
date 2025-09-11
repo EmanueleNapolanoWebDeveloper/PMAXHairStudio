@@ -5,25 +5,33 @@ import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, 
 import { deleteReservation } from '@/src/lib/actions';
 import { Reservation } from '@/src/lib/types';
 
-const ReservationPanoramics = ({ reservations } : Reservation) => {
+type ReservationPanoramicProps = {
+  reservations: Reservation[] | null;
+  setIsModalOpen: (value: boolean) => void; // setIsModalOpen
+  setSelectedReservation: (value: Reservation | null) => void;
+}
+
+const ReservationPanoramics = ({ reservations, setIsModalOpen, setSelectedReservation }: ReservationPanoramicProps) => {
+
+
 
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(false);
   const [localReservation, setLocalReservations] = useState(reservations);
 
-  const filteredReservations = localReservation.filter(res =>
+  const filteredReservations = reservations?.filter(res =>
     filter === 'all' ? true : res.status === filter
   );
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'pending': return <Clock className="w-5 h-5 text-blue-500" />;
+      case 'completato': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'prenotato': return <Clock className="w-5 h-5 text-blue-500" />;
       default: return null;
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'completato': return 'bg-green-100 text-green-800';
       case 'prenotato': return 'bg-blue-100 text-blue-800';
@@ -31,7 +39,7 @@ const ReservationPanoramics = ({ reservations } : Reservation) => {
     }
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status: string) => {
     switch (status) {
       case 'completato': return 'Completata';
       case 'prenotato': return 'Prenotato';
@@ -45,6 +53,12 @@ const ReservationPanoramics = ({ reservations } : Reservation) => {
     setLocalReservations(localReservation.filter(res => res.id !== reservationId));
     setLoading(false);
   };
+
+  const handleOpenModal = (reservationID: Reservation['id']) => {
+    setIsModalOpen(true);
+    setSelectedReservation(reservationID);
+  };
+
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -128,7 +142,7 @@ const ReservationPanoramics = ({ reservations } : Reservation) => {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-gray-400" />
                   <p className="text-sm text-gray-600">
-                    Barbiere : <span className="font-medium">{reservation.barber_id.name} {reservation.barber_id.surname}</span>
+                    Barbiere : <span className="font-medium">{reservation.barber_id?.name} {reservation.barber_id?.surname}</span>
                   </p>
                 </div>
                 <div className="text-right">
@@ -147,6 +161,21 @@ const ReservationPanoramics = ({ reservations } : Reservation) => {
                     type="button"
                     className='w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 hover:shadow-md'>
                     {loading ? 'Sto annullando' : 'Annulla prenotazione'}
+                  </button>
+                </div>
+              }
+
+              {reservation.status === 'completato' &&
+                <div className='w-full flex items-center'>
+                  <button
+                    onClick={() => handleOpenModal(reservation.id)}
+                    disabled={loading}
+                    type="button"
+                    className='w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'>
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    {loading ? 'Invio recensione...' : 'Lascia una recensione'}
                   </button>
                 </div>
               }

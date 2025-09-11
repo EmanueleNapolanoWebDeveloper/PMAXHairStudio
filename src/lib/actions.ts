@@ -1,10 +1,11 @@
 'use server'
 
-import { Profile, Reservation, Service } from "@/src/lib/types"
+import { Profile, Reservation, Reviews, Service } from "@/src/lib/types"
 import { createClient } from "@/src/utils/supabase/client"
+import { create } from "domain"
 
 
-// GET USER 
+// -----_-------> USER 
 export async function getUser() {
     const supabase = await createClient()
     const { data, error } = await supabase.auth.getUser()
@@ -97,7 +98,7 @@ export async function fetchProfile(id: string) {
     return data
 }
 
-export async function fetchAllProfiles(){
+export async function fetchAllProfiles() {
     const supabase = await createClient()
     const { data, error } = await supabase
         .from("profiles")
@@ -106,18 +107,24 @@ export async function fetchAllProfiles(){
     return data
 }
 
-// EMPLOYEE
+// ---------------> EMPLOYEE
 export async function getEmployees(): Promise<Profile[]> {
     const supabase = await createClient()
-    const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("role", "employee")
-    if (error) return []
-    return data
+    try {
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("role", "employee")
+        if (error) return []
+        return data
+    } catch (err) {
+        console.error("Errore in getEmployees:", err)
+        return []
+    }
+
 }
 
-// SERVICES
+//----------------> SERVICES
 
 export async function getServices(): Promise<Service[]> {
     const supabase = await createClient()
@@ -130,7 +137,7 @@ export async function getServices(): Promise<Service[]> {
 }
 
 
-// RESERVATIONS
+// ---------------->  RESERVATIONS
 
 // tutte le res
 export async function getAllReservations(): Promise<Reservation[]> {
@@ -184,9 +191,6 @@ export async function getStaffIDAppointments(barber_id: string) {
     return data
 
 }
-
-
-// EMPLOYEE - crea res anche per Guest
 
 export async function createReservation({
     logged_id,
@@ -394,16 +398,214 @@ export async function deleteReservation(id: string) {
 
 // update res da prenotato a in_corso
 
-export async function updateReservationStatus(reservationId: string, newStatus: string = "completato") {
+export async function updateReservationStatus(
+    reservationId: string,
+    newStatus: string = "completato"
+): Promise<void> {
+    if (!reservationId) throw new Error("reservationId è richiesto");
 
-    console.log('reservationId:', reservationId);
+    const supabase = await createClient();
+
+    try {
+        const { data, error } = await supabase
+            .from("appuntamenti")
+            .update({ status: newStatus })
+            .eq("id", reservationId)
+            .select(); // opzionale: restituisce l'oggetto aggiornato
+
+        if (error) throw error;
+
+        console.log(`Prenotazione ${reservationId} aggiornata a status "${newStatus}"`, data);
+    } catch (err: any) {
+        console.error("Errore updateReservationStatus:", err.message || err);
+        throw new Error(`Impossibile aggiornare lo status: ${err.message || err}`);
+    }
+}
+
+
+// ------------------> REVIEWS
+
+
+
+export async function addReview({ customer, reservation_id, rating, comment }: Reviews) {
+    const supabase = await createClient()
+
+    console.log('dati entrati', customer, reservation_id, rating, comment);
+
+
+    try {
+        const { data, error } = await supabase
+            .from('reviews')
+            .insert({
+                customer,
+                reservation_id,
+                rating,
+                comment
+            })
+            .select()
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile inserire la recensione: ${error.message || error}`)
+    }
+}
+
+
+export async function fetchReviews(reservationId: string) {
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase.from('reviews').select().eq('reservation_id', reservationId)
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+}
+
+export async function fetchReviewsForStaffID(staffId: string) {
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase
+            .from('reviews')
+            .select(`
+             id,            
+            customer(
+            id,
+            name,
+            surname,
+            phone,
+            email),
+            appuntamenti : reservation_id(
+                id,
+                data,
+                barber_id,
+                logged_id,
+                start_time,
+                end_time,
+                services,
+                status,
+                note,
+                amount,
+                created_at
+            ),
+            rating,
+            comment
+            `)
+            .eq('appuntamenti.barber_id', staffId)
+
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+
+}
+
+
+
+// -------------> STAFF NOTES
+
+type Notes = {
+    author: Profile['id'],
+    title: string,
+    content: string,
+    date: string,
+    time: string,
+    reference: string,
+    priority: 'bassa' | 'media' | 'alta'
+}
+
+export async function addNotes({ author, title, content, date, time, reference, priority }: Notes) {
+
+    console.log('dati entrati', author, title, content, date, time, reference, priority);
 
     const supabase = await createClient()
-    const { error } = await supabase
-        .from("appuntamenti")
-        .update({ status: newStatus })
-        .eq("id", reservationId)
-    if (error) throw new Error(error.message)
+
+    try {
+        const { data, error } = await supabase
+            .from('staffnotes')
+            .insert({
+                author,
+                title,
+                content,
+                note_date: date,
+                time,
+                reference,
+                priority
+            })
+            .select()
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+
+}
+
+export async function fetchAllMemos(id: string) {
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase
+            .from('staffnotes')
+            .select(`
+            id,
+            author(
+                id,
+                name,
+                surname
+            ),
+            title,
+            content,
+            note_date,
+            time,
+            reference,
+            priority`
+            )
+            .or(`reference.eq.${'tutti'},reference.eq.${id}`)
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+}
+
+export async function deleteNote(id: number) {
+    const supabase = await createClient()
+
+    console.log('id passato', id);
+    
+
+    try {
+        const { error } = await supabase.from('staffnotes').delete().eq('id', id)
+
+        if (error) throw error
+
+        console.log('Nota eliminata con successo');
+        
+        return
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+    
 }
 
 

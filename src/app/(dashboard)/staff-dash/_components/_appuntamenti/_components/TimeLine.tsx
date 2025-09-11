@@ -23,9 +23,6 @@ export default function TimeLine({ appointment, date }: TimeLineType) {
         setDatingAppointments(filteredAppointments);
     }, [appointment, date]);
 
-
-    console.log('datingAppointments:', datingAppointments);
-
     return (
         <div className="space-y-0">
             {datingAppointments.length > 0 ? (

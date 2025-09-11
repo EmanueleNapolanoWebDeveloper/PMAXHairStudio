@@ -1,29 +1,86 @@
+'use client'
+
+import { useState } from "react"
+import { Reservation } from "@/src/lib/types"
 import UserProfile from "./_components/UserProfile"
 import FidelityCard from "./_components/FidelityCard"
 import ReservationPanoramics from "./_components/ReservationPanoramics"
 import ActionCard from "./_components/ActionCard"
 import Link from "next/link"
-import { getUserReservations } from "@/src/lib/actions"
-import { createClient } from "@/src/utils/supabase/server"
-import { redirect } from "next/navigation"
+import { addReview, getUserReservations } from "@/src/lib/actions"
 import { User } from "lucide-react"
+import { useAuth } from "../../store/AuthContext"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import ReviewModal from "@/src/components/UI/ReviewModal"
+import toast from "react-hot-toast"
 
-const Dashboard = async () => {
-    const supabase = await createClient()
-    
-    // Ottieni l'utente corrente dal server
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
-    if (!user || authError) {
-        redirect('/login')
+const Dashboard = () => {
+
+    const { user, profile } = useAuth();
+    const queryClient = useQueryClient();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
+
+
+    const { data: reservations = [], isLoading, isError, error } = useQuery({
+        queryKey: ['reservations', user?.id],
+        queryFn: () => getUserReservations(user?.id),
+        enabled: !!user?.id
+    });
+
+    const { mutate: createReview } = useMutation({
+        mutationFn: addReview,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations", user?.id] })
+            handleCloseModal();
+            toast.success('Recensione aggiunta con successo!')
+        },
+        onError: () => {
+            toast.error('Si è verificato un errore durante l\'aggiunta della recensione.')
+        }
+    })
+
+    // FUNZIONI PER RECENSIONI
+    const handleOpenModal = (reservation: Reservation) => {
+        setSelectedReservation(reservation);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedReservation(null);
+        setIsModalOpen(false);
+    };
+
+    const handleSubmit = async ({rating, comment} : {rating: number, comment: string}) => {
+
+        console.log('selectedReservation:', selectedReservation);
+        
+        console.log('user:', user);
+        console.log('rating:', rating);
+        console.log('comment:', comment);
+        
+        if (!selectedReservation || !user) return;
+        
+
+        createReview({
+            customer: user.id,
+            reservation_id: selectedReservation,
+            rating: rating,
+            comment: comment
+        })
     }
 
-    // Ottieni il profilo dell'utente
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+
+
+    // Calcola le statistiche dai dati
+    const stats = {
+        total: reservations?.length,
+        pending: reservations?.filter(r => r.status === 'prenotato').length,
+        completed: reservations?.filter(r => r.status === 'completato').length,
+    };
+
 
     if (!profile) {
         return (
@@ -42,14 +99,8 @@ const Dashboard = async () => {
         )
     }
 
-    const reservations = await getUserReservations(user.id);
-
-    // Calcola le statistiche dai dati
-    const stats = {
-        total: reservations.length,
-        pending: reservations.filter(r => r.status === 'pending').length,
-        completed: reservations.filter(r => r.status === 'completed').length,
-    };
+    console.log('Selected reservations:', selectedReservation);
+    
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900/20 to-black pt-24 pb-12">
@@ -80,7 +131,7 @@ const Dashboard = async () => {
 
                         {/* Reservation List */}
                         <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-slate-700/50">
-                            <ReservationPanoramics reservations={reservations} />
+                            <ReservationPanoramics reservations={reservations} setIsModalOpen={setIsModalOpen} setSelectedReservation={setSelectedReservation} />
                         </div>
                     </div>
                 </section>
@@ -100,9 +151,10 @@ const Dashboard = async () => {
                             </div>
                         )}
                     </div>
-
                 </section>
             </div>
+
+            <ReviewModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmit} />
         </div>
     )
 }
