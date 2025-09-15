@@ -104,13 +104,14 @@ const StaffDashboard = () => {
     queryKey: ['reservations', user?.id],
     queryFn: async () => {
       if (!user?.id) return []
-      const appointments = await getStaffIDAppointments(user.id)
+      const appointments = await getStaffIDAppointments(user?.id)
       return appointments || []
     },
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
     retry: 2,
   })
+  
 
   // query per reviews
   const { data: reviews = [],
@@ -132,6 +133,9 @@ const StaffDashboard = () => {
     queryFn: () => fetchAllReviews(),
     enabled: !!user?.id
   })
+
+  
+  
 
 
   // ✅ Real-time subscriptions per appointments
@@ -243,6 +247,7 @@ const StaffDashboard = () => {
   }
 
   const safeReservations = reservations || []
+  
 
   const renderContent = () => {
     switch (activeSection) {

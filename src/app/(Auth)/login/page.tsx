@@ -1,5 +1,5 @@
 
-import LoginSMS from "./_components/LoginSms"
+import LoginEmailPassword from "./_components/LoginEmailPass"
 import LoginGoogle from "./_components/LoginGoogle"
 
 export default function LoginPage() {
@@ -10,7 +10,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-6">
 
         {/* Login SMS */}
-        <LoginSMS />
+        <LoginEmailPassword />
 
         {/* Divisore */}
         <div className="flex items-center w-full gap-4">

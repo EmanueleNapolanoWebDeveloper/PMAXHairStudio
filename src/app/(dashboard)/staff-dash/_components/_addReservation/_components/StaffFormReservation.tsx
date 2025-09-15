@@ -16,7 +16,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
 import CustomerSearchBar from './LoggedSearchBar'
 
-export default function AddStaffReservation({reservations}: {reservations: Reservation[]}) {
+
+
+export default function AddStaffReservation({ reservations }: { reservations: Reservation[] }) {
     const router = useRouter()
     const queryClient = useQueryClient()
     const { user, profile, refreshProfile } = useAuth()
@@ -51,6 +53,7 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
     const [note, setNote] = useState<string>('')
     const [isWorkingDay, setIsWorkingDay] = useState(true)
 
+    console.log('barberRes:', barberRes);
 
     // Query per le prenotazioni dello staff loggato
 
@@ -100,7 +103,7 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
             queryClient.invalidateQueries({ queryKey: ['reservations'] })
             queryClient.invalidateQueries({ queryKey: ['all-reservations'] })
             queryClient.invalidateQueries({ queryKey: ['staff-appointments'] })
-            
+
             // Reset form
             setSelectedServices([])
             setDate(getToday())
@@ -118,7 +121,7 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
     })
 
     // ✅ Realtime subscription ottimizzata
-    
+
 
     // ✅ Aggiorna barberRes quando cambiano i dati
     useEffect(() => {
@@ -126,10 +129,23 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
             setBarberRes([])
             return
         }
-                
+
+        console.log('reservations che ci sono:', reservations);
+
+
         const filteredReservations: Reservation[] = reservations
-            .filter(r => r.barber_id['id'] === user.id)
-            .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+            .filter(r => {
+                if (!r.barber_id) return false; // null o undefined
+                if (typeof r.barber_id === 'string') {
+                    return r.barber_id === user.id;
+                } else {
+                    return r.barber_id.id === user.id;
+                }
+            })
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        console.log('filtered da StaffFormReservation: ',filteredReservations);
+
 
         setBarberRes(filteredReservations)
     }, [reservations, user?.id])
@@ -140,12 +156,12 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
             setTimeResBarber([])
             return
         }
-        
+
         const slots: TimeSlot[] = barberRes.map(r => ({
             start_time: r.start_time,
             end_time: r.end_time
         }))
-        
+
         console.log("⏰ Aggiornamento slot temporali:", slots.length)
         setTimeResBarber(slots)
     }, [barberRes])
@@ -192,7 +208,7 @@ export default function AddStaffReservation({reservations}: {reservations: Reser
         }
 
         console.log("📝 Creazione prenotazione per:", isGuestBooking ? guest : selectedCustomer)
-        
+
         createReservationMutation.mutate({
             logged_id: isGuestBooking ? undefined : selectedCustomer?.id,
             barber_id: user.id,

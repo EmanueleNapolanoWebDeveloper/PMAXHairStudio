@@ -68,7 +68,8 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
             email,
             phone,
             role: 'customer',
-            reg_complete: true
+            reg_complete: true,
+            is_Admin: false
         })
 
         if (error) {
@@ -147,7 +148,7 @@ export async function getAllReservations(): Promise<Reservation[]> {
         const { data, error } = await supabase
             .from("appuntamenti")
             .select("*")
-            .order("data", { ascending: true })
+            .order("date", { ascending: true })
 
         if (error) {
             throw new Error(error.message)
@@ -169,7 +170,7 @@ export async function getStaffIDAppointments(barber_id: string) {
         .select(`
             id,
             barber_id(id, name, surname, phone, email),
-            data,
+            date,
             start_time,
             end_time,
             logged_id(id, name, surname, phone, email),
@@ -181,7 +182,7 @@ export async function getStaffIDAppointments(barber_id: string) {
             guest_datas
             `)
         .eq("barber_id", barber_id)
-        .order("data", { ascending: true });
+        .order("date", { ascending: true });
 
     if (error) {
         console.log("Errore caricamento appuntamenti:", error);
@@ -294,7 +295,7 @@ export async function createReservation({
         .from("appuntamenti")
         .select("start_time, end_time")
         .eq("barber_id", barber_id)
-        .eq("data", date); // 🔥 Aggiornato da 'data' a 'date'
+        .eq("date", date); // 🔥 Aggiornato da 'data' a 'date'
 
     if (fetchError) {
         console.error("Errore fetch prenotazioni:", fetchError);
@@ -327,7 +328,7 @@ export async function createReservation({
 
         // Dati comuni
         barber_id,
-        data: date, // 🔥 Aggiornato da 'data' a 'date'
+        date: date, // 🔥 Aggiornato da 'data' a 'date'
         start_time,
         end_time: endTime,
         services: services.map(s => s.title),
@@ -376,8 +377,6 @@ export async function getUserReservations(id: string) {
 
 // delet res da logged customer
 export async function deleteReservation(id: string) {
-
-    console.log('id ricevuto:', id);
 
 
     const supabase = await createClient()
@@ -468,7 +467,7 @@ export async function fetchAllReviews() {
             email),
             appuntamenti : reservation_id(
                 id,
-                data,
+                date,
                 barber_id,
                 logged_id,
                 start_time,
@@ -525,7 +524,7 @@ export async function fetchReviewsForStaffID(staffId: string) {
             email),
             appuntamenti : reservation_id(
                 id,
-                data,
+                date,
                 barber_id,
                 logged_id,
                 start_time,

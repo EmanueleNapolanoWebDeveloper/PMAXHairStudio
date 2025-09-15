@@ -83,7 +83,7 @@ const ReservationPanoramics = ({ reservations, setIsModalOpen, setSelectedReserv
         </div>
       </div>
 
-      {filteredReservations.length === 0 ? (
+      {filteredReservations?.length === 0 ? (
         <div className="text-center py-12">
           <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-500 mb-2">Nessuna prenotazione</h3>
@@ -93,7 +93,7 @@ const ReservationPanoramics = ({ reservations, setIsModalOpen, setSelectedReserv
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredReservations.map(reservation => (
+          {filteredReservations?.map(reservation => (
             <div key={reservation.id} className="flex flex-col items-start justify-center gap-3 border border-gray-200 rounded-lg p-5 hover:shadow-lg transition-all duration-200 hover:border-blue-200">
               <div className="flex items-center gap-2">
                 {getStatusIcon(reservation.status)}

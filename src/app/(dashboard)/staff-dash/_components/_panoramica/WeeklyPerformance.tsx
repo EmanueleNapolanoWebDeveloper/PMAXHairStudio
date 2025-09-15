@@ -11,7 +11,7 @@ export default function WeeklyStatsInline({ reservations }: WeeklyStatsInlinePro
   const tempMap: Record<string, { date: string; completed: number }> = {}
 
   reservations.forEach(res => {
-    if (res.status !== 'completed') return
+    if (res.status !== 'completato') return
 
     const dateObj = new Date(res.date)
     const dayName = dayNames[dateObj.getDay()]

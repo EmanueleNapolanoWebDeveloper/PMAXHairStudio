@@ -51,23 +51,18 @@ export default function DataChoise({
 
   // ✅ Funzione per filtrare le prenotazioni
   const filterReservations = useCallback((barberId: string, date: string) => {
+    const filtered = resBarber.filter(r => {
+      if (!r.barber_id) return false; // sicurezza
 
-    let filtered : Reservation[];
+      const id = typeof r.barber_id === 'string' ? r.barber_id : r.barber_id.id;
 
-    // ✅ Filtra le prenotazioni per barberId e data se Staff
-    if (isStaff) {
-      filtered = resBarber.filter(r =>
-        r.barber_id['id'] === barberId && r.data === date
-      )
-    }else{
-      filtered = resBarber.filter(r =>
-        r.barber_id === barberId && r.data === date
-      )
-    }
+      return id === barberId && r.date === date;
+    });
 
+    console.log('filtered:', filtered);
 
-    setTimeResBarber(filtered)
-  }, [resBarber, setTimeResBarber])
+    setTimeResBarber(filtered);
+  }, [resBarber, setTimeResBarber]);
 
   // ✅ Filtro solo quando barberId o date cambiano
   useEffect(() => {

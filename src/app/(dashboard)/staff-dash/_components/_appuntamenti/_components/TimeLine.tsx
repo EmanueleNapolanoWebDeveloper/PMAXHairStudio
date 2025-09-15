@@ -16,7 +16,7 @@ export default function TimeLine({ appointment, date }: TimeLineType) {
         if (!date) return;
 
         const filteredAppointments = appointment.filter((a: Reservation) => {
-            const aptDate = new Date(a.data); // converto la stringa in Date
+            const aptDate = new Date(a.date); // converto la stringa in Date
             return aptDate.toISOString().split("T")[0] === date.toISOString().split("T")[0];
         });
 

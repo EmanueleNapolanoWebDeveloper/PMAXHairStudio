@@ -25,7 +25,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
     const todayFormatted = today.toISOString().split('T')[0] // "2025-09-03"
 
     const todayReservations = reservations?.filter((reservation: Reservation) =>
-        reservation.data === todayFormatted
+        reservation.date === todayFormatted
     );
 
     return (

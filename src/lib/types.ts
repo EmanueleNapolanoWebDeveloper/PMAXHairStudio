@@ -16,7 +16,7 @@ export type Reservation = {
     surname: string
     email: string
     phone: string
-  } | null
+  } | string |null
   logged_id?: {
     id: string
     name: string
@@ -26,7 +26,7 @@ export type Reservation = {
   } | null
   guest_datas?: string // ⚠️ viene salvato come stringa JSON
   services: string[]
-  data: string
+  date: string
   start_time: string
   end_time: string
   amount: number
