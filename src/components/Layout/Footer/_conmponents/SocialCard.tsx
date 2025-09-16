@@ -20,11 +20,6 @@ const SocialSection = () => {
       name: 'Instagram',
       href: 'https://www.instagram.com/pmaxhairstudio/',
       icon: <Image src={InstagramLogo} alt="Instagram" className="w-6 h-6" />
-    },
-    {
-      name: 'Email',
-      href: '/contatti',
-      icon: <Image src={MailIcon} alt="Mail" className="w-6 h-6" />
     }
   ]
 
@@ -37,7 +32,7 @@ const SocialSection = () => {
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2">
               <Users className="w-5 h-5 text-red-500" />
-              <h3 className="text-xl font-bold text-white">Social Media</h3>
+              <h3 className="text-3xl font-bold text-white">Social Media</h3>
             </div>
             <p className="text-gray-400 text-sm">
               Seguici per vedere i nostri lavori e le novità

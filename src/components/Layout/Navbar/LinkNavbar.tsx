@@ -75,6 +75,23 @@ export default function LinkMenuDesktop() {
         {isDropdownOpen && (
           <div className="absolute top-full right-0 mt-4 w-56 bg-black/95 backdrop-blur-sm border border-gray-700/50 rounded-xl shadow-2xl overflow-hidden z-50 transform origin-top-right">
             <div className="py-2">
+              <Link href="/">
+                <button
+                  className="w-full text-left px-5 py-3 text-gray-300 hover:text-white hover:bg-red-900/20 transition-all duration-200 font-medium text-sm border-l-2 border-transparent hover:border-red-500 group"
+                >
+                  <span className="flex items-center justify-between">
+                    Torna alla Home
+                    <svg
+                      className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </button>
+              </Link>
               {homepageSections.map((section, index) => (
                 <button
                   key={section.anchor}

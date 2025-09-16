@@ -69,7 +69,7 @@ export default function ModernOpeningTable() {
             current.setDate(now.getDate() + i)
             const iso = formatDateISO(current)
             const isHoliday = italianHolidays.includes(iso)
-            const isWeekend = [0, 6].includes(current.getDay())
+            const isWeekend = [0, 1].includes(current.getDay())
             const dayName = current.toLocaleDateString('it-IT', { weekday: 'long' })
             const shortDay = current.toLocaleDateString('it-IT', { weekday: 'short' })
             const dateString = current.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })
