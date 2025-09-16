@@ -33,7 +33,7 @@ export default function DateSelector({ selectedDate, setSelectedData }: DateSele
           <h2 className="text-2xl font-semibold text-white capitalize text-balance">{formatDate(selectedDate)}</h2>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex gap-2">
             <button
               className="group px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-200 font-medium flex items-center gap-2"

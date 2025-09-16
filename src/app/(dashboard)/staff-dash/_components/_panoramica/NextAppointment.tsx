@@ -27,7 +27,7 @@ export default function NextAppointment({
     const today = new Date().toISOString().split('T')[0];
 
     const todayReservations = list
-      .filter(r => r.data === today && (r.status === 'prenotato' || r.status === 'in_corso'))
+      .filter(r => r.date === today && (r.status === 'prenotato' || r.status === 'in_corso'))
       .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
     if (!todayReservations.length) return null;

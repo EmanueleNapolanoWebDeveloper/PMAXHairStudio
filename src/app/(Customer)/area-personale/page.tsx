@@ -7,7 +7,7 @@ import FidelityCard from "./_components/FidelityCard"
 import ReservationPanoramics from "./_components/ReservationPanoramics"
 import ActionCard from "./_components/ActionCard"
 import Link from "next/link"
-import { addReview, getUserReservations } from "@/src/lib/actions"
+import { addReview, getUserReservations, fetchReviewById, deleteReservation } from "@/src/lib/actions"
 import { User } from "lucide-react"
 import { useAuth } from "../../store/AuthContext"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -30,6 +30,12 @@ const Dashboard = () => {
         enabled: !!user?.id
     });
 
+    const { data: userReviews = [], isLoading: isLoadingReviews, isError: isErrorReviews, error: errorReviews } = useQuery({
+        queryKey: ['reviews', user?.id],
+        queryFn: () => fetchReviewById(user?.id),
+        enabled: !!user?.id
+    });
+
     const { mutate: createReview } = useMutation({
         mutationFn: addReview,
         onSuccess: () => {
@@ -39,6 +45,17 @@ const Dashboard = () => {
         },
         onError: () => {
             toast.error('Si è verificato un errore durante l\'aggiunta della recensione.')
+        }
+    })
+
+    const { mutate: removeReservation } = useMutation({
+        mutationFn: deleteReservation,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations", user?.id] })
+            toast.success('Appuntamento eliminato')
+        },
+        onError: () => {
+            toast.error('Errore durante l\'eliminazione dell\'appuntamento')
         }
     })
 
@@ -53,24 +70,27 @@ const Dashboard = () => {
         setIsModalOpen(false);
     };
 
-    const handleSubmit = async ({rating, comment} : {rating: number, comment: string}) => {
+    // cancellare res
+    const handleDeleteReservation = (reservationId: Reservation['id']) => {
+        removeReservation(reservationId)
+    }
 
-        console.log('selectedReservation:', selectedReservation);
-        
-        console.log('user:', user);
-        console.log('rating:', rating);
-        console.log('comment:', comment);
-        
-        if (!selectedReservation || !user) return;
-        
+    interface SubmitReviewParams {
+        rating: number
+        comment: string
+    }
 
-        createReview({
+    const handleSubmit = async ({ rating, comment }: SubmitReviewParams): Promise<void> => {
+        if (!selectedReservation || !user) return
+
+        await createReview({
             customer: user.id,
             reservation_id: selectedReservation,
-            rating: rating,
-            comment: comment
+            rating,
+            comment
         })
     }
+
 
 
 
@@ -100,7 +120,7 @@ const Dashboard = () => {
     }
 
     console.log('Selected reservations:', selectedReservation);
-    
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900/20 to-black pt-24 pb-12">
@@ -131,7 +151,7 @@ const Dashboard = () => {
 
                         {/* Reservation List */}
                         <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-slate-700/50">
-                            <ReservationPanoramics reservations={reservations} setIsModalOpen={setIsModalOpen} setSelectedReservation={setSelectedReservation} />
+                            <ReservationPanoramics reservations={reservations} setIsModalOpen={setIsModalOpen} setSelectedReservation={setSelectedReservation} reviews={userReviews} onDelete={handleDeleteReservation} />
                         </div>
                     </div>
                 </section>

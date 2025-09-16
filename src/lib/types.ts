@@ -6,6 +6,7 @@ export type Profile = {
   phone?: string
   role?: string
   reg_complete?: boolean
+  is_Admin?: boolean
 }
 
 export type Reservation = {
@@ -16,7 +17,7 @@ export type Reservation = {
     surname: string
     email: string
     phone: string
-  } | string |null
+  } | string | null
   logged_id?: {
     id: string
     name: string
@@ -44,32 +45,35 @@ export type Service = {
 }
 
 export type GuestType = {
-    name: string
-    surname: string
-    phone: string
-    email: string
+  name: string
+  surname: string
+  phone: string
+  email: string
 }
 
-export type Reviews ={
-  customer: string
-  reservation_id: number
-  rating: number
-  comment: string
+export type Reviews = {
+  id: number;
+  customer: Profile;
+  appuntamenti: Reservation;
+  rating: 1 | 2 | 3 | 4 | 5; 
+  comment: string;
+  created_at: string;
 }
 
 export type StaffNotes = {
-  id : number
-  author : {
-    id : string
-    name : string
-    surname : string
-    email : string
-    phone : string
+  id: number
+  author: {
+    id: string
+    name: string
+    surname: string
+    email: string
+    phone: string
   }
-  title : string
-  content : string
-  note_date : string
-  time : string
-  reference : string
-  priority : string
+  title: string
+  content: string
+  note_date: string
+  time: string
+  reference: string
+  priority: string
+  created_at: string
 }

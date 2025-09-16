@@ -10,7 +10,6 @@ type ContainerNavMobileProps = {
 const NAV_LINKS = [
     { href: "/", label: "Home" },
     { href: "/reservation", label: "Prenotazioni" },
-    { href: "/services", label: "Servizi" },
 ]
 
 export default function ContainerNavMobile({ onSelect, toggleMenu }: ContainerNavMobileProps) {

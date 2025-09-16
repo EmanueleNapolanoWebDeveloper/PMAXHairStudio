@@ -38,9 +38,9 @@ const MonthlyDashboard = () => {
   const getMonthlyStats = (reservations: Reservation[]): MonthlyStats => {
     return reservations.reduce((acc, res) => {
       if (res.status !== "completato") return acc;
-      if (!res.data || isNaN(new Date(res.data).getTime())) return acc;
+      if (!res.date || isNaN(new Date(res.date).getTime())) return acc;
 
-      const date = new Date(res.data);
+      const date = new Date(res.date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
       if (!acc[monthKey]) acc[monthKey] = { clienti: 0, guadagni: 0 };

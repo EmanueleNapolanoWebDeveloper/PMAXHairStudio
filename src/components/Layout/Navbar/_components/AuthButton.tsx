@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AuthButton({ user, signOut, loading,profile }: { user: SupabaseUser | null, signOut: () => Promise<void>, loading: boolean, profile: Profile | null }) {
+export default function AuthButton({ user, signOut, loading, profile }: { user: SupabaseUser | null, signOut: () => Promise<void>, loading: boolean, profile: Profile | null }) {
 
     const router = useRouter();
 
@@ -82,10 +82,10 @@ export default function AuthButton({ user, signOut, loading,profile }: { user: S
             >
                 <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 
                         rounded-full flex items-center justify-center text-white font-bold">
-                    {profile.name.charAt(0).toUpperCase()}
+                    {profile?.name.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-gray-700 font-medium hidden sm:block">
-                    {profile.name.split(' ')[0]}
+                    {profile?.name.split(' ')[0]}
                 </span>
                 <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -98,7 +98,7 @@ export default function AuthButton({ user, signOut, loading,profile }: { user: S
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 
                               rounded-full flex items-center justify-center text-white font-bold text-lg">
-                                {profile.name.charAt(0).toUpperCase()}
+                                {profile?.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
                                 <p className="font-semibold text-gray-800">{profile.name}</p>
@@ -108,15 +108,17 @@ export default function AuthButton({ user, signOut, loading,profile }: { user: S
                     </div>
 
                     <div className="py-2">
-                        <Link href="/area-personale">
-                            <button
-                                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
-                                onClick={() => setIsDropdownOpen(false)}
-                            >
-                                <User className="w-5 h-5 text-gray-600" />
-                                <span className="text-gray-700 font-medium">Il mio profilo</span>
-                            </button>
-                        </Link>
+                        {profile.role === 'customer' &&
+                            <Link href="/area-personale">
+                                <button
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                >
+                                    <User className="w-5 h-5 text-gray-600" />
+                                    <span className="text-gray-700 font-medium">Il mio profilo</span>
+                                </button>
+                            </Link>
+                        }
 
                         {(profile.role === 'admin' || profile.role === 'employee') && (
                             <Link href={profile.role === 'admin' ? '/admin-dash' : '/staff-dash'}>

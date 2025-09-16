@@ -2,12 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import LogoPM from './_components/Logo'
-import { Menu } from 'lucide-react'
-
+import { Menu, X } from 'lucide-react'
 import LinkMenuDesktop from "./LinkNavbar"
 import ContainerNavMobile from './ContainerNavMobile'
 import { useAuth } from '@/src/app/store/AuthContext'
-import AuthButton from './_components/AuthButton' // componente pulsante login/logout
+import AuthButton from './_components/AuthButton'
 
 export default function Navbar() {
   const [isMounted, setIsMounted] = useState(false)
@@ -16,77 +15,59 @@ export default function Navbar() {
 
   const { user, signOut, loading, profile } = useAuth()
 
-  // Toggle sidebar
   const handleClick = useCallback(() => {
     setIsSidebarOpen(prev => !prev)
   }, [])
 
-  // Mount check per client
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Scroll listener ottimizzato
   useEffect(() => {
-    let ticking = false
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 150)
-          ticking = false
-        })
-        ticking = true
-      }
-    }
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 80)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
- 
 
   return (
     <>
       <nav
         className={`
-          w-screen grid grid-cols-2 h-[7rem] fixed top-0 left-0 z-[50] transition-all duration-500
-          ${isScrolled ? 'bg-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}
+          fixed top-0 left-0 w-full z-50 transition-all duration-500
+          ${isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'}
         `}
       >
-        {/* Logo */}
-        <div className="col-span-1 flex items-center justify-start relative">
-          <LogoPM />
-        </div>
-
-        {/* Menù link */}
-        <div className="col-span-1 flex items-center justify-end p-2 w-full gap-4">
-          {/* Toggle mobile */}
-          <div className="lg:hidden">
-            <button
-              onClick={handleClick}
-              aria-label="Apri menu di navigazione"
-              aria-controls="mobile-menu"
-              aria-expanded={isSidebarOpen}
-              className="p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-            >
-              <Menu />
-            </button>
+        <div className="max-w-[1440px] mx-auto flex items-center justify-between px-6 lg:px-12 h-20">
+          {/* Logo */}
+          <div className="flex items-center z-50">
+            <LogoPM />
           </div>
 
-          {/* Desktop menu */}
-          <LinkMenuDesktop />
-
-          {/* Auth Button: mostra solo dopo mount e quando loading è false */}
+          {/* Desktop Menu + Auth */}
           {isMounted && (
-            <AuthButton user={user} signOut={signOut} loading={loading} profile={profile}/>
+            <div className="hidden lg:flex items-center gap-8">
+              <LinkMenuDesktop />
+              <AuthButton user={user} signOut={signOut} loading={loading} profile={profile} />
+            </div>
           )}
-        </div>
-      </nav>
 
-      {/* Mobile menu */}
-      {isMounted && (
-        <ContainerNavMobile toggleMenu={isSidebarOpen} onSelect={handleClick} />
-      )}
+          {/* Mobile toggle */}
+          <div className="lg:hidden z-50">
+            <button
+              onClick={handleClick}
+              aria-label="Apri menu mobile"
+              className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white transition-colors duration-300"
+            >
+              {isSidebarOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {isMounted && (
+          <ContainerNavMobile toggleMenu={isSidebarOpen} onSelect={handleClick} />
+        )}
+      </nav>
     </>
   )
 }

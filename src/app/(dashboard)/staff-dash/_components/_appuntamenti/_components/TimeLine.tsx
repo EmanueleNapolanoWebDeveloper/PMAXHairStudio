@@ -15,10 +15,12 @@ export default function TimeLine({ appointment, date }: TimeLineType) {
     useEffect(() => {
         if (!date) return;
 
-        const filteredAppointments = appointment.filter((a: Reservation) => {
-            const aptDate = new Date(a.date); // converto la stringa in Date
-            return aptDate.toISOString().split("T")[0] === date.toISOString().split("T")[0];
-        });
+        const filteredAppointments = appointment
+            .filter((a: Reservation) => {
+                const aptDate = new Date(a.date);
+                return aptDate.toISOString().split("T")[0] === date.toISOString().split("T")[0];
+            })
+            .sort((a, b) => a.start_time.localeCompare(b.start_time)); // ordina per orario
 
         setDatingAppointments(filteredAppointments);
     }, [appointment, date]);

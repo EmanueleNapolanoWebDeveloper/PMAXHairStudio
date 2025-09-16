@@ -13,7 +13,6 @@ interface Profile {
   id?: string
   name?: string
   role?: string
-  avatar_url?: string
 }
 
 export default function HeroUserSection() {
@@ -44,11 +43,33 @@ export default function HeroUserSection() {
     <Link href={href}>
       <button
         aria-label={label}
-        className="bg-red-600 text-white px-6 py-3 font-semibold rounded-lg shadow-lg
-                   hover:bg-white hover:text-red-600 transition-colors duration-300 ease-in-out
-                   transform hover:scale-105 active:scale-95"
+        className="relative px-8 py-4 font-semibold
+             bg-black/20 backdrop-blur-md border border-amber-500/30
+             rounded-xl shadow-2xl overflow-hidden group
+             hover:border-amber-400/50 hover:shadow-amber-500/20 hover:bg-black/30
+             active:scale-95 active:bg-black/40 active:border-amber-300/60
+             transform transition-all duration-200 ease-out"
       >
-        {label}
+        {/* Glass overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-600/10 
+                  group-hover:from-amber-400/20 group-hover:to-amber-500/20
+                  group-active:from-amber-300/30 group-active:to-amber-400/30
+                  transition-all duration-200" />
+
+        {/* Gold gradient text */}
+        <span className="relative z-10 bg-gradient-to-r from-amber-300 to-yellow-500 
+                   bg-clip-text text-transparent font-medium tracking-wide
+                   group-hover:from-amber-200 group-hover:to-yellow-400
+                   group-active:from-amber-100 group-active:to-yellow-300
+                   transition-all duration-200">
+          {label}
+        </span>
+
+        {/* Top shine */}
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r 
+                  from-transparent via-amber-400/50 to-transparent
+                  group-hover:via-amber-300/70 group-active:via-amber-200/90
+                  transition-all duration-200" />
       </button>
     </Link>
   )
@@ -70,12 +91,12 @@ export default function HeroUserSection() {
               alt="Logo P-MAX HAIR STUDIO"
               width={350}
               height={350}
-              className={`z-10 mt-10 lg:mb-10 transition-all duration-700 ease-out ${styles.animateslideInLeft}`}
+              className={`z-10 mt-10 mb-10 lg:mb-10 transition-all duration-700 ease-out ${styles.animateslideInLeft}`}
             />
           </div>
           {isLogged ? (
             <div className="mb-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 mt-[25px]">
                 Benvenuto, {userName}!
               </h1>
               <p className="text-lg sm:text-xl text-white/90">
@@ -98,7 +119,7 @@ export default function HeroUserSection() {
 
 
         {/* Action buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-center">
+        <div className="flex gap-4 sm:gap-6 items-center justify-center">
           {isLogged ? (
             <>
               <ActionButton href="/reservation" label="Prenota" />
@@ -112,7 +133,7 @@ export default function HeroUserSection() {
           )}
         </div>
 
-        
+
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="animate-bounce">

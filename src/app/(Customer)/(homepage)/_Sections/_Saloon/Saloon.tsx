@@ -26,7 +26,7 @@ type GalleryImage = {
 
 export default function Saloon() {
     return (
-        <section className="min-h-screen w-full flex flex-col items-center justify-around bg-white px-4 py-3">
+        <section className="min-h-screen w-full flex flex-col items-center justify-around bg-white px-4 py-3" id="saloonHome">
             <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center pb-12">
                 <h2 className="text-center text-4xl md:text-6xl font-bold text-black uppercase mb-4 tracking-wide">
                     P-MAX <span className="text-red-600">Saloon</span>
@@ -38,10 +38,10 @@ export default function Saloon() {
                     <div className="flex-1 max-w-32 h-px bg-gradient-to-r from-transparent to-red-600"></div>
 
                     {/* Spazio per l'icona che aggiungerai */}
-                    <div className="w-20 h-24 rounded-full flex items-center justify-center relative">
+                    <div className="w-15 h-24 rounded-full flex items-center justify-center relative">
                         {/* Placeholder - sostituisci con la tua icona */}
                         <Image
-                            src={'/assets/logos/iconBeard.png'}
+                            src={'/assets/logos/iconGira.png'}
                             fill
                             alt="P-Max Logo"
                             className="" />

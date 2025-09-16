@@ -111,7 +111,8 @@ const StaffDashboard = () => {
     staleTime: 5 * 60 * 1000,
     retry: 2,
   })
-  
+
+
 
   // query per reviews
   const { data: reviews = [],
@@ -123,8 +124,9 @@ const StaffDashboard = () => {
     queryFn: () => fetchReviewsForStaffID(user?.id),
     enabled: !!user?.id
   })
+  
 
-   const { data: allReviews = [],
+  const { data: allReviews = [],
     isLoading: isLoadingAllReviews,
     isError: isErrorAllReviews,
     error: errorAllReviews,
@@ -134,8 +136,8 @@ const StaffDashboard = () => {
     enabled: !!user?.id
   })
 
-  
-  
+
+
 
 
   // ✅ Real-time subscriptions per appointments
@@ -247,7 +249,7 @@ const StaffDashboard = () => {
   }
 
   const safeReservations = reservations || []
-  
+
 
   const renderContent = () => {
     switch (activeSection) {

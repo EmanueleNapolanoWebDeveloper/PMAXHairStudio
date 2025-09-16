@@ -43,13 +43,13 @@ const staffMembers: StaffMember[] = [
 
 export default function VintageStaffs() {
     return (
-        <section className="min-h-screen bg-red-900 py-20 px-4">
+        <section className="min-h-screen bg-gradient-to-b from-black via-red-900 to-red-950 py-20 px-4" id="staffHome">
             {/* Header Section */}
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-20">
                     {/* Title */}
                     <div className="mb-8">
-                        <h1 className="text-7xl md:text-8xl font-black text-white tracking-wider mb-4">
+                        <h1 className="text-5xl md:text-7xl text-white tracking-wider mb-4">
                             STAFF
                         </h1>
                         <div className="w-24 h-1 bg-red-800 mx-auto rounded-full shadow-lg shadow-red-900/50"></div>
@@ -58,20 +58,20 @@ export default function VintageStaffs() {
                     {/* Decorative razor */}
                     <div className="w-full flex items-center justify-center gap-5">
                         {/* Linea sinistra */}
-                        <div className="flex-1 max-w-32 h-px bg-gradient-to-r from-transparent to-red-600"></div>
+                        <div className="flex-1 max-w-32 h-px bg-gradient-to-r from-transparent to-white"></div>
 
                         {/* Spazio per l'icona che aggiungerai */}
                         <div className="w-20 h-24 rounded-full flex items-center justify-center relative">
                             {/* Placeholder - sostituisci con la tua icona */}
                             <Image
-                                src={'/assets/logos/iconBeard.png'}
+                                src={'/assets/logos/rasoio.png'}
                                 fill
                                 alt="P-Max Logo"
-                                className="" />
+                                className="rotate-[-75deg]" />
                         </div>
 
                         {/* Linea destra */}
-                        <div className="flex-1 max-w-32 h-px bg-gradient-to-l from-transparent to-red-600"></div>
+                        <div className="flex-1 max-w-32 h-px bg-gradient-to-l from-transparent to-white"></div>
                     </div>
 
 
@@ -94,17 +94,7 @@ export default function VintageStaffs() {
                         </div>
                     ))}
                 </div>
-
-                {/* Bottom decorative element */}
-                <div className="flex justify-center">
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-px bg-gray-600"></div>
-                        <div className="w-3 h-3 bg-red-800 rounded-full shadow-lg shadow-red-900/50"></div>
-                        <div className="w-8 h-px bg-gray-500"></div>
-                        <div className="w-2 h-2 bg-red-700 rounded-full"></div>
-                        <div className="w-16 h-px bg-gray-600"></div>
-                    </div>
-                </div>
+                
             </div>
         </section>
     )

@@ -21,7 +21,7 @@ export default function InProgressReservation({
   // Trova l'appuntamento in corso
   const findInProgressAppointment = (): Reservation | null => {
     const today = new Date().toISOString().split('T')[0];
-    return reservations.find(r => r.data === today && r.status === 'in_corso') || null;
+    return reservations.find(r => r.date === today && r.status === 'in_corso') || null;
   };
 
   // Calcola tempo trascorso

@@ -74,7 +74,7 @@ export default async function Tariff() {
     })) as any[];
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-gray-100 py-16 px-6" id="tariff">
+        <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-gray-100 py-16 px-6" id="tariffHome">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">

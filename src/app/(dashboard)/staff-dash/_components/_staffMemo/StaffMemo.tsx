@@ -39,6 +39,9 @@ const StaffNotes = () => {
         refetchInterval: 5000, // Refetch ogni 5 secondi come fallback
     })
 
+    console.log('memos:', memos);
+    
+
     // Create Note Mutation
     const { mutate: createNote, isPending: isCreating } = useMutation({
         mutationFn: addNotes,
@@ -166,13 +169,6 @@ const StaffNotes = () => {
         setShowAddForm(true)
     }
 
-    const filteredNotes = memos.filter(note => {
-        const matchesDate = !filterDate || note.note_date === filterDate
-        const matchesType = reference === 'tutti' || note.reference === reference
-        return matchesDate && matchesType
-    })
-
-
 
     const formatDate = (dateString) => {
         if (!dateString) return ''
@@ -262,7 +258,7 @@ const StaffNotes = () => {
 
             {/* Lista Note */}
             <NotesList
-                memos={filteredNotes}
+                memos={memos}
                 user={user}
                 isLoading={isLoading}
                 handleEdit={handleEdit}

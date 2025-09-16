@@ -113,11 +113,16 @@ const AppointmentCard = ({ reservation }: AppointmentCardProp) => {
     // Componente per la lista dei servizi
     const ServicesList = () => (
         <div className="flex flex-col gap-2 mt-1">
-            {reservation.services.map((service, index) => (
-                <p key={index} className="text-sm text-gray-600">{service}</p>
-            ))}
+            {Array.isArray(reservation?.services) && reservation.services.length > 0 ? (
+                reservation.services.map((service, index) => (
+                    <p key={index} className="text-sm text-gray-600">{service}</p>
+                ))
+            ) : (
+                <p className="text-sm text-gray-400 italic">Nessun servizio selezionato</p>
+            )}
         </div>
     );
+
 
     // Componente per prezzo e stato
     const PriceAndStatus = () => (

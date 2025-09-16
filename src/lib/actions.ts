@@ -59,7 +59,7 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
         }
 
         // Se ok continua a inserire profile
-        const { name, surname, email, phone } = data
+        const { name, surname, email, phone, avatar } = data
 
         const { error } = await supabase.from('profiles').insert({
             id: userID,
@@ -69,7 +69,7 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
             phone,
             role: 'customer',
             reg_complete: true,
-            is_Admin: false
+            is_Admin: false,
         })
 
         if (error) {
@@ -196,7 +196,7 @@ export async function getStaffIDAppointments(barber_id: string) {
 export async function createReservation({
     logged_id,
     barber_id,
-    date, // 🔥 RINOMINATO da 'data' a 'date' per evitare conflitti
+    date,
     start_time,
     services,
     note = '',
@@ -205,7 +205,7 @@ export async function createReservation({
 }: {
     logged_id: Profile['id'],
     barber_id: Profile['id'],
-    date: string, // 🔥 Aggiornato tipo
+    date: string,
     start_time: string,
     services: Service[],
     note?: string,
@@ -264,6 +264,13 @@ export async function createReservation({
     const totalPrice = services.reduce((acc, s) => acc + (s.price || 0), 0);
     const totalDuration = services.reduce((acc, s) => acc + (s.time || 0), 0);
 
+    // Configurazione orari (facilmente modificabile)
+    const BUSINESS_HOURS = {
+        OPENING: "09:00",
+        CLOSING: "20:00", // Orario massimo - modificabile
+        SLOT_DURATION: 30 // Durata slot in minuti
+    };
+
     // Funzione helper per generare intervalli di tempo a step di 30 minuti
     const generateTimeSlots = (start: string, totalMinutes: number, step = 30) => {
         const [h, m] = start.split(":").map(Number);
@@ -280,22 +287,55 @@ export async function createReservation({
         return slots;
     };
 
+    // Funzione per convertire "HH:MM" in minuti
+    const timeToMinutes = (time: string): number => {
+        const [h, m] = time.split(":").map(Number);
+        return h * 60 + m;
+    };
+
+    // Funzione per convertire minuti in "HH:MM"
+    const minutesToTime = (minutes: number): string => {
+        const hour = Math.floor(minutes / 60);
+        const minute = minutes % 60;
+        return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    };
+
+    // Validazione orario di fine
+    const validateEndTime = (startTime: string, durationMinutes: number): { isValid: boolean; endTime: string; error?: string } => {
+        const startMinutes = timeToMinutes(startTime);
+        const endMinutes = startMinutes + durationMinutes;
+        const maxMinutes = timeToMinutes(BUSINESS_HOURS.CLOSING);
+        const endTime = minutesToTime(endMinutes);
+
+        if (endMinutes > maxMinutes) {
+            return {
+                isValid: false,
+                endTime,
+                error: `L'appuntamento terminerebbe alle ${endTime}, oltre l'orario di chiusura (${BUSINESS_HOURS.CLOSING})`
+            };
+        }
+
+        return { isValid: true, endTime };
+    };
+
+    // Il tuo codice modificato:
     const durationArray = generateTimeSlots(start_time, totalDuration, 30);
 
-    // Calcolo orario di fine
-    const lastSlot = durationArray[durationArray.length - 1];
-    const [lastHour, lastMinute] = lastSlot.split(":").map(Number);
-    const endTotalMinutes = lastHour * 60 + lastMinute + 30;
-    const endHour = Math.floor(endTotalMinutes / 60);
-    const endMinute = endTotalMinutes % 60;
-    const endTime = `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
+    // ✅ Validazione orario di fine con limite
+    const endTimeValidation = validateEndTime(start_time, totalDuration);
+
+    if (!endTimeValidation.isValid) {
+        throw new Error(endTimeValidation.error);
+    }
+
+    const endTime = endTimeValidation.endTime;
 
     // --- Controllo sovrapposizioni ---
     const { data: existingReservations, error: fetchError } = await supabase
         .from("appuntamenti")
         .select("start_time, end_time")
         .eq("barber_id", barber_id)
-        .eq("date", date); // 🔥 Aggiornato da 'data' a 'date'
+        .eq("date", date);
 
     if (fetchError) {
         console.error("Errore fetch prenotazioni:", fetchError);
@@ -304,8 +344,7 @@ export async function createReservation({
 
     if (existingReservations && existingReservations.length > 0) {
         const hasOverlap = existingReservations.some((r: any) => {
-            const existingDuration = (parseInt(r.end_time.split(":")[0]) * 60 + parseInt(r.end_time.split(":")[1])) -
-                (parseInt(r.start_time.split(":")[0]) * 60 + parseInt(r.start_time.split(":")[1]));
+            const existingDuration = timeToMinutes(r.end_time) - timeToMinutes(r.start_time);
             const existingSlots = generateTimeSlots(r.start_time, existingDuration);
             return durationArray.some(slot => existingSlots.includes(slot));
         });
@@ -314,6 +353,10 @@ export async function createReservation({
             throw new Error("Il servizio si sovrappone con una prenotazione esistente. Riprova con un altro orario.");
         }
     }
+
+    // Esempio di utilizzo alternativo con configurazione dinamica:
+    // const BUSINESS_CONFIG = await getBusinessConfig(); // Da DB o config file
+    // const MAX_HOUR = BUSINESS_CONFIG.closing_time || "20:00";
 
     // --- Preparazione dati per inserimento ---
     const insertData = {
@@ -376,7 +419,7 @@ export async function getUserReservations(id: string) {
 }
 
 // delet res da logged customer
-export async function deleteReservation(id: string) {
+export async function deleteReservation(id: number) {
 
 
     const supabase = await createClient()
@@ -492,23 +535,7 @@ export async function fetchAllReviews() {
     }
 }
 
-
-export async function fetchReviewsFromReservation(reservationId: string) {
-    const supabase = await createClient()
-
-    try {
-        const { data, error } = await supabase.from('reviews').select().eq('reservation_id', reservationId)
-
-        if (error) throw error
-
-        return data
-    } catch (error: any) {
-        console.log(error)
-        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
-    }
-}
-
-export async function fetchReviewsForStaffID(staffId: string) {
+export async function fetchReviewById(id: string) {
     const supabase = await createClient()
 
     try {
@@ -536,10 +563,26 @@ export async function fetchReviewsForStaffID(staffId: string) {
                 created_at
             ),
             rating,
-            comment
+            comment,
+            created_at
             `)
-            .eq('appuntamenti.barber_id', staffId)
+            .eq('customer.id', id)
 
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(`Impossibile ottenere la recensione: ${error.message || error}`)
+    }
+}
+
+
+export async function fetchReviewsFromReservation(reservationId: string) {
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase.from('reviews').select().eq('reservation_id', reservationId)
 
         if (error) throw error
 
@@ -548,8 +591,63 @@ export async function fetchReviewsForStaffID(staffId: string) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
-
 }
+
+export async function fetchReviewsForStaffID(staffId: string) {
+    const supabase = await createClient()
+
+    try {
+        // Prima recupero gli appuntamenti del barbiere
+        const { data: appointments, error: appointmentsError } = await supabase
+            .from("appuntamenti")
+            .select("id")
+            .eq("barber_id", staffId)
+
+        if (appointmentsError) throw appointmentsError
+
+        const appointmentIds = appointments.map(a => a.id)
+
+        if (appointmentIds.length === 0) return [] // nessuna recensione per questo barbiere
+
+        // Ora prendo le recensioni collegate a quegli appuntamenti
+        const { data, error } = await supabase
+            .from("reviews")
+            .select(`
+                id,
+                customer(
+                    id,
+                    name,
+                    surname,
+                    phone,
+                    email
+                ),
+                appuntamenti: reservation_id(
+                    id,
+                    date,
+                    barber_id,
+                    logged_id,
+                    start_time,
+                    end_time,
+                    services,
+                    status,
+                    note,
+                    amount,
+                    created_at
+                ),
+                rating,
+                comment
+            `)
+            .in("reservation_id", appointmentIds)
+
+        if (error) throw error
+
+        return data
+    } catch (error: any) {
+        console.error(error)
+        throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
+    }
+}
+
 
 
 

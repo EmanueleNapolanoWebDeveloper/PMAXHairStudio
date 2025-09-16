@@ -56,11 +56,12 @@ export default function Innovation() {
                 <ul className="space-y-2 text-gray-700 text-base">
                     <li className="flex items-start gap-2">
                         <span className="text-red-600 text-lg">🌐</span>
-                        <span><strong>Accesso tramite Google</strong>: utilizza il tuo account Google per entrare velocemente senza bisogno di creare una nuova password.</span>
+                        <span><strong>Accesso tramite Google</strong>: utilizza il tuo account Google per entrare velocemente senza bisogno di creare nuove credenziali.</span>
                     </li>
                     <li className="flex items-start gap-2">
                         <span className="text-red-600 text-lg">📩</span>
-                        <span><strong>Magic Link</strong>: inserisci la tua email e riceverai un link di accesso diretto nella tua casella. Non serve password: basta cliccare sul link per accedere in sicurezza.</span>
+                        <span><strong>Email &amp; Password</strong>: registrati con la tua email e scegli una password personale.
+                            Dopo la registrazione riceverai un’email di conferma: clicca sul link per attivare il tuo account e iniziare subito ad accedere ai servizi.</span>
                     </li>
                 </ul>
             </div>

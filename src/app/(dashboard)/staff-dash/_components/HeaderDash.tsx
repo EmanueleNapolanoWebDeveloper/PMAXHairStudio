@@ -73,19 +73,10 @@ export default function Header({ currentSectionName, setIsOpen }: HeaderDashProp
                 {/* Right side */}
                 <div className="flex items-center space-x-4">
 
-                    {/* Notifications */}
-                    <button className="p-2 text-gray-400 hover:text-gray-600 relative rounded-lg">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                            2
-                        </span>
-                    </button>
-
-
                     {/* Dropdown button */}
                     <div className="relative" ref={dropdownRef}>
                         <button
-                            className="flex w-[5rem] justify-center items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg text-green-700 text-sm font-medium focus:outline-none"
+                            className="flex w-[5rem] justify-center items-center space-x-2 bg-red-700/60 px-3 py-2 rounded-lg text-black text-sm font-medium focus:outline-none"
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
                             Menu
@@ -95,16 +86,16 @@ export default function Header({ currentSectionName, setIsOpen }: HeaderDashProp
                             <div className="absolute h-[7rem] w-[10rem] right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-md z-10">
                                 <ul className="flex flex-col h-full w-full">
                                     <li className="flex flex-col h-full w-full items-center justify-center">
-                                        <Link href={'/'} prefetch={false}>
+                                        <Link href={'/'} prefetch={false} className="w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                                             <button className="w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                 Home
                                             </button>
                                         </Link>
                                     </li>
                                     <li className="flex flex-col h-full w-full items-center justify-center">
-                                        <button 
-                                        onClick={() => signOut()}
-                                        className="w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                        <button
+                                            onClick={() => signOut()}
+                                            className="w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                                             Logout
                                         </button>
                                     </li>

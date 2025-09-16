@@ -28,6 +28,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
         reservation.date === todayFormatted
     );
 
+
     return (
         <>
 

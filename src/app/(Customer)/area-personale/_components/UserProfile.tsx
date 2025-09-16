@@ -2,9 +2,9 @@ import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, 
 
 
 const UserProfile = ({ profile }) => {
-    
+
   const getRoleColor = (role) => {
-    switch(role) {
+    switch (role) {
       case 'admin': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'employee': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'customer': return 'bg-green-100 text-green-800 border-green-200';
@@ -13,7 +13,7 @@ const UserProfile = ({ profile }) => {
   };
 
   const getRoleText = (role) => {
-    switch(role) {
+    switch (role) {
       case 'customer': return 'Cliente';
       case 'employee': return 'Dipendente';
       case 'admin': return 'Amministratore';
@@ -21,11 +21,14 @@ const UserProfile = ({ profile }) => {
     }
   };
 
+  console.log('profile: ',profile);
+  
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center gap-6 mb-8">
-        <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-          <User className="w-10 h-10 text-white" />
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+           <User className="w-10 h-10 text-white" />
         </div>
         <div className="flex-1">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -54,7 +57,7 @@ const UserProfile = ({ profile }) => {
             <p className="text-gray-800 font-medium">{profile.email}</p>
           </div>
         </div>
-        
+
         {profile.phone && (
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
             <div className="p-2 bg-white rounded-lg shadow-sm">
@@ -66,7 +69,7 @@ const UserProfile = ({ profile }) => {
             </div>
           </div>
         )}
-        
+
         <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
           <div className="p-2 bg-white rounded-lg shadow-sm">
             <Calendar className="w-5 h-5 text-gray-500" />
@@ -76,7 +79,7 @@ const UserProfile = ({ profile }) => {
             <p className="text-gray-800 font-medium">
               {new Date(profile.created_at).toLocaleDateString('it-IT', {
                 year: 'numeric',
-                month: 'long', 
+                month: 'long',
                 day: 'numeric'
               })}
             </p>

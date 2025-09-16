@@ -14,7 +14,7 @@ export default function Footer() {
     const contactPath = usePathname()
     
     return (
-        <footer className={`relative bg-black border-t border-red-500/20 overflow-hidden ${contactPath === "/contatti" && 'hidden'}`}>
+        <footer className={`relative bg-black border-t border-red-500/20 overflow-hidden ${contactPath === "/contatti" && 'hidden'}`} id='footerHome'>
             {/* Background Effects */}
             <div className="absolute inset-0">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-black to-red-900/20"></div>

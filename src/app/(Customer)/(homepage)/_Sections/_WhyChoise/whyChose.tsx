@@ -1,21 +1,22 @@
 import Image from "next/image"
+import Link from "next/link"
 
 const choises = [
     {
         title: "Esperienza Professionale",
-        image: "/professional-barber-tools.png",
+        image: "/assets/gallery/gallery/foto17.webp",
     },
     {
         title: "Qualità Premium",
-        image: "/luxury-barbershop-interior.png",
+        image: "/assets/backgrounds/prodottiPremium.webp",
     },
     {
         title: "Servizio Personalizzato",
-        image: "/custom-barber-service.png",
+        image: "/assets/backgrounds/servizioPersonalizzato.webp",
     },
     {
-        title: "Tradizione Italiana",
-        image: "/traditional-italian-barbershop.png",
+        title: "Passione Autentica",
+        image: "/assets/gallery/photos/fotosection1.jpg",
     },
 ]
 
@@ -35,29 +36,35 @@ export default function WhyChoose() {
                     }}
                 />
             </div>
-
-            <div className="w-full flex flex-col items-center justify-center pb-8 relative z-10">
+            <div className="w-full flex flex-col items-center justify-center pb-14 relative z-10">
+                {/* Titolo */}
                 <div className="relative">
-                    <div className="absolute inset-0 text-[4rem] font-bold text-red-600 blur-sm opacity-30 uppercase tracking-wider">
-                        Perchè Sceglierci?
-                    </div>
-                    <h2 className="relative text-center text-[4rem] font-bold text-white uppercase tracking-wider drop-shadow-2xl">
+                    <h2 className="text-center text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-[0.2em] drop-shadow-2xl">
                         Perchè Sceglierci?
                     </h2>
                 </div>
 
-                <div className="relative mt-6">
-                    <div className="absolute inset-0 bg-red-600 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                {/* Divider con forbici */}
+                <div className="relative mt-10 flex items-center gap-8 w-full max-w-2xl mx-auto">
+                    {/* Linea sinistra */}
+                    <div className="flex-1 h-[1.5px] bg-gradient-to-r from-transparent to-red-600"></div>
+
+                    {/* Icona forbici */}
                     <Image
                         src="/assets/logos/iconScissors_white.png"
                         alt="forbici"
                         width={50}
-                        height={24}
-                        className="relative z-10 drop-shadow-lg filter brightness-0 invert rotate-[65deg]"
+                        height={40}
+                        className="z-10 drop-shadow-xl filter brightness-0 invert rotate-[55deg] transition-transform duration-500 hover:rotate-[75deg] hover:scale-110"
                     />
+
+                    {/* Linea destra */}
+                    <div className="flex-1 h-[1.5px] bg-gradient-to-r from-red-600 to-transparent"></div>
                 </div>
             </div>
-            <div className="flex w-full items-center justify-around">
+
+
+            <div className="flex flex-wrap gap-5 w-full items-center justify-around">
                 {choises.map((choise, index) => (
                     <div key={index} className="flex flex-col items-center justify-around gap-6 relative z-10 group">
                         <div className="relative">
@@ -91,17 +98,33 @@ export default function WhyChoose() {
             </div>
 
 
-            <div className="text-center mt-16">
-                <div className="bg-white p-8 rounded-2xl border border-black/20 max-w-2xl mx-auto shadow-lg">
-                    <h3 className="text-2xl font-bold text-black mb-4">Vieni a Trovarci</h3>
-                    <p className="text-gray-700 mb-6 text-pretty">
-                        Scopri la differenza di un taglio fatto con passione e maestria
+            <div className="text-center mt-20">
+                <div className="bg-white p-10 rounded-3xl border border-black/10 max-w-2xl mx-auto shadow-2xl relative overflow-hidden">
+                    {/* Decorazione di sfondo */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 via-transparent to-transparent rounded-3xl pointer-events-none"></div>
+
+                    {/* Titolo */}
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-black mb-4 tracking-tight">
+                        Vieni a Trovarci
+                    </h3>
+
+                    {/* Sottotitolo */}
+                    <p className="text-gray-700 mb-8 text-lg leading-relaxed max-w-md mx-auto">
+                        Scopri la differenza di un taglio realizzato con <span className="text-red-600 font-semibold">passione</span> e <span className="text-red-600 font-semibold">maestria</span>.
                     </p>
-                    <button className="bg-red-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-red-700 transition-colors duration-300 shadow-lg hover:shadow-xl">
-                        Prenota Ora
-                    </button>
+
+                    {/* Bottone */}
+                    <Link href="/reservation">
+                        <button
+                            type="button"
+                            className="relative inline-block px-10 py-4 rounded-full font-semibold text-lg text-white bg-red-600 shadow-lg transition-all duration-300 hover:bg-red-700 hover:shadow-2xl hover:scale-105"
+                        >
+                            Prenota Ora
+                        </button>
+                    </Link>
                 </div>
             </div>
+
         </section>
     )
 }

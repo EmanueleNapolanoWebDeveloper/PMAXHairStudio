@@ -37,6 +37,7 @@ const NotesList = ({
             default: return 'border-l-blue-500 bg-blue-50'
         }
     }
+    
 
     // Filtra le note in base alla data, al reference e al tab attivo
     const getFilteredNotes = () => {
@@ -46,20 +47,21 @@ const NotesList = ({
 
                 if (activeTab === 'tutti') {
                     // Tab "Tutti": solo note con reference = 'tutti'
-                    return matchesDate && (note.reference === 'tutti')
+                    return matchesDate && (note.reference == 'tutti')
                 } else {
                     // Tab "Per me": solo note con reference = user.id
-                    return matchesDate && (note.reference === user.id)
+                    return matchesDate && (note.reference === user?.id)
                 }
             })
             .sort((a, b) => {
-                const dateA = new Date(a.created_at || a.createdAt || 0)
-                const dateB = new Date(b.created_at || b.createdAt || 0)
+                const dateA = new Date(a.created_at || a.created_at || 0)
+                const dateB = new Date(b.created_at || b.created_at || 0)
                 return dateB.getTime() - dateA.getTime()
             })
     }
 
     const filteredNotes = getFilteredNotes()
+    
 
     // Conteggio note per i badges
     const allNotesCount = memos.filter(note => {

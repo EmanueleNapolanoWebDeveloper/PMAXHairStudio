@@ -8,6 +8,7 @@ import Staffs from "./_Sections/_Staffs/Staffs";
 import Divider from "./_Sections/_PmaxDivider/Divider";
 import Saloon from "./_Sections/_Saloon/Saloon";
 import WhyChoose from "./_Sections/_WhyChoise/whyChose";
+import DecorativeDivider from "./_Sections/DecorativeDivider";
 
 
 
@@ -20,12 +21,12 @@ export default function Home() {
       <HeroSection />
 
       {/* intro */}
-      <IntroHome />     
+      <IntroHome />
 
-      {/* saloon */}  
+      {/* saloon */}
       <Saloon />
 
-{/* perchè sceglierciGF */}
+      {/* perchè sceglierciGF */}
       <WhyChoose />
 
       {/* divider */}
@@ -37,12 +38,14 @@ export default function Home() {
       {/* servizi */}
       <ServicesHome />
 
-       {/* partner */}
+      <Divider />
+
+      {/* partner */}
       <Partners />
 
       {/* prezziario */}
-      <Tariff />    
-      
+      <Tariff />
+
       {/* testimonials */}
       <Testimonials />
     </main>

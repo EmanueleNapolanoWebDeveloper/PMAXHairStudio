@@ -90,100 +90,132 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="w-full mx-auto bg-white/80 dark:bg-slate-800/80 border rounded-2xl p-6 shadow-md">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Registrati</h2>
+        <div className="w-full mx-auto bg-white/95 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-2xl mt-[100px] relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-gray-50/30 rounded-3xl pointer-events-none" />
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Nome</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        placeholder="Mario"
-                        required
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+            {/* Top accent line */}
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full" />
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Cognome</label>
-                    <input
-                        type="text"
-                        name="surname"
-                        value={form.surname}
-                        onChange={handleChange}
-                        placeholder="Rossi"
-                        required
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+            <div className="relative z-10">
+                <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    Registrati
+                </h2>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        placeholder="mario@esempio.com"
-                        required
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-gray-700 ml-1">
+                                Nome
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={form.name}
+                                onChange={handleChange}
+                                placeholder="Mario"
+                                required
+                                className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                            />
+                        </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Telefono</label>
-                    <input
-                        type="tel"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                        placeholder="1234567890"
-                        required
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-gray-700 ml-1">
+                                Cognome
+                            </label>
+                            <input
+                                type="text"
+                                name="surname"
+                                value={form.surname}
+                                onChange={handleChange}
+                                placeholder="Rossi"
+                                required
+                                className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                            />
+                        </div>
+                    </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        placeholder="••••••"
-                        required
-                        minLength={6}
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-gray-700 ml-1">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            placeholder="mario@esempio.com"
+                            required
+                            className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                        />
+                    </div>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Conferma Password</label>
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        value={form.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="••••••"
-                        required
-                        minLength={6}
-                        className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-400"
-                    />
-                </div>
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-gray-700 ml-1">
+                            Telefono
+                        </label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            value={form.phone}
+                            onChange={handleChange}
+                            placeholder="1234567890"
+                            required
+                            className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                        />
+                    </div>
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-gray-700 ml-1">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={form.password}
+                                onChange={handleChange}
+                                placeholder="••••••"
+                                required
+                                minLength={6}
+                                className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                            />
+                        </div>
 
-                <button
-                    type="submit"
-                    disabled={!isValid() || mutation.isPending}
-                    className="w-full py-2 rounded-xl font-medium shadow-sm disabled:opacity-60 disabled:cursor-not-allowed bg-indigo-600 text-white"
-                >
-                    {mutation.isPending ? "Registrando..." : "Registrati"}
-                </button>
-            </form>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-gray-700 ml-1">
+                                Conferma Password
+                            </label>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                value={form.confirmPassword}
+                                onChange={handleChange}
+                                placeholder="••••••"
+                                required
+                                minLength={6}
+                                className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200/60 bg-gray-50/30 focus:outline-none focus:ring-4 focus:ring-gray-200/40 focus:border-gray-400 text-gray-800 placeholder-gray-400 shadow-inner"
+                            />
+                        </div>
+                    </div>
+
+                    {error && (
+                        <div className="p-3 rounded-xl bg-red-50 border-l-4 border-red-400">
+                            <p className="text-sm text-red-700 font-medium">{error}</p>
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={!isValid() || mutation.isPending}
+                        className="w-full py-4 rounded-2xl font-bold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 text-white hover:from-gray-700 hover:via-gray-800 hover:to-gray-700 relative overflow-hidden"
+                    >
+                        <span className="relative z-10">
+                            {mutation.isPending ? "Registrando..." : "Registrati"}
+                        </span>
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

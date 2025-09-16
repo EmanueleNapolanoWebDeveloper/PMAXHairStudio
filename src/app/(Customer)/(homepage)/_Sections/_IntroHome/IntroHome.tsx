@@ -1,7 +1,9 @@
 import Image from "next/image"
+import QuoteCard from "./_components/QuoteCard"
+import Innovation from "./_components/Innovation"
 export default function AboutUs() {
     return (
-        <section className="min-h-screen bg-white py-20 px-4 relative overflow-hidden">
+        <section className="min-h-screen bg-white py-20 px-4 relative overflow-hidden" id="chi-siamo">
             <div className="absolute inset-0 opacity-5">
                 <div
                     className="absolute inset-0"
@@ -20,7 +22,7 @@ export default function AboutUs() {
                         {/* Decorative razor */}
                         <div className="w-full flex items-center justify-center gap-5">
                             {/* Linea sinistra */}
-                            <div className="flex-1 max-w-32 h-px bg-gradient-to-r from-transparent to-red-600"></div>
+                            <div className="flex-1 max-w-64 h-px bg-gradient-to-r from-transparent to-red-600"></div>
 
                             {/* Spazio per l'icona che aggiungerai */}
                             <div className="w-20 h-24 rounded-full flex items-center justify-center relative">
@@ -33,10 +35,10 @@ export default function AboutUs() {
                             </div>
 
                             {/* Linea destra */}
-                            <div className="flex-1 max-w-32 h-px bg-gradient-to-l from-transparent to-red-600"></div>
+                            <div className="flex-1 max-w-64 h-px bg-gradient-to-l from-transparent to-red-600"></div>
                         </div>          </div>
                     <p className="text-xl text-gray-700 mt-6 max-w-2xl mx-auto text-pretty">
-                        Una storia di passione, tradizione e maestria che si tramanda dal 1985
+                        Una storia di passione, tradizione e maestria che si tramanda da generazione in generazione.
                     </p>
                 </div>
 
@@ -54,18 +56,25 @@ export default function AboutUs() {
                                 </div>
 
                                 <p className="text-lg text-black leading-relaxed text-pretty">
-                                    <span className="text-red-600 font-bold">Dal 1985</span>, la nostra passione per l'arte del barbiere
-                                    si tramanda di generazione in generazione. Quello che è iniziato come un piccolo negozio di quartiere
-                                    è diventato un punto di riferimento per chi cerca{" "}
-                                    <span className="text-red-600 font-semibold">stile, tradizione e innovazione</span>.
+                                    <span className="text-red-600 font-bold">Dal 2016</span>, Massimo Polverino porta avanti con dedizione e talento
+                                    l’arte del barbiere, un mestiere che affonda le sue radici nella tradizione di famiglia. Ciò che per molti è solo
+                                    un lavoro, per noi è una vera e propria eredità: passione, cura del dettaglio e rispetto per un’arte che si tramanda
+                                    di generazione in generazione.
                                 </p>
 
                                 <p className="text-lg text-black leading-relaxed text-pretty">
-                                    Ogni taglio racconta una storia, ogni cliente è parte della nostra famiglia. Utilizziamo{" "}
-                                    <span className="text-red-600 font-semibold">tecniche tradizionali</span> unite alle più moderne
-                                    tendenze per offrirti un'esperienza unica e personalizzata.
+                                    Ogni cliente che varca la soglia del nostro salone non trova soltanto un taglio di capelli o una rasatura,
+                                    ma un’esperienza costruita su misura. Coniughiamo <span className="text-red-600 font-semibold">tecniche tradizionali</span>
+                                    e nuove tendenze, perché crediamo che lo stile migliore nasca dall’incontro tra radici e innovazione.
+                                </p>
+
+                                <p className="text-lg text-black leading-relaxed text-pretty">
+                                    Da oltre un decennio, il nome <span className="text-red-600 font-semibold">Polverino</span> rappresenta
+                                    affidabilità, eleganza e passione. Non sei solo un cliente: entri a far parte di una famiglia che da sempre
+                                    mette al centro l’arte, la professionalità e il piacere di farti sentire al meglio.
                                 </p>
                             </div>
+
                         </div>
 
                         {/* Services Card */}
@@ -103,13 +112,13 @@ export default function AboutUs() {
                         {/* Stats Grid */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
-                                { number: "40+", label: "Anni di Esperienza" },
+                                { number: "20+", label: "Anni di Esperienza" },
                                 { number: "∞", label: "Passione" },
                                 { number: "100%", label: "Soddisfazione" },
                             ].map((stat, index) => (
                                 <div
                                     key={index}
-                                    className="text-center p-6 bg-white rounded-2xl border border-black/20 hover:border-red-600 transition-all duration-300 hover:shadow-md group"
+                                    className="text-center p-6 bg-white rounded-2xl border border-black/20 hover:border-red-600 transition-all duration-300 hover:shadow-md group flex flex-col gap-2 items-center justify-center"
                                 >
                                     <div className="text-3xl font-bold text-red-600 mb-2 group-hover:text-black transition-colors duration-300">
                                         {stat.number}
@@ -120,40 +129,10 @@ export default function AboutUs() {
                         </div>
 
                         {/* Quote Card */}
-                        <div className="bg-red-600 p-8 rounded-2xl border border-red-700 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-
-                            <div className="relative z-10">
-                                <div className="text-6xl text-white/60 font-serif mb-4 leading-none">"</div>
-                                <blockquote className="text-xl text-white leading-relaxed mb-6 text-pretty font-medium">
-                                    Non tagliamo solo capelli, creiamo stile. Non facciamo solo la barba, coltiviamo fiducia.
-                                </blockquote>
-                                <cite className="text-white font-bold text-lg">— Massimo Polverino, Master Barber</cite>
-                                <div className="text-6xl text-white/60 font-serif text-right leading-none mt-4">"</div>
-                            </div>
-                        </div>
+                        <QuoteCard />
 
                         {/* Heritage Badge */}
-                        <div className="bg-white p-6 rounded-2xl border border-black/20 text-center shadow-lg">
-                            <div className="w-16 h-16 bg-black rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                                <div className="w-8 h-8 border-2 border-white rounded-full"></div>
-                            </div>
-                            <h4 className="text-xl font-bold text-black mb-2">Tradizione & Innovazione</h4>
-                            <p className="text-gray-700 leading-relaxed">Dove l'arte antica incontra le tendenze moderne</p>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div className="flex justify-center mt-12">
-                    <div className="flex items-center gap-3">
-                        <div className="w-16 h-px bg-black/20"></div>
-                        <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                        <div className="w-8 h-px bg-black"></div>
-                        <div className="w-2 h-2 bg-black rounded-full"></div>
-                        <div className="w-16 h-px bg-black/20"></div>
+                        <Innovation />
                     </div>
                 </div>
             </div>
