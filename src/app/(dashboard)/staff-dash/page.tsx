@@ -19,10 +19,9 @@ import StaffSideBar from './_components/SideBar'
 import HeaderDash from './_components/HeaderDash'
 import DashboardContent from './_components/_panoramica/DashboardContent'
 import BarberCalendar from './_components/_appuntamenti/Reservations'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getStaffIDAppointments, fetchReviewsForStaffID, fetchAllReviews } from '@/src/lib/actions'
 import { Reservation } from '@/src/lib/types'
 import { useAuth } from '@/src/app/store/AuthContext'
+import { useStaffContext } from '../../store/StaffContext'
 import { createClient } from '@/src/utils/supabase/client'
 import AddStaffReservation from './_components/_addReservation/_components/StaffFormReservation'
 import StaffNotes from './_components/_staffMemo/StaffMemo'
@@ -93,89 +92,8 @@ const StaffDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user } = useAuth()
-  const queryClient = useQueryClient()
+  const { reservations,  allReviews, staffReviews, isLoadingReservations, isLoadingReviews, isErrorReservations, errorReservations, refetchReservations } = useStaffContext()
 
-  // Query per gli appuntamenti
-  const {
-    data: reservations = [],
-    isLoading: isLoadingReservation,
-    isError: isErrorReservations,
-    error: errorReservations,
-  } = useQuery({
-    queryKey: ['reservations', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return []
-      const appointments = await getStaffIDAppointments(user?.id)
-      return appointments || []
-    },
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-
-
-  // query per reviews
-  const { data: reviews = [],
-    isLoading: isLoadingReviews,
-    isError: isErrorReviews,
-    error: errorReviews,
-  } = useQuery({
-    queryKey: ['reviews', user?.id],
-    queryFn: () => fetchReviewsForStaffID(user?.id),
-    enabled: !!user?.id
-  })
-
-
-  const { data: allReviews = [],
-    isLoading: isLoadingAllReviews,
-    isError: isErrorAllReviews,
-    error: errorAllReviews,
-  } = useQuery({
-    queryKey: ['all_reviews', user?.id],
-    queryFn: () => fetchAllReviews(),
-    enabled: !!user?.id
-  })
-
-
-
-
-
-  // ✅ Real-time subscriptions per appointments
-  useEffect(() => {
-    if (!user?.id) return
-
-    const supabase = createClient()
-
-    const channel = supabase
-      .channel('all_reservations_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'appuntamenti'
-        },
-        (payload) => {
-
-          // ✅ Invalida tutte le query di prenotazioni
-          queryClient.invalidateQueries({ queryKey: ['reservations'] })
-          queryClient.invalidateQueries({ queryKey: ['all-reservations'] })
-          queryClient.invalidateQueries({ queryKey: ['staff-appointments'] })
-
-          // ✅ Refresh immediato per aggiornamenti critici
-          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-            queryClient.refetchQueries({ queryKey: ['reservations', user.id] })
-          }
-        }
-      )
-      .subscribe((status) => {
-      })
-
-    return () => {
-      channel.unsubscribe()
-    }
-  }, [user?.id, queryClient])
 
   const currentSection = sidebarItems.find((item) => item.id === activeSection)
 
@@ -193,7 +111,7 @@ const StaffDashboard = () => {
     )
   }
 
-  if (isLoadingReservation) {
+  if (isLoadingReservations) {
     return (
       <div className="flex h-screen bg-gray-50 overflow-hidden">
         <StaffSideBar
@@ -256,11 +174,11 @@ const StaffDashboard = () => {
             getStatusIcon={getStatusIcon}
             getStatusColor={getStatusColor}
             reservations={safeReservations}
-            reviews={reviews}
+            reviews={staffReviews}
           />
         )
       case 'my-appointments':
-        return <BarberCalendar reservations={safeReservations} isLoading={isLoadingReservation} isError={isErrorReservations} error={errorReservations?.message} />
+        return <BarberCalendar reservations={safeReservations} isLoading={isLoadingReservations} isError={isErrorReservations} error={errorReservations?.message} />
       case 'addReservation':
         return <AddStaffReservation reservations={safeReservations} />
       case 'staff-notes':

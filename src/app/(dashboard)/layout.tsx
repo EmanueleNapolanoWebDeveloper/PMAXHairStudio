@@ -1,10 +1,13 @@
+import { StaffProvider } from "../store/StaffContext";
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-            {children}
+            <StaffProvider>
+                {children}
+            </StaffProvider>
         </>
 
     )

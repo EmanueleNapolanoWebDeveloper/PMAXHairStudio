@@ -25,7 +25,12 @@ export type Reservation = {
     email: string
     phone: string
   } | null
-  guest_datas?: string // ⚠️ viene salvato come stringa JSON
+  guest_datas?: {
+    name: string
+    surname: string
+    phone: string
+    email: string
+  } // ⚠️ viene salvato come stringa JSON
   services: string[]
   date: string
   start_time: string

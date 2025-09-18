@@ -111,13 +111,27 @@ export default function ContainerNavMobile({ onSelect, toggleMenu }: ContainerNa
                             </button>
                         </div>
                     ) : (
-                        <a
-                            href="/login"
-                            onClick={onSelect}
-                            className="block bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded-lg shadow-md text-center"
-                        >
-                            Login
-                        </a>
+                        <div className="flex flex-col gap-3">
+                            <Link
+                                href="/login"
+                                onClick={onSelect}
+                                className="block bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded-lg shadow-md text-center"
+                            >
+                                Login
+                            </Link>
+
+                            <Link
+                                href="/reservation"
+                                onClick={onSelect}
+                                prefetch={false}
+                                className="block relative bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500
+             text-black px-4 py-2 rounded-lg shadow-md text-center font-semibold
+             transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:from-yellow-400 hover:to-yellow-300"
+                            >
+                                Prenota Ora
+                                <span className="absolute inset-0 rounded-lg border border-black/20 pointer-events-none" />
+                            </Link>
+                        </div>
                     )}
                 </div>
 

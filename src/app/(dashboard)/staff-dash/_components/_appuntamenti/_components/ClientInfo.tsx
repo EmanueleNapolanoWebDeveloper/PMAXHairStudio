@@ -1,11 +1,12 @@
 'use client'
 
 import { Clock, User, Scissors, Calendar, Phone, Info, X } from 'lucide-react';
-import { Profile } from '@/src/lib/types';
+import { Profile, Reservation } from '@/src/lib/types';
 import { useState } from 'react';
 import ModalEditRes from './ModalEditRes';
 
 type ClientInfoType = {
+    reservation: Reservation
     client: Profile;
     services: string[];
     note: string;
@@ -15,7 +16,7 @@ type ClientInfoType = {
     onReschedule: (newDate: string, newTime: string) => void; // aggiorniamo la firma
 }
 
-export default function ClientInfo({ client, services, note, price, status, onDelete, onReschedule }: ClientInfoType) {
+export default function ClientInfo({ reservation, client, services, note, price, status, onDelete, onReschedule }: ClientInfoType) {
 
     const [loading, setLoading] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -140,7 +141,7 @@ export default function ClientInfo({ client, services, note, price, status, onDe
 
             {/* Modale Sposta Appuntamento */}
             {showReschedule && (
-                <ModalEditRes setShowReschedule={setShowReschedule} newDate={newDate} setNewDate={setNewDate} newTime={newTime} setNewTime={setNewTime} loading={loading} handleRescheduleConfirm={handleRescheduleConfirm} />
+                <ModalEditRes setShowReschedule={setShowReschedule} reservation={reservation} loading={loading} handleRescheduleConfirm={handleRescheduleConfirm} />
             )}
 
         </div>

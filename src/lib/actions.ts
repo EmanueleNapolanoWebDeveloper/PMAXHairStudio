@@ -400,6 +400,27 @@ export async function createReservation({
 }
 
 
+// UPDATE RESERVATION
+
+export async function updateReservation(id: number, data: any) {
+    const supabase = await createClient()
+
+    try {
+        const { data: resUpdated, error } = await supabase
+            .from('appuntamenti')
+            .update(data)
+            .eq('id', id)
+
+        if (error) throw error
+
+        return resUpdated
+    } catch (error) {
+        console.log(error)
+        return
+    }
+}
+
+
 
 //  prendi le res del customer loggato
 export async function getUserReservations(id: string) {

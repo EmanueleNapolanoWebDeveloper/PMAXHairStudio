@@ -12,6 +12,7 @@ type ReservationSlotType = {
 
 export default function ReservationSlot({ appointment }: ReservationSlotType) {
 
+
     return (
         <div className="flex flex-col md:flex-row w-full">
 
@@ -50,6 +51,7 @@ export default function ReservationSlot({ appointment }: ReservationSlotType) {
                     </div>
 
                     <ClientInfo
+                        reservation={appointment}
                         client={appointment.logged_id || JSON.parse(appointment.guest_datas)}
                         services={appointment.services}
                         note={appointment.note}

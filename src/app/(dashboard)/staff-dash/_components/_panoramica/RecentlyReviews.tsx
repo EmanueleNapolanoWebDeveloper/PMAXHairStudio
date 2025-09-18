@@ -3,14 +3,20 @@
 import { Reviews } from "@/src/lib/types"
 import { Star, MessageCircle } from "lucide-react"
 
-export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
+type RecentlyReviewsProps = {
+    reviews: Reviews[]
+}
+
+export default function RecentlyReviews({ reviews }: RecentlyReviewsProps) {
+
+    const safeReviews = reviews || []
+
+    console.log('reviews:', safeReviews);
+
     // Calcolo rating medio
     const averageRating =
-        recentStaffReviews.length > 0
-            ? (
-                recentStaffReviews.reduce((sum, client) => sum + (client.rating || 0), 0) /
-                recentStaffReviews.length
-            ).toFixed(1)
+        safeReviews.length > 0
+            ? (safeReviews.reduce((sum, client) => sum + (client.rating || 0), 0) / safeReviews.length).toFixed(1)
             : 0
 
     return (
@@ -29,8 +35,8 @@ export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
                             <Star
                                 key={i}
                                 className={`w-4 h-4 ${i < Math.round(Number(averageRating))
-                                        ? "text-yellow-400 fill-yellow-400"
-                                        : "text-gray-300"
+                                    ? "text-yellow-400 fill-yellow-400"
+                                    : "text-gray-300"
                                     }`}
                             />
                         ))}
@@ -41,7 +47,13 @@ export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
             {/* Body */}
             <div className="p-4 sm:p-6">
                 <div className="space-y-6">
-                    {recentStaffReviews.map((client, index) => (
+                    {safeReviews.length === 0 && (
+                        <p className="text-sm text-gray-500 text-center">
+                            Nessuna recensione ricevuta
+                        </p>
+                    )}
+
+                    {safeReviews.map((client, index) => (
                         <div
                             key={index}
                             className="flex items-start justify-between border-b last:border-0 pb-4"
@@ -50,7 +62,7 @@ export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
                             <div className="flex items-start gap-3">
                                 {/* Avatar */}
                                 <div className="w-10 h-10 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full flex items-center justify-center font-bold text-gray-800">
-                                    {client.customer.name.charAt(0)}
+                                    {client.customer?.name.charAt(0)}
                                 </div>
 
                                 <div>
@@ -68,8 +80,8 @@ export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
                                                 <Star
                                                     key={i}
                                                     className={`w-4 h-4 ${i < client.rating
-                                                            ? "text-yellow-400 fill-yellow-400"
-                                                            : "text-gray-300"
+                                                        ? "text-yellow-400 fill-yellow-400"
+                                                        : "text-gray-300"
                                                         }`}
                                                 />
                                             ))}
@@ -90,11 +102,7 @@ export default function RecentlyReviews({ recentStaffReviews }: Reviews[]) {
                         </div>
                     ))}
 
-                    {recentStaffReviews.length === 0 && (
-                        <p className="text-sm text-gray-500 text-center">
-                            Nessuna recensione ricevuta
-                        </p>
-                    )}
+
                 </div>
             </div>
         </div>

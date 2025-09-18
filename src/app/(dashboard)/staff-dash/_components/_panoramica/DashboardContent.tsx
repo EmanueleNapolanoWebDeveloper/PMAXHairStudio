@@ -52,7 +52,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
                     </div>
 
                     <div className="col-span-6 lg:col-span-2 space-y-6">
-                        <RecentlyReviews recentStaffReviews={reviews} />
+                        <RecentlyReviews reviews={reviews} />
                         <WeeklyPerformance reservations={reservations} />
                     </div>
                 </div>

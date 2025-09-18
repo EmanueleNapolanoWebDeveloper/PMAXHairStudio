@@ -59,8 +59,6 @@ export default function DataChoise({
       return id === barberId && r.date === date;
     });
 
-    console.log('filtered:', filtered);
-
     setTimeResBarber(filtered);
   }, [resBarber, setTimeResBarber]);
 
@@ -101,7 +99,7 @@ export default function DataChoise({
   }, [isWorkingDay, onChange, barberId, filterReservations])
 
   // ✅ Matcher per disabilitare weekend
-  const disableWeekDays: Matcher = useCallback((date) => {
+  const disableWeekDays: Matcher = useCallback((date : Date) => {
     const day = date.getDay()
     return day === 0 || day === 1
   }, [])
