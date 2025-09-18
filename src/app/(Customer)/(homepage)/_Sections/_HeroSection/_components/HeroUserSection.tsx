@@ -83,7 +83,7 @@ export default function HeroUserSection() {
       <div className="relative z-20 flex flex-col justify-center items-center h-full px-4 sm:px-6 lg:px-8">
 
         {/* Welcome section */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12 md:mb-1">
 
           <div className="h-[7rem] w-full flex items-center justify-center">
             <Image

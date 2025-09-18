@@ -28,6 +28,7 @@ import AddStaffReservation from './_components/_addReservation/_components/Staff
 import StaffNotes from './_components/_staffMemo/StaffMemo'
 import ActivityReviews from './_components/_StaffReviews.tsx/StaffReviews'
 import MonthlyDashboard from './_components/_managing/Managing'
+import toast from 'react-hot-toast'
 
 // ==============================
 // Costanti comuni
@@ -124,7 +125,7 @@ const StaffDashboard = () => {
     queryFn: () => fetchReviewsForStaffID(user?.id),
     enabled: !!user?.id
   })
-  
+
 
   const { data: allReviews = [],
     isLoading: isLoadingAllReviews,
@@ -145,7 +146,6 @@ const StaffDashboard = () => {
     if (!user?.id) return
 
     const supabase = createClient()
-    console.log("🔌 Avvio subscription realtime per tutti gli appuntamenti")
 
     const channel = supabase
       .channel('all_reservations_channel')
@@ -157,7 +157,6 @@ const StaffDashboard = () => {
           table: 'appuntamenti'
         },
         (payload) => {
-          console.log("🔄 Evento realtime ricevuto:", payload.eventType, payload)
 
           // ✅ Invalida tutte le query di prenotazioni
           queryClient.invalidateQueries({ queryKey: ['reservations'] })
@@ -171,11 +170,9 @@ const StaffDashboard = () => {
         }
       )
       .subscribe((status) => {
-        console.log("📡 Status subscription:", status)
       })
 
     return () => {
-      console.log("🔌 Chiudo subscription realtime")
       channel.unsubscribe()
     }
   }, [user?.id, queryClient])

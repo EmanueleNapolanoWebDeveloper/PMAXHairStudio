@@ -108,7 +108,7 @@ const Dashboard = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <header className="mb-12 text-center lg:text-left">
                         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-red-200 bg-clip-text text-transparent mb-3">
-                            Dashboard Personale
+                            La mia Area Personale
                         </h1>
                         <p className="text-lg text-gray-300 font-medium">
                             Caricamento profilo in corso...
@@ -128,7 +128,7 @@ const Dashboard = () => {
                 {/* Header */}
                 <header className="mb-12 text-center lg:text-left">
                     <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-red-200 bg-clip-text text-transparent mb-3">
-                        Dashboard Personale
+                        La mia Area Personale
                     </h1>
                     <p className="text-lg text-gray-300 font-medium">
                         Gestisci i tuoi appuntamenti e visualizza la cronologia delle prenotazioni

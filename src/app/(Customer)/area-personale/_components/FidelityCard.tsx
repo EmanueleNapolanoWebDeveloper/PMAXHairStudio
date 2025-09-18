@@ -5,6 +5,7 @@ import type React from "react"
 import { Check, X, Calendar, Plus, User, Phone, Mail, Clock } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface FidelityCardProps {
   totalSlots?: number
@@ -18,16 +19,12 @@ const ActionCard = ({ onClick }: { onClick: () => void }) => (
   >
     <div className="flex items-center gap-4 mb-4">
       <div className="p-3 bg-white bg-opacity-20 rounded-lg group-hover:bg-opacity-30 transition-all">
-        <Plus className="w-6 h-6" />
+        <Plus className="w-8 h-8 text-black" />
       </div>
       <div className="flex-1 text-left">
         <h3 className="text-xl font-semibold mb-1">Nuova Prenotazione</h3>
         <p className="text-red-100 text-sm leading-relaxed">Prenota il tuo prossimo appuntamento</p>
       </div>
-    </div>
-    <div className="flex items-center justify-center gap-2 text-sm font-medium">
-      <Calendar className="w-4 h-4" />
-      Prenota Ora
     </div>
   </button>
 )
@@ -44,12 +41,12 @@ const FidelityCard = ({ totalSlots = 10, completed }: FidelityCardProps) => {
     <div className="space-y-6">
       <ActionCard onClick={() => router.push('/reservation')} />
 
-      <div className="bg-gradient-to-br from-slate-900 via-red-950/20 to-slate-800 rounded-2xl shadow-2xl p-8 hover:shadow-3xl transition-all duration-300 w-full max-w-md mx-auto border border-red-900/30 backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-black via-red-950/20 to-black/60 shadow-2xl p-8 hover:shadow-3xl transition-all duration-300 w-full max-w-md mx-auto border border-red-900/30 backdrop-blur-sm">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-red-600 to-red-700 rounded-lg shadow-lg">
-              <Calendar className="w-5 h-5 text-white" />
+            <div className="p-2 shadow-lg relative w-[90px] h-[50px]">
+              <Image src="/assets/logos/P-MaxLogoNoBg.png" alt="Logo" fill />
             </div>
             <h3 className="text-2xl font-bold bg-gradient-to-r from-red-400 to-rose-400 bg-clip-text text-transparent">
               Fidelity Card
@@ -80,8 +77,8 @@ const FidelityCard = ({ totalSlots = 10, completed }: FidelityCardProps) => {
             <div
               key={index}
               className={`relative flex items-center justify-center w-12 h-12 rounded-xl text-lg font-bold transition-all duration-300 ${slot === "completed"
-                  ? "bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg shadow-red-500/30 scale-105"
-                  : "bg-slate-700 text-slate-500 hover:bg-slate-600"
+                ? "bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg shadow-red-500/30 scale-105"
+                : "bg-slate-700 text-slate-500 hover:bg-slate-600"
                 }`}
             >
               {slot === "completed" ? <Check className="w-5 h-5" /> : <X className="w-4 h-4" />}

@@ -1,8 +1,9 @@
 'use client'
 
-import { Clock, User, Scissors, Calendar, Phone, Info } from 'lucide-react';
+import { Clock, User, Scissors, Calendar, Phone, Info, X } from 'lucide-react';
 import { Profile } from '@/src/lib/types';
 import { useState } from 'react';
+import ModalEditRes from './ModalEditRes';
 
 type ClientInfoType = {
     client: Profile;
@@ -10,15 +11,35 @@ type ClientInfoType = {
     note: string;
     price: number;
     status: string;
-    onDelete: () => void
+    onDelete: () => void;
+    onReschedule: (newDate: string, newTime: string) => void; // aggiorniamo la firma
 }
 
-export default function ClientInfo({ client, services, note, price, status, onDelete }: ClientInfoType) {
+export default function ClientInfo({ client, services, note, price, status, onDelete, onReschedule }: ClientInfoType) {
 
     const [loading, setLoading] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [showReschedule, setShowReschedule] = useState(false);
 
-    if (!client) {
-        return null;
+    // stati per nuova data/ora
+    const [newDate, setNewDate] = useState('');
+    const [newTime, setNewTime] = useState('');
+
+    if (!client) return null;
+
+    const handleDelete = async () => {
+        setLoading(true);
+        await onDelete();
+        setLoading(false);
+        setShowConfirm(false);
+    }
+
+    const handleRescheduleConfirm = async () => {
+        if (!newDate || !newTime) return;
+        setLoading(true);
+        await onReschedule(newDate, newTime);
+        setLoading(false);
+        setShowReschedule(false);
     }
 
     return (
@@ -37,7 +58,6 @@ export default function ClientInfo({ client, services, note, price, status, onDe
             {/* Body: Servizi + Contatti + Note */}
             <div className="flex flex-col gap-4">
 
-                {/* Servizi richiesti */}
                 <div className="flex items-center gap-2">
                     <div className="p-2 bg-red-100 rounded-lg">
                         <Scissors className="w-5 h-5 text-red-600" />
@@ -47,13 +67,11 @@ export default function ClientInfo({ client, services, note, price, status, onDe
                     </p>
                 </div>
 
-                {/* Contatti */}
                 <div className="flex items-center gap-2 text-gray-700">
                     <Phone className="w-4 h-4 text-gray-500" />
                     <span className="text-sm">{client.phone}</span>
                 </div>
 
-                {/* Nota */}
                 {note && (
                     <div className="flex items-start gap-2 bg-green-50 text-green-800 px-3 py-2 rounded-lg shadow-sm border border-green-200">
                         <Info className="w-4 h-4 text-green-600 mt-0.5" />
@@ -68,19 +86,63 @@ export default function ClientInfo({ client, services, note, price, status, onDe
                     €{price}
                 </div>
                 {status === 'prenotato' && (
-                    <button
-                        onClick={async () => {
-                            setLoading(true);
-                            await onDelete();
-                            setLoading(false);
-                        }}
-                        disabled={loading}
-                        className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-50 shadow-sm"
-                    >
-                        {loading ? 'Eliminando...' : 'Rifiuta'}
-                    </button>
+                    <div className="flex gap-2">
+                        {/* Pulsante Sposta */}
+                        <button
+                            onClick={() => setShowReschedule(true)}
+                            disabled={loading}
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-50 shadow-sm"
+                        >
+                            {loading ? 'Caricamento...' : 'Modifica appuntamento'}
+                        </button>
+
+                        {/* Pulsante Rifiuta */}
+                        <button
+                            onClick={() => setShowConfirm(true)}
+                            disabled={loading}
+                            className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-50 shadow-sm"
+                        >
+                            {loading ? 'Eliminando...' : 'Rifiuta'}
+                        </button>
+                    </div>
                 )}
             </div>
+
+            {/* Modale di conferma Rifiuto */}
+            {showConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-6 w-80 flex flex-col gap-4 shadow-lg">
+                        <div className="flex justify-between items-center">
+                            <h4 className="text-lg font-semibold text-gray-900">Conferma Rifiuto</h4>
+                            <button onClick={() => setShowConfirm(false)}>
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-700">Sei sicuro di voler rifiutare questa prenotazione?</p>
+                        <div className="flex justify-end gap-2 mt-2">
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="px-4 py-2 bg-gray-200 rounded-lg text-sm hover:bg-gray-300"
+                            >
+                                Annulla
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={loading}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 disabled:opacity-50"
+                            >
+                                {loading ? 'Eliminando...' : 'Conferma'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modale Sposta Appuntamento */}
+            {showReschedule && (
+                <ModalEditRes setShowReschedule={setShowReschedule} newDate={newDate} setNewDate={setNewDate} newTime={newTime} setNewTime={setNewTime} loading={loading} handleRescheduleConfirm={handleRescheduleConfirm} />
+            )}
+
         </div>
     )
 }

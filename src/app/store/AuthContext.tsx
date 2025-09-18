@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { createClient } from "@/src/utils/supabase/client"
-import { User, Session } from "@supabase/supabase-js"
+import { User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 
 export type ProfileType = {
@@ -18,7 +18,6 @@ export type ProfileType = {
 
 type AuthContextType = {
   user: User | null
-  session: Session | null
   profile: ProfileType | null
   loading: boolean
   isLoggedIn: boolean
@@ -113,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: subscription } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔥 Auth event:', event) // Per debug
-        
+
         // 🔥 Cancella il timeout precedente se esiste
         if (authTimeout) {
           clearTimeout(authTimeout)
@@ -121,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // 🔥 Aspetta 500ms prima di processare l'evento
         authTimeout = setTimeout(async () => {
-          const currentUser = session?.user ?? null
+          const { data: { user: currentUser } } = await supabase.auth.getUser()
           setUser(currentUser)
           setSession(session ?? null)
 
@@ -129,9 +128,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             case "INITIAL_SESSION":
               // Non fare nulla, già gestito in init()
               break
-              
+
             case "SIGNED_IN":
             case "USER_UPDATED":
+              if (currentUser) {
+                setLoading(true)
+                await fetchProfile(currentUser)
+                setLoading(false)
+              }
+              break
+
+            case 'PASSWORD_RECOVERY':
               if (currentUser) {
                 setLoading(true)
                 await fetchProfile(currentUser)
@@ -165,7 +172,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value: AuthContextType = {
     user,
-    session,
     profile,
     loading,
     isLoggedIn: !!user,

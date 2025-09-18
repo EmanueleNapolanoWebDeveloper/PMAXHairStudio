@@ -53,8 +53,6 @@ export default function AddStaffReservation({ reservations }: { reservations: Re
     const [note, setNote] = useState<string>('')
     const [isWorkingDay, setIsWorkingDay] = useState(true)
 
-    console.log('barberRes:', barberRes);
-
     // Query per le prenotazioni dello staff loggato
 
     const customersQuery = useQuery({

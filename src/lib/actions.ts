@@ -1,8 +1,7 @@
 'use server'
 
 import { Profile, Reservation, Reviews, Service } from "@/src/lib/types"
-import { createClient } from "@/src/utils/supabase/client"
-import { create } from "domain"
+import { createClient } from "@/src/utils/supabase/server"
 
 
 // -----_-------> USER 
@@ -38,28 +37,31 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
             .from('profiles')
             .select('id,phone,email')
             .or(`email.eq.${data.email?.toLowerCase().trim()},phone.eq.${data.phone?.replace(/\s/g, '')}`)
-            .neq('id', userID) // Esclude il profilo corrente
+            .neq('id', userID) // esclude l'utente corrente
 
         if (checkError) {
             console.error('Errore controllo duplicati:', checkError)
             return { error: 'Errore durante la verifica dei dati' }
         }
 
+
+
         if (existingProfile && existingProfile.length > 0) {
             const duplicateEmail = existingProfile.find(p => p.email === data.email?.toLowerCase().trim())
             const duplicatePhone = existingProfile.find(p => p.phone === data.phone?.replace(/\s/g, ''))
 
-            if (duplicateEmail && duplicatePhone) {
-                return { error: 'duplicate: Email e telefono già registrati' }
+
+            if (duplicatePhone) {
+                return { error: 'Questo numero di telefono è già registrato' }
             } else if (duplicateEmail) {
-                return { error: 'duplicate email: Questa email è già registrata' }
-            } else if (duplicatePhone) {
-                return { error: 'duplicate phone: Questo numero di telefono è già registrato' }
+                return { error: 'Questa email è già registrata' }
+            } else if (duplicatePhone && duplicateEmail) {
+                return { error: 'Questo numero di telefono e questa E-mail sono già registrate' }
             }
         }
 
         // Se ok continua a inserire profile
-        const { name, surname, email, phone, avatar } = data
+        const { name, surname, email, phone } = data
 
         const { error } = await supabase.from('profiles').insert({
             id: userID,
@@ -73,14 +75,12 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
         })
 
         if (error) {
-            console.error("Errore nella registrazione:", error)
             return { error: error.message }
         }
 
         return { success: true }
 
     } catch (error: any) {
-        console.error("Errore nella registrazione:", error)
         return { error: error.message || 'Errore durante la registrazione' }
     }
 }

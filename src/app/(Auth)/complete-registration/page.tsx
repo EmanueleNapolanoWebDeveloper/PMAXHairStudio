@@ -20,6 +20,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export default function CompleteProfile() {
     const router = useRouter()
     const { refreshProfile, user } = useAuth()
+    
 
     const [form, setForm] = useState<FormData>({
         name: '',
@@ -29,8 +30,6 @@ export default function CompleteProfile() {
     })
     const [fieldErrors, setFieldErrors] = useState<Partial<FormData>>({})
     const [isLoading, setIsLoading] = useState(true)
-
-    console.log('form:', form);
 
     useEffect(() => {
         if (user) {
@@ -47,15 +46,20 @@ export default function CompleteProfile() {
     const mutation = useMutation({
         mutationFn: async (data: FormData) => {
             if (!user) throw new Error('Utente non loggato')
-            await CompleteRegistration({ userID: user.id, data })
+            const res = await CompleteRegistration({ userID: user.id, data })
+
+            if (res.error) {
+                throw new Error(res.error)
+            }
+
+            return res
         },
         onSuccess: async () => {
             await refreshProfile()
             toast.success('Profilo salvato con successo!')
             router.push('/')
         },
-        onError: (err: any) => {
-            console.error('Errore completamento profilo:', err)
+        onError: (err: Error) => {
             toast.error(err?.message || 'Errore nel completamento del profilo')
         }
     })
@@ -92,6 +96,7 @@ export default function CompleteProfile() {
             return
         }
         setFieldErrors({})
+
         mutation.mutate(form)
     }
 
@@ -198,7 +203,7 @@ export default function CompleteProfile() {
                                     </div>
                                 ) : (
                                     <span className="tracking-wide font-semibold">
-                                         Completa Profilo
+                                        Completa Profilo
                                     </span>
                                 )}
                             </span>

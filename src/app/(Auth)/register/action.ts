@@ -49,8 +49,6 @@ export async function SignUpEmailPassword({
                     name: name.trim(),
                     surname: surname.trim(),
                     phone: phone.trim(),
-                    role,
-                    reg_complete: true
                 },
                 emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
             }

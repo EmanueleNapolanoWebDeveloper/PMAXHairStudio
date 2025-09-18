@@ -20,25 +20,7 @@ const staffMembers: StaffMember[] = [
         experience: "15+ anni",
         specialties: ["Taglio Classico", "Barba", "Baffi"],
         bio: "Maestro nell'arte della rasatura tradizionale",
-    },
-    {
-        id: 2,
-        name: "Antonio Rossi",
-        role: "Senior Barber",
-        image: "/professional-barber-with-beard-and-styled-hair.png",
-        experience: "10+ anni",
-        specialties: ["Fade", "Styling", "Trattamenti"],
-        bio: "Esperto in tagli moderni e styling contemporaneo",
-    },
-    {
-        id: 3,
-        name: "Giuseppe Bianchi",
-        role: "Barber Specialist",
-        image: "/young-professional-barber-with-modern-haircut.png",
-        experience: "8+ anni",
-        specialties: ["Pompadour", "Undercut", "Beard Care"],
-        bio: "Specialista in look vintage e cura della barba",
-    },
+    }
 ]
 
 export default function VintageStaffs() {

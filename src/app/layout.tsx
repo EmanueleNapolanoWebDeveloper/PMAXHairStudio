@@ -167,8 +167,8 @@ export const metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
     apple: [
@@ -254,9 +254,6 @@ export const metadata = {
     "geo.position": "40.860518;14.171176", // Inserisci coordinate GPS
     "ICBM": "40.860518, 14.171176",
 
-    // Verifica proprietà (aggiungi i tuoi codici reali)
-    "google-site-verification": "your-google-verification-code",
-    "msvalidate.01": "your-bing-verification-code",
 
     // Meta per performance 
     "theme-color": "#000000",

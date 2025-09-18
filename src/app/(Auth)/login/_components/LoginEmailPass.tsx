@@ -115,9 +115,9 @@ export default function LoginEmailPassword() {
                     </div>
 
                     <div className="flex items-center justify-between py-2">
-                        <a href="#" className="text-sm font-semibold text-gray-600 hover:text-gray-900 relative">
+                        <Link href="/forgot-password" className="text-sm font-semibold text-gray-600 hover:text-gray-900 relative">
                             Password dimenticata?
-                        </a>
+                        </Link>
                     </div>
 
                     {error && (

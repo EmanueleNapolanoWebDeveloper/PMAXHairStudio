@@ -19,7 +19,7 @@ export default function OpeningHours() {
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                     <span className="font-medium text-black/70">Sabato</span>
-                    <span className="text-red-600 font-semibold">08:30 - 21:00</span>
+                    <span className="text-red-600 font-semibold">08:30 - 20:00</span>
                 </div>
                 <div className="flex justify-between py-2">
                     <span className="font-medium text-black/70">Domenica - Lunedì</span>

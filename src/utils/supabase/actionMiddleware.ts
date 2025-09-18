@@ -1,5 +1,10 @@
 import { createClient } from '@/src/utils/supabase/server'
+import { UserIdentity } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
+
+type identidyProps = {
+  identity: UserIdentity
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -8,25 +13,53 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = await createClient()
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: DO NOT REMOVE auth.getUser()
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
+
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user?.id).single()
 
-  if((user && profile) && request.nextUrl.pathname.startsWith('/login')) {
+
+
+  if (request.nextUrl.pathname.startsWith('/reset-password')) {
+
+    const { data: identitiesData, error: errorIdentities } = await supabase.auth.getUserIdentities()
+    const googleIdentity = identitiesData?.identities?.find(i => i.provider === 'google')
+
+    const code = request.nextUrl.searchParams.get('code')
+
+    if (!code) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login' // nessun code, non autorizzato
+      return NextResponse.redirect(url)
+    }
+
+    if (googleIdentity) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/`
+      return NextResponse.redirect(url)
+    }
+
+    const url = request.nextUrl.clone()
+    url.pathname = '/login' // nessun code, non autorizzato
+    return NextResponse.redirect(url)
+  }
+
+  if (user && request.nextUrl.pathname.startsWith('/forgot-password')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
-  if((!user && !profile) && request.nextUrl.pathname.startsWith('/complete-registration')) {
+  if ((user && profile) && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
+  if ((!user && !profile) && request.nextUrl.pathname.startsWith('/complete-registration')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
