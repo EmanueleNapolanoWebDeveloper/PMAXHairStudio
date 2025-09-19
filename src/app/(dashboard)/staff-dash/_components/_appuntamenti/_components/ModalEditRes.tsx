@@ -82,6 +82,8 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
         }
     }
 
+    const guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : ''
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-[32rem] max-h-[90vh] overflow-y-auto flex flex-col gap-4 shadow-lg">
@@ -94,22 +96,92 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
                 </div>
 
                 {/* Riepilogo prenotazione */}
-                <div className="border p-3 rounded-lg bg-gray-50">
-                    <p className="font-medium text-gray-900">
+                <div className="border p-4 rounded-xl bg-gray-50 shadow-sm space-y-3">
+                    {/* Titolo */}
+                    <h5 className="text-base font-semibold text-gray-800 mb-3">
+                        📋 Riepilogo Appuntamento
+                    </h5>
+
+                    {/* Cliente */}
+                    <div className="text-sm text-gray-700">
+                        <span className="font-medium">👤 Cliente: </span>
                         {reservation?.logged_id ? (
-                            <p>👤 Cliente : {reservation?.logged_id?.name} {reservation.logged_id?.surname}</p>
+                            <span>{reservation.logged_id?.name} {reservation.logged_id?.surname}</span>
                         ) : (
-                            <p>👤 Cliente : {reservation?.guest_datas?.name} {reservation.guest_datas?.surname}</p>
+                            <span>{guest.name} {guest.surname}</span>
                         )}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                        📞 {reservation.logged_id ? reservation.logged_id.phone : reservation.guest_datas?.phone}
-                    </p>
-                    <p className="text-sm text-gray-600">💶 Totale: {reservation.amount}€</p>
+                    </div>
+
+                    {/* Telefono */}
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">📞 </span>
+                        {reservation.logged_id ? reservation.logged_id.phone : guest.phone}
+                    </div>
+
+                    {/* Orario */}
+                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                        <span className="font-medium">🕒 Orario:</span>
+                        <span>{reservation.start_time} - {reservation.end_time}</span>
+                        {newTime !== reservation.start_time && (
+                            <>
+                                <span className="text-gray-400">→</span>
+                                <span className="text-green-600 font-medium">
+                                    {newTime} - {/** calcolo end_time nuovo */}
+                                </span>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Data */}
+                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                        <span className="font-medium">📅 Data:</span>
+                        <span>{reservation.date}</span>
+                        {newDate !== reservation.date && (
+                            <>
+                                <span className="text-gray-400">→</span>
+                                <span className="text-green-600 font-medium">{newDate}</span>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Totale */}
+                    <div className="text-sm text-gray-600 flex items-center gap-2">
+                        <span className="font-medium">💶 Totale:</span>
+                        <span>{reservation.amount}€</span>
+                        {selectedServices.reduce((acc, s) => acc + (s.price || 0), 0) !== reservation.amount && (
+                            <>
+                                <span className="text-gray-400">→</span>
+                                <span className="text-green-600 font-medium">
+                                    {selectedServices.reduce((acc, s) => acc + (s.price || 0), 0)}€
+                                </span>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Servizi */}
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">💈 Servizi: </span>
+                        <span>{reservation.services.join(", ")}</span>
+                        {selectedServices.length > 0 &&
+                            JSON.stringify(selectedServices.map(s => s.title)) !== JSON.stringify(reservation.services) && (
+                                <>
+                                    <span className="text-gray-400"> → </span>
+                                    <span className="text-green-600 font-medium">
+                                        {selectedServices.map(s => s.title).join(", ")}
+                                    </span>
+                                </>
+                            )}
+                    </div>
+
+                    {/* Note */}
                     {reservation.note && (
-                        <p className="text-sm italic text-gray-500">📝 {reservation.note}</p>
+                        <div className="text-sm italic text-gray-500">
+                            📝 {reservation.note}
+                        </div>
                     )}
                 </div>
+
+
 
                 {/* Data */}
                 <label className="flex flex-col gap-1 text-sm text-gray-700">
@@ -132,7 +204,7 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
                         date={newDate}
                         time={newTime}
                         onChange={setNewTime}
-                        timeSlots={timeResBarber}
+                        timeSlots={timeResBarber.filter(slot => slot.date === newDate)}
                         isWorkingDay={true}
                     />
                 </label>

@@ -68,8 +68,17 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
             : r.barber_id.id === user?.id
     )
 
+
+
+
     // Genera slot temporali
-    const timeResBarber = barberRes.map(r => ({ start_time: r.start_time, end_time: r.end_time }))
+    const timeResBarber = barberRes.map(r => ({
+        date: r.date,
+        start_time: r.start_time,
+        end_time: r.end_time
+    }))
+
+    console.log('timeResBarber:', timeResBarber);
 
     // Realtime Supabase per aggiornamenti
     useEffect(() => {
