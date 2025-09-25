@@ -56,7 +56,7 @@ export default function ServicesHome() {
                     </div>
 
                     <p className="text-xl md:text-2xl font-medium text-gray-200 max-w-2xl mx-auto">
-                        Scopri i servizi esclusivi <span className="text-red-400 font-semibold">P-Max</span> e vivi un'esperienza di stile unica.
+                        Scopri i servizi esclusivi <span className="text-red-400 font-semibold">P-Max</span> e vivi un&apos;esperienza di stile unica.
                     </p>
                 </div>
 
@@ -132,11 +132,11 @@ export default function ServicesHome() {
 
                         <div className="max-w-4xl mx-auto">
                             <p className="text-xl md:text-2xl text-gray-200 mb-6 leading-relaxed">
-                                L'arte del <span className="text-red-400 font-bold">Hair Tattoo</span> incontra la maestria del barbiere.
+                                L&apos;arte del <span className="text-red-400 font-bold">Hair Tattoo</span> incontra la maestria del barbiere.
                             </p>
                             <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                                 Disegni personalizzati e pattern unici rasati nei capelli con precisione millimetrica.
-                                Un servizio esclusivo che trasforma la tua chioma in una vera opera d'arte,
+                                Un servizio esclusivo che trasforma la tua chioma in una vera opera d&apos;arte,
                                 unendo tradizione e innovazione per un look <span className="text-red-400 font-semibold">assolutamente unico</span>.
                             </p>
                         </div>

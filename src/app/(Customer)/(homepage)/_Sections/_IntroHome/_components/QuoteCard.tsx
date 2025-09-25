@@ -60,7 +60,7 @@ export default function QuoteCard() {
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
 
             <div className="relative z-10">
-                <div className="text-6xl text-white/60 font-serif mb-4 leading-none">"</div>
+                <div className="text-6xl text-white/60 font-serif mb-4 leading-none">&quot;</div>
 
                 <AnimatePresence mode="wait">
                     <motion.blockquote
@@ -86,7 +86,7 @@ export default function QuoteCard() {
                     {quotes[index].author}
                 </motion.cite>
 
-                <div className="text-6xl text-white/60 font-serif text-right leading-none mt-4">"</div>
+                <div className="text-6xl text-white/60 font-serif text-right leading-none mt-4">&quot;</div>
             </div>
         </div>
     )

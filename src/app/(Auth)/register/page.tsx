@@ -1,13 +1,26 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { SignUpEmailPassword } from "./action"
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+interface RegisterForm {
+    name: string;
+    surname: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+}
+
+interface MutationResult {
+    error?: string;
+}
+
 export default function RegisterPage() {
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<RegisterForm>({
         name: "",
         surname: "",
         email: "",
@@ -15,17 +28,18 @@ export default function RegisterPage() {
         password: "",
         confirmPassword: ""
     });
-    const [error, setError] = useState("");
+    const [error, setError] = useState<string>("");
 
-    const router = useRouter()
+    const router = useRouter();
 
-    const handleChange = (e) => {
+    // Tipizza correttamente handleChange
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-    const isValidPhone = (p) => /^\d{10}$/.test(p);
+    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPhone = (phone: string) => /^\d{10}$/.test(phone);
     const isValid = () => {
         return (
             form.name.trim() &&
@@ -37,26 +51,24 @@ export default function RegisterPage() {
         );
     };
 
-    const mutation = useMutation({
+    const mutation = useMutation<MutationResult, Error>({
         mutationFn: async () => {
-            // Passa un oggetto invece di parametri separati
             return await SignUpEmailPassword({
                 email: form.email,
                 password: form.password,
                 name: form.name,
                 surname: form.surname,
                 phone: form.phone,
-                role: 'customer' // Aggiungi il ruolo richiesto
+                role: 'customer'
             });
         },
         onSuccess: (result) => {
             if (result.error) {
-
-                if (result.error === 'duplicate key value violates unique constraint "profiles_phone_key"') {
-                    setError('Telefono esistente! \n Prego, inserisci un altro numero.');
+                if (result.error.includes('profiles_phone_key')) {
+                    setError('Telefono esistente! Prego, inserisci un altro numero.');
                 }
-                if (result.error === 'duplicate key value violates unique constraint "profiles_email_key"') {
-                    setError('Email esistente! \n Prego, inserisci un altra e-mail.');
+                if (result.error.includes('profiles_email_key')) {
+                    setError('Email esistente! Prego, inserisci un altra e-mail.');
                 }
                 return;
             }
@@ -69,17 +81,18 @@ export default function RegisterPage() {
                 password: "",
                 confirmPassword: ""
             });
-            toast.success(`Registrazione avvenuta con successo! \n Conferma la tua email per completare la registrazione.`);
+            toast.success("Registrazione avvenuta con successo! Conferma la tua email per completare la registrazione.");
             router.push('/login');
         },
         onError: (err) => {
             console.error('Mutation error:', err);
-            setError(err?.message || "Errore durante la registrazione");
-            toast.error(err?.message || "Errore durante la registrazione");
+            setError(err.message || "Errore durante la registrazione");
+            toast.error(err.message || "Errore durante la registrazione");
         }
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // Tipizza handleSubmit
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
         if (!isValid()) {

@@ -1,28 +1,27 @@
 'use client'
 import { useState, useMemo, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-
 import GuestForm from './GuestForm'
 import CustomerSearchBar from './LoggedSearchBar'
 import ServicesChoise from '@/src/app/(Customer)/reservation/_components/ServicesChoise'
 import DataChoise from '@/src/app/(Customer)/reservation/_components/DataChoise'
 import TimeChoise from '@/src/app/(Customer)/reservation/_components/TimeChoise'
 import SummaryReservation from '@/src/app/(Customer)/reservation/_components/SummaryReservation'
-
 import { createReservation } from '@/src/lib/actions'
 import { useAuth } from '@/src/app/store/AuthContext'
 import { useStaffContext } from '@/src/app/store/StaffContext'
 import { Service, Profile, Reservation } from '@/src/lib/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import type { TimeSlot } from '@/src/app/(Customer)/reservation/page'
 
 type GuestType = { name: string; surname: string; phone: string; email: string }
 
+
 export default function AddStaffReservation() {
-    const router = useRouter()
-    const queryClient = useQueryClient()
     const { user, refreshProfile } = useAuth()
     const { barberRes, timeResBarber: tempoResBarber, customers, services, barber, refreshReservations } = useStaffContext()
+
+    const servicesLocal: Service[] = Array.isArray(services) ? services : []
 
     // Stati locali
     const [selectedCustomer, setSelectedCustomer] = useState<Profile | null>(null)
@@ -36,16 +35,15 @@ export default function AddStaffReservation() {
     const [time, setTime] = useState('')
     const [note, setNote] = useState('')
     const [isWorkingDay, setIsWorkingDay] = useState(true)
-    const [activeTab, setActiveTab] = useState(services[0]?.category || 'Barba')
-    const [timeResBarber, setTimeResBarber] = useState<Reservation[]>([])
+    const [activeTab, setActiveTab] = useState(servicesLocal[0]?.category || 'Barba')
+    const [timeResBarber, setTimeResBarber] = useState<TimeSlot[]>([])
 
     useEffect(() => {
         if (!tempoResBarber) {
             return
         }
-
         setTimeResBarber(tempoResBarber)
-    }, [])
+    }, [tempoResBarber])
 
     // Toggle servizio
     const toggleService = (service: Service) => {
@@ -169,10 +167,10 @@ export default function AddStaffReservation() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {isGuestBooking && <GuestForm guest={guest} onGuestChange={setGuest} />}
-                    {!isGuestBooking && <CustomerSearchBar allProfiles={customers} selectedProfile={selectedCustomer} setSelectedProfile={setSelectedCustomer} />}
+                    {!isGuestBooking && <CustomerSearchBar allProfiles={customers.data} selectedProfile={selectedCustomer} setSelectedProfile={setSelectedCustomer} />}
 
-                    <ServicesChoise services={selectedServices} onToggle={toggleService} allServices={services} setActiveTab={setActiveTab} activeTab={activeTab} />
-                    <DataChoise isStaff={true} date={date} onChange={setDate} setTimeResBarber={setTimeResBarber} resBarber={barberRes} barberId={user?.id} setIsWorkingDay={setIsWorkingDay} />
+                    <ServicesChoise services={selectedServices} loading={services.isLoading} onToggle={toggleService} allServices={services.data} setActiveTab={setActiveTab} activeTab={activeTab} />
+                    <DataChoise date={date} onChange={setDate} setTimeResBarber={setTimeResBarber} resBarber={barberRes.data} barberId={user?.id} setIsWorkingDay={setIsWorkingDay} />
                     <TimeChoise time={time} onChange={setTime} barber={barber} date={date} timeSlots={timeResBarber} isWorkingDay={isWorkingDay} totalDuration={selectedServices.reduce((acc, s) => acc + s.time, 0)} />
 
                     <div>

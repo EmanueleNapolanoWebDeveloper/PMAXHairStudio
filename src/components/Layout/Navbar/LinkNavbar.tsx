@@ -1,5 +1,5 @@
 'use client'
-import LinksNavbar from "./_components/LinksNavbar"
+
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
@@ -19,22 +19,24 @@ const homepageSections = [
 export default function LinkMenuDesktop() {
   const pathName = usePathname()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Chiudi dropdown quando clicchi fuori
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
-  const handleSectionClick = (anchor) => {
+  const handleSectionClick = (anchor : string) => {
     setIsDropdownOpen(false)
     // Scroll to section se siamo sulla homepage
     if (pathName === "/") {
@@ -94,7 +96,7 @@ export default function LinkMenuDesktop() {
               </Link>
               {homepageSections.map((section, index) => (
                 <button
-                  key={section.anchor}
+                  key={index}
                   onClick={() => handleSectionClick(section.anchor)}
                   className="w-full text-left px-5 py-3 text-gray-300 hover:text-white hover:bg-red-900/20 transition-all duration-200 font-medium text-sm border-l-2 border-transparent hover:border-red-500 group"
                 >

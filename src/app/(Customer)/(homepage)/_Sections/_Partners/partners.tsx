@@ -1,5 +1,4 @@
 import Image from "next/image"
-import styles from '@/src/app/(Customer)/homepage.module.css'
 import { partners } from '@/src/lib/datas'
 
 export default function Partners() {

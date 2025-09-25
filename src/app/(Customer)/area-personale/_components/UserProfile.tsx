@@ -1,9 +1,24 @@
-import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Plus, Filter } from 'lucide-react';
+import { Calendar, User, Phone, Mail, AlertCircle } from 'lucide-react';
+import { Profile } from '@/src/lib/types';
 
 
-const UserProfile = ({ profile }) => {
+type UserProfileProps = {
+  profile: {
+    id?: string
+    name?: string
+    surname?: string
+    email?: string
+    phone?: string
+    role?: 'customer' | 'employee' | 'admin'
+    reg_complete?: boolean
+    is_Admin?: boolean
+    created_at?: string
+  }
+};
 
-  const getRoleColor = (role) => {
+const UserProfile = ({ profile }: UserProfileProps) => {
+
+  const getRoleColor = (role: UserProfileProps['profile']['role']) => {
     switch (role) {
       case 'admin': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'employee': return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -12,7 +27,7 @@ const UserProfile = ({ profile }) => {
     }
   };
 
-  const getRoleText = (role) => {
+  const getRoleText = (role: UserProfileProps['profile']['role']) => {
     switch (role) {
       case 'customer': return 'Cliente';
       case 'employee': return 'Dipendente';
@@ -21,14 +36,11 @@ const UserProfile = ({ profile }) => {
     }
   };
 
-  console.log('profile: ',profile);
-  
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center gap-6 mb-8">
         <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
-           <User className="w-10 h-10 text-white" />
+          <User className="w-10 h-10 text-white" />
         </div>
         <div className="flex-1">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -77,11 +89,13 @@ const UserProfile = ({ profile }) => {
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-600">Membro dal</p>
             <p className="text-gray-800 font-medium">
-              {new Date(profile.created_at).toLocaleDateString('it-IT', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {profile.created_at
+                ? new Date(profile.created_at).toLocaleDateString('it-IT', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })
+                : "Data non disponibile"}
             </p>
           </div>
         </div>

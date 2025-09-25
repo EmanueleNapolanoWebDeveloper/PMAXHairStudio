@@ -10,18 +10,17 @@ const FESTIVALS = [
   "2025-12-25", "2025-12-26"
 ].map(d => new Date(d))
 
+
 export type DataChoiseType = {
-  isStaff: boolean
   date: string
   onChange: (date: string) => void
   setTimeResBarber: (timeResBarber: Reservation[]) => void
   resBarber: Reservation[]
-  barberId?: string
+  barberId?: { id: string; name: string; surname: string; email: string; phone: string } | string | null
   setIsWorkingDay: (isWorking: boolean) => void // ✅ Fixed: boolean invece di function
 }
 
 export default function DataChoise({
-  isStaff,
   date,
   onChange,
   setTimeResBarber,
@@ -64,7 +63,9 @@ export default function DataChoise({
 
   // ✅ Filtro solo quando barberId o date cambiano
   useEffect(() => {
-    if (barberId && date) {
+    if (barberId && typeof barberId !== 'string' && 'id' in barberId) {
+      filterReservations(barberId.id, date)
+    } else if (typeof barberId === 'string') {
       filterReservations(barberId, date)
     }
   }, [barberId, date, filterReservations])
@@ -94,12 +95,16 @@ export default function DataChoise({
     onChange(formattedDate)
 
     if (barberId) {
-      filterReservations(barberId, formattedDate)
+      if (typeof barberId === 'string') {
+        filterReservations(barberId, formattedDate)
+      } else if ('id' in barberId) {
+        filterReservations(barberId.id, formattedDate)
+      }
     }
   }, [isWorkingDay, onChange, barberId, filterReservations])
 
   // ✅ Matcher per disabilitare weekend
-  const disableWeekDays: Matcher = useCallback((date : Date) => {
+  const disableWeekDays: Matcher = useCallback((date: Date) => {
     const day = date.getDay()
     return day === 0 || day === 1
   }, [])

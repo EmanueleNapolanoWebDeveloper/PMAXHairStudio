@@ -1,15 +1,13 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Reservation } from '@/src/lib/types';
 import { Clock, User, Scissors, Calendar, Phone, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { updateReservationStatus, deleteReservation } from '@/src/lib/actions';
-import next from 'next';
-import { div } from 'framer-motion/client';
 
 interface NextAppointmentProps {
   reservations?: Reservation[];
-  onStartAppointment?: (reservationId: string) => void;
+  onStartAppointment?: (reservationId: number) => void;
   onRefreshData?: () => void;
 }
 
@@ -18,16 +16,16 @@ export default function NextAppointment({
   onStartAppointment,
   onRefreshData
 }: NextAppointmentProps) {
-  const [nextAppointment, setNextAppointment] = useState<Reservation | null>(null);
-  const [timeUntilNext, setTimeUntilNext] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
 
-  // 📌 Calcola prossimo appuntamento
-  const calculateNextAppointment = (list: Reservation[]): Reservation | null => {
+  // ===============================
+  // Memo: calcola il prossimo appuntamento
+  // ===============================
+  const nextAppointment = useMemo<Reservation | null>(() => {
     const today = new Date().toISOString().split('T')[0];
 
-    const todayReservations = list
+    const todayReservations = reservations
       .filter(r => r.date === today && (r.status === 'prenotato' || r.status === 'in_corso'))
       .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
@@ -41,58 +39,52 @@ export default function NextAppointment({
     }
 
     return todayReservations.find(r => r.status === 'prenotato') || null;
-  };
-
-
-
-  // 🧠 Memo per calcolare automaticamente al cambio delle reservations
-  useEffect(() => {
-    const updateNext = () => {
-      const next = calculateNextAppointment(reservations);
-      setNextAppointment(next);
-    };
-
-    updateNext();
-    const interval = setInterval(updateNext, 60000); // ogni minuto
-    return () => clearInterval(interval);
   }, [reservations]);
 
-  // 🧑‍💼 Dettagli cliente
-  const getCustomerInfo = (reservation: Reservation) => {
-    if (reservation.logged_id) {
+  // ===============================
+  // Memo: info cliente
+  // ===============================
+  const customerInfo = useMemo(() => {
+    if (!nextAppointment) return null;
+
+    if (nextAppointment.logged_id) {
       return {
-        name: `${reservation.logged_id?.name || ''} ${reservation.logged_id?.surname || ''}`.trim() || 'Cliente registrato',
-        phone: reservation.logged_id?.phone || ''
+        name: `${nextAppointment.logged_id?.name || ''} ${nextAppointment.logged_id?.surname || ''}`.trim() || 'Cliente registrato',
+        phone: nextAppointment.logged_id?.phone || ''
       };
     } else {
-      let guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : '';
+      const guest = nextAppointment.guest_datas ? JSON.parse(nextAppointment.guest_datas) : {};
       return {
         name: guest.name || 'Cliente ospite',
         surname: guest.surname || '',
         phone: guest.phone || ''
       };
     }
-  };
+  }, [nextAppointment]);
 
-  // 🚀 Inizia appuntamento e carica automaticamente il prossimo
+  // ===============================
+  // Memo: lista servizi JSX
+  // ===============================
+  const servicesList = useMemo(() => {
+    if (!nextAppointment?.services?.length) return null;
+    return nextAppointment.services.map((s, i) => (
+      <div key={i} className="flex items-center gap-2 mb-2">
+        <Scissors className="w-4 h-4 text-gray-600" /> <span className="font-medium text-gray-900">{s}</span>
+      </div>
+    ));
+  }, [nextAppointment?.services]);
+
+  // ===============================
+  // Handlers
+  // ===============================
   const handleStartAppointment = async () => {
     if (!nextAppointment) return;
     setIsUpdating(true);
 
     try {
       await updateReservationStatus(nextAppointment.id, 'in_corso');
-
-      if (onStartAppointment) onStartAppointment(nextAppointment.id);
-      if (onRefreshData) onRefreshData();
-
-      // Aggiorna localmente il prossimo appuntamento
-      const updatedReservations = reservations.map(r =>
-        r.id === nextAppointment.id ? { ...r, status: 'in_corso' } : r
-      );
-
-      const next = calculateNextAppointment(updatedReservations);
-      setNextAppointment(next);
-
+      onStartAppointment?.(nextAppointment.id);
+      onRefreshData?.();
     } catch (error) {
       console.error('Errore nell\'avviare l\'appuntamento:', error);
     } finally {
@@ -106,15 +98,17 @@ export default function NextAppointment({
 
     try {
       await deleteReservation(nextAppointment.id);
-      if (onRefreshData) onRefreshData();
+      onRefreshData?.();
     } catch (error) {
       console.error('Errore nell\'annullare l\'appuntamento:', error);
     } finally {
       setIsUpdating(false);
     }
-  }
+  };
 
-  // 🟦 Nessun appuntamento
+  // ===============================
+  // Render
+  // ===============================
   if (!nextAppointment) {
     return (
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 shadow-lg text-center">
@@ -126,9 +120,6 @@ export default function NextAppointment({
       </div>
     );
   }
-
-  const customerInfo = getCustomerInfo(nextAppointment);
-
 
   return (
     <>
@@ -149,9 +140,9 @@ export default function NextAppointment({
 
           <div className="flex-1">
             <div className="flex items-center gap-2 text-gray-900 font-semibold mb-1">
-              <User className="w-4 h-4 text-gray-600" /> {customerInfo.name} {customerInfo.surname}
+              <User className="w-4 h-4 text-gray-600" /> {customerInfo?.name} {customerInfo?.surname}
             </div>
-            {customerInfo.phone && (
+            {customerInfo?.phone && (
               <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
                 <Phone className="w-3 h-3" /> {customerInfo.phone}
               </div>
@@ -160,13 +151,9 @@ export default function NextAppointment({
         </div>
 
         {/* Servizi */}
-        {nextAppointment.services?.length > 0 && (
+        {servicesList && (
           <div className="bg-white rounded-lg p-4 mb-4">
-            {nextAppointment.services.map((s, i) => (
-              <div key={i} className="flex items-center gap-2 mb-2">
-                <Scissors className="w-4 h-4 text-gray-600" /> <span className="font-medium text-gray-900">{s}</span>
-              </div>
-            ))}
+            {servicesList}
             <div className="pt-2 border-t border-gray-200 flex justify-between font-semibold text-gray-900">
               <span>Totale</span>
               <span>€{nextAppointment.amount}</span>
@@ -184,7 +171,7 @@ export default function NextAppointment({
           </div>
         )}
 
-        {/* Status e pulsante */}
+        {/* Status e pulsanti */}
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
           <div className="flex items-center gap-2">
             <div
@@ -202,19 +189,15 @@ export default function NextAppointment({
 
           {nextAppointment.status === 'prenotato' && (
             <div className="flex items-center gap-3 mt-4">
-              {/* Bottone Avvio */}
               <button
                 onClick={handleStartAppointment}
                 disabled={isUpdating}
                 className={`
-      flex items-center gap-2 px-5 py-2.5
-      rounded-lg font-medium text-sm transition-all duration-300
-      shadow-sm
-      ${isUpdating
-                    ? "bg-green-400 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 active:scale-95 text-white"
-                  }
-    `}
+                  flex items-center gap-2 px-5 py-2.5
+                  rounded-lg font-medium text-sm transition-all duration-300
+                  shadow-sm
+                  ${isUpdating ? "bg-green-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700 active:scale-95 text-white"}
+                `}
               >
                 {isUpdating ? (
                   <>
@@ -228,16 +211,15 @@ export default function NextAppointment({
                 )}
               </button>
 
-              {/* Bottone Annulla */}
               <button
                 onClick={() => setOpen(true)}
                 type="button"
                 className="
-      flex items-center gap-2 px-5 py-2.5
-      rounded-lg font-medium text-sm transition-all duration-300
-      bg-red-500 text-white hover:bg-red-600 active:scale-95
-      shadow-sm
-    "
+                  flex items-center gap-2 px-5 py-2.5
+                  rounded-lg font-medium text-sm transition-all duration-300
+                  bg-red-500 text-white hover:bg-red-600 active:scale-95
+                  shadow-sm
+                "
               >
                 <X className="w-4 h-4" /> Annulla
               </button>
@@ -245,6 +227,7 @@ export default function NextAppointment({
           )}
         </div>
       </div>
+
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">

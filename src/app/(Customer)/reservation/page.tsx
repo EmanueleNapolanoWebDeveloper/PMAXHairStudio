@@ -7,13 +7,16 @@ import TimeChoise from './_components/TimeChoise'
 import SummaryReservation from './_components/SummaryReservation'
 import { createReservation, getAllReservations, getEmployees, getServices } from '@/src/lib/actions'
 import { useAuth } from '@/src/app/store/AuthContext'
-import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { Profile, Reservation, Service, GuestType } from '@/src/lib/types'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
 import GuestForm from '../../(dashboard)/staff-dash/_components/_addReservation/_components/GuestForm'
+import { RealtimeChannel } from '@supabase/supabase-js'
+
+export type TimeSlot = { start_time: string; end_time: string; date: string }
+
 
 export default function ReservationPage() {
   const router = useRouter()
@@ -29,10 +32,9 @@ export default function ReservationPage() {
     return `${yyyy}-${mm}-${dd}`
   }
 
-  type TimeSlot = { start_time: string; end_time: string }
 
   // States
-  const [guest, setGuest] = useState<GuestType | null>({
+  const [guest, setGuest] = useState<GuestType>({
     name: '',
     surname: '',
     phone: '',
@@ -65,9 +67,6 @@ export default function ReservationPage() {
   const servicesQuery = useQuery({
     queryKey: ['services'],
     queryFn: () => getServices(),
-    onSuccess: (data) => {
-      if (data.length > 0) setActiveTab(data[0].category)
-    }
   })
 
   // Mutation per creare prenotazione
@@ -134,7 +133,7 @@ export default function ReservationPage() {
   // ✅ Setup Real-time subscriptions - VERSIONE CORRETTA
   // Setup Real-time subscriptions - VERSIONE CORRETTA
   useEffect(() => {
-    let channel: any = null
+    let channel: RealtimeChannel | null = null
 
     const setupRealtime = async () => {
       try {
@@ -170,7 +169,7 @@ export default function ReservationPage() {
                 // Se la nuova prenotazione è dello stesso barbiere, aggiungila
                 if (barber && payload.new.barber_id === barber.id) {
                   return [...prev, payload.new as Reservation].sort(
-                    (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()
+                    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
                   )
                 }
                 return prev
@@ -246,14 +245,14 @@ export default function ReservationPage() {
         channel = null
       }
     }
-  }, [queryClient, barber?.id, reservationsQuery.data])
+  }, [queryClient, barber, reservationsQuery.data])
 
   // ✅ Aggiorna barberRes quando cambiano le reservations o il barbiere selezionato
   useEffect(() => {
     if (barber && reservationsQuery.data) {
       const filteredReservations = reservationsQuery.data
-        .filter(r => r.barber_id === barber.id)
-        .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+        .filter(r => r.barber_id?.id === barber.id)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
       setBarberRes(filteredReservations)
     } else {
@@ -321,7 +320,6 @@ export default function ReservationPage() {
           />
 
           <DataChoise
-            isStaff={false}
             date={date}
             onChange={setDate}
             setTimeResBarber={setTimeResBarber}

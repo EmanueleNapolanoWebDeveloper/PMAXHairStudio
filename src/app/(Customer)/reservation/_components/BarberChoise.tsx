@@ -34,7 +34,7 @@ export default function BarberChoise({
     
 
     const filteredReservations = reservations
-      .filter(r => r.barber_id === selectedBarber.id)
+      .filter(r => r.barber_id?.id === selectedBarber.id)
       
          console.log('res caricate nel componente:', filteredReservations);
     setReservations(filteredReservations)

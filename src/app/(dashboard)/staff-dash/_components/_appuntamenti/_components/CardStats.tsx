@@ -1,5 +1,8 @@
 'use client'
 
+import React from "react";
+import { ComponentType, SVGProps } from "react";
+
 type CardStatsType = {
     appointments: {
         id: number;
@@ -11,8 +14,8 @@ type CardStatsType = {
         price: number;
         status: string;
         avatar: string;
-    },
-    icon: string,
+    }[],
+        icon: ComponentType<SVGProps<SVGSVGElement>>, // <-- qui
     status: string
 }
 

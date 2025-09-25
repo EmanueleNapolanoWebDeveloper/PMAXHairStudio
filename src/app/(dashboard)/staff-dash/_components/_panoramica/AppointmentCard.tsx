@@ -1,35 +1,13 @@
 'use client'
 
 import React from 'react';
-import { Clock, User, Calendar, Play, CheckCircle, XCircle, AlertCircle, Euro, Info } from 'lucide-react';
-import { Reservation, Service } from '@/src/lib/types';
+import { Clock, User, Calendar, Play, CheckCircle, AlertCircle, Euro, Info } from 'lucide-react';
+import { Reservation } from '@/src/lib/types';
 
 type AppointmentCardProp = {
-    reservation: {
-        logged_id: {
-            name: string;
-            surname: string;
-            phone: string;
-            email?: string;
-        };
-        barbrer_id: {
-            name: string;
-            surname: string;
-            phone: string;
-            email?: string;
-        }
-        id: string;
-        services: string[];
-        date: string;
-        time: string;
-        status: string;
-        amount: number;
-        guest_datas: string;
-        start_time: string;
-        end_time: string;
-        note: string;
-    };
-}
+    reservation: Reservation
+};
+
 
 // Configurazioni per gli stati
 const STATUS_CONFIGS = {
@@ -61,7 +39,7 @@ const STATUS_CONFIGS = {
 };
 
 const AppointmentCard = ({ reservation }: AppointmentCardProp) => {
-    const guest = JSON.parse(reservation.guest_datas);
+    const guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : {};
     const statusConfig = STATUS_CONFIGS[reservation.status] || STATUS_CONFIGS['in_corso'];
     const StatusIcon = statusConfig.icon;
 
@@ -129,7 +107,7 @@ const AppointmentCard = ({ reservation }: AppointmentCardProp) => {
         <div className="flex items-center space-x-3">
             <PriceTag />
             <StatusBadge />
-            {reservation.status === 'confirmed' && <StartButton />}
+            {reservation.status === 'confermato' && <StartButton />}
         </div>
     );
 

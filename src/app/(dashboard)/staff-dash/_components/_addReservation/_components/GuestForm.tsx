@@ -201,7 +201,7 @@ export default function GuestForm({ guest, onGuestChange }: GuestFormProps) {
                         <p className="text-blue-800 font-medium">Informazione importante</p>
                         <p className="text-blue-700 mt-1">
                             I dati inseriti verranno utilizzati solo per questa prenotazione.
-                            L'email è facoltativa ma utile per eventuali comunicazioni.
+                            L&apos;email è facoltativa ma utile per eventuali comunicazioni.
                         </p>
                     </div>
                 </div>

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-
+import { type NextRequest } from 'next/server'
 import { createClient } from '@/src/utils/supabase/server'
+import type { EmailOtpType } from '@supabase/supabase-js'
 
 // Creating a handler to a GET request to route /auth/confirm
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const token_hash = searchParams.get('token_hash')
   const type = searchParams.get('type')
@@ -19,7 +20,7 @@ export async function GET(request) {
     const supabase = await createClient()
 
     const { error } = await supabase.auth.verifyOtp({
-      type,
+      type: type as EmailOtpType,
       token_hash,
     })
     if (!error) {

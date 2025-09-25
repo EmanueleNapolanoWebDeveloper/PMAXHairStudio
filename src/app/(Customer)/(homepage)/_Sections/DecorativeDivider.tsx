@@ -1,5 +1,15 @@
-export default function DecorativeDivider({ colorScheme = "gold" }) {
-    const colorSchemes = {
+type ColorScheme = "gold" | "red";
+
+interface ColorSchemeStyles {
+    lines: string;
+    circle1: string;
+    circle1Shadow: string;
+    circle2: string;
+    smallLines: string;
+}
+
+export default function DecorativeDivider({ colorScheme = "gold" }: { colorScheme?: ColorScheme }) {
+    const colorSchemes: Record<ColorScheme, ColorSchemeStyles> = {
         gold: {
             lines: "bg-gradient-to-r from-transparent via-yellow-500/70 to-yellow-600",
             circle1: "bg-gradient-to-br from-yellow-400 to-yellow-600",
@@ -16,7 +26,7 @@ export default function DecorativeDivider({ colorScheme = "gold" }) {
         }
     };
 
-    const colors = colorSchemes[colorScheme] || colorSchemes.gold;
+    const colors = colorSchemes[colorScheme] ?? colorSchemes.gold;
 
     return (
         <div className="flex justify-center p-3">

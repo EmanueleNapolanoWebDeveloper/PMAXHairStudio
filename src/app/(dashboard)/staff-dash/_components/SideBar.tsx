@@ -1,53 +1,25 @@
 'use client'
 
-import React, { useState } from 'react';
-import {
-    Calendar,
-    Users,
-    Scissors,
-    UserCheck,
-    TrendingUp,
-    Euro,
-    Clock,
-    Star,
-    Package,
-    BarChart3,
-    Settings,
-    Bell,
-    Search,
-    Filter,
-    Plus,
-    Edit,
-    Trash2,
-    Eye,
-    ChevronRight,
-    Activity,
-    Menu,
-    X,
-    User,
-    Target,
-    Award,
-    MessageCircle,
-    CheckCircle,
-    AlertCircle,
-    Coffee,
-
-    DollarSign,
-    BookOpen,
-    Camera,
-    Heart
-} from 'lucide-react';
+import React, { ReactNode } from 'react';
+import { LucideIcon, Scissors, X } from 'lucide-react';
 import { useAuth } from '@/src/app/store/AuthContext';
+
+type SidebarItem = {
+  id: string;
+  name: string;
+  icon: LucideIcon; // 👈 invece di ReactNode o JSXElementConstructor
+};
 
 type StaffSideBarType = {
     isOpen: boolean,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     activeSection: string,
     setActiveSection: React.Dispatch<React.SetStateAction<string>>
-    sidebarItems: { id: string; name: string; icon: any }[]
+    sidebarItems: SidebarItem[],
 }
 
 export default function StaffSideBar({ isOpen, setIsOpen, activeSection, setActiveSection, sidebarItems }: StaffSideBarType) {
+
 
     const { profile } = useAuth();
 
@@ -66,7 +38,7 @@ export default function StaffSideBar({ isOpen, setIsOpen, activeSection, setActi
         w-64 bg-gradient-to-b from-gray-900 to-black shadow-lg transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-              
+
 
                 {/* Staff Info */}
                 <div className="p-6 border-b border-gray-700">

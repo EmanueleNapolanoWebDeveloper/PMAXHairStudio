@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useAuth } from "@/src/app/store/AuthContext"
-import { Menu, Bell } from "lucide-react"
+import { Menu } from "lucide-react"
 import Link from "next/link"
 
 type HeaderDashProps = {

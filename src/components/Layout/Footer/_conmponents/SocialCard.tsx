@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import InstagramLogo from '@/public/assets/logos/iconInstagram.svg'
-import MailIcon from '@/public/assets/logos/iconMail.png'
 import WhatAppIcon from '@/public/assets/logos/iconWhatApp.svg'
 import { Users, MessageSquare } from 'lucide-react'
 

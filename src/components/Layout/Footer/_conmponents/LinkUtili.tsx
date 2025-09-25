@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, ExternalLink, Briefcase, ArrowRight } from 'lucide-react'
+import { ExternalLink, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 const quickLinks = [

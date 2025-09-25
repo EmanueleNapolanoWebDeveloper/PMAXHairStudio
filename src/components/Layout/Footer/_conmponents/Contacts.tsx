@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, ExternalLink, Briefcase, ArrowRight } from 'lucide-react'
+import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react'
 
 export default function Contacts() {
     return (

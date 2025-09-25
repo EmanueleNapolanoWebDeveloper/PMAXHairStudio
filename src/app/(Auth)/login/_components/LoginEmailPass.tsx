@@ -12,11 +12,9 @@ export default function LoginEmailPassword() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [remember, setRemember] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
     const isValid = () => isValidEmail(email) && password.length >= 6;
 
     const router = useRouter()
@@ -29,7 +27,6 @@ export default function LoginEmailPassword() {
                 setEmail("");
                 setPassword("");
                 setShowPassword(false);
-                setRemember(false);
                 setError("");
 
                 toast.success("Login avvenuto con successo");
@@ -38,13 +35,13 @@ export default function LoginEmailPassword() {
                 setError(data?.message || "Errore durante il login");
             }
         },
-        onError: (err: any) => {
+        onError: (err: Error) => {
             setError(err?.message || "Errore durante il login");
             toast.error("Errore durante il login");
         }
     });
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
@@ -65,7 +62,7 @@ export default function LoginEmailPassword() {
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full" />
 
             <div className="relative z-10">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 bg-clip-text ">
                     Accedi
                 </h2>
 
@@ -128,11 +125,11 @@ export default function LoginEmailPassword() {
 
                     <button
                         type="submit"
-                        disabled={!isValid() || submitting}
+                        disabled={!isValid() || mutation.isPending}
                         className="w-full py-4 rounded-2xl font-bold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 text-white hover:from-gray-700 hover:via-gray-800 hover:to-gray-700 relative overflow-hidden"
                     >
                         <span className="relative z-10">
-                            {submitting ? "Accedendo..." : "Accedi"}
+                            {mutation.isPending ? "Accedendo..." : "Accedi"}
                         </span>
                     </button>
                 </form>

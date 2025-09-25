@@ -2,12 +2,13 @@
 
 import { X } from "lucide-react"
 import Link from "next/link"
-import { ProfileType, User } from "@/src/app/store/AuthContext"
+import { User } from "@supabase/supabase-js"
+import { Profile } from "@/src/lib/types"
 
 type UserSectionnavMobileProps = {
   onClickMenu: () => void
   user: User | null
-  profile: ProfileType | null
+  profile: Profile | null
   onLogout: () => Promise<void> // Logout async
 }
 

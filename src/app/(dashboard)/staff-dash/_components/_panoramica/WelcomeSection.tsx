@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from "@/src/app/store/AuthContext"
-import { Reservation } from "@/src/lib/types"
 
 type WelcomeStaffSectionProps = {
     todayAppointments: number | undefined
@@ -12,7 +11,7 @@ type WelcomeStaffSectionProps = {
 export default function WelcomeStaffSection({ todayAppointments }: WelcomeStaffSectionProps) {
 
     const { profile } = useAuth();
-    
+
 
 
     return (

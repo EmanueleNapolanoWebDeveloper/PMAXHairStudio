@@ -56,7 +56,7 @@ export default function Saloon() {
             <div className="flex flex-col items-center justify-center max-w-4xl mx-auto mb-16">
                 <p className="text-lg md:text-xl font-light text-center text-gray-800 leading-relaxed">
                     Ogni dettaglio del nostro salone racconta chi siamo. <br />
-                    Dalla poltrona al rasoio, dall'arredamento urbano al tocco old school,
+                    Dalla poltrona al rasoio, dall&apos;arredamento urbano al tocco old school,
                     <span className="text-red-600 font-medium">
                         {" "}
                         ogni angolo è pensato per farti sentire a casa, ma con stile.

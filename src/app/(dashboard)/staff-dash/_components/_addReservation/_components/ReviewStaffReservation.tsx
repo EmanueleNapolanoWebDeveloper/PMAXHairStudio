@@ -1,4 +1,4 @@
-import { Check, Clock, CreditCard, User, Scissors, Calendar } from "lucide-react";
+import { Check, CreditCard, User, Scissors, Calendar } from "lucide-react";
 
 interface Service {
   id: string;
@@ -175,7 +175,7 @@ export default function ReviewStaffReservation({
             {getPaymentMethodLabel(formData.paymentMethod)}
           </p>
           {formData.paymentMethod === 'pending' && (
-            <p className="text-xs text-amber-600">Da pagare all'arrivo</p>
+            <p className="text-xs text-amber-600">Da pagare all&apos;arrivo</p>
           )}
         </div>
       </div>

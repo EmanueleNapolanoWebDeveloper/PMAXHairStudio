@@ -1,6 +1,5 @@
 import Footer from "@/src/components/Layout/Footer/Footer"
 import Navbar from "@/src/components/Layout/Navbar/Navbar"
-import WhatsAppCTA from "@/src/components/Layout/CTA"
 
 export default function HomeLayout({
     children,
@@ -12,8 +11,6 @@ export default function HomeLayout({
             <Navbar />
             {children}
             <Footer />
-
         </main>
-
     )
 }

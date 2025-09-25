@@ -1,20 +1,22 @@
 "use client"
 
-import type React from "react"
-
-import { Check, X, Calendar, Plus, User, Phone, Mail, Clock } from "lucide-react"
-import { useState } from "react"
+import { Check, X, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { useMemo } from "react"
 
 interface FidelityCardProps {
   totalSlots?: number
   completed: number
+  onActionClick?: () => void
 }
+
+type SlotState = "completed" | "empty"
 
 const ActionCard = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
+    aria-label="Nuova prenotazione"
     className="w-full bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-white group border border-red-500/30"
   >
     <div className="flex items-center gap-4 mb-4">
@@ -29,19 +31,20 @@ const ActionCard = ({ onClick }: { onClick: () => void }) => (
   </button>
 )
 
-
-
-const FidelityCard = ({ totalSlots = 10, completed }: FidelityCardProps) => {
-
-  const progressPercentage = (completed / totalSlots) * 100
-  const slots = Array.from({ length: totalSlots }, (_, i) => (i < completed ? "completed" : "empty"))
+const FidelityCard = ({ totalSlots = 10, completed, onActionClick }: FidelityCardProps) => {
   const router = useRouter()
+
+  const progressPercentage = useMemo(() => (completed / totalSlots) * 100, [completed, totalSlots])
+
+  const slots = useMemo<SlotState[]>(() => {
+    return Array.from({ length: totalSlots }, (_, i) => (i < completed ? "completed" : "empty"))
+  }, [totalSlots, completed])
 
   return (
     <div className="space-y-6">
-      <ActionCard onClick={() => router.push('/reservation')} />
+      <ActionCard onClick={onActionClick ?? (() => router.push('/reservation'))} />
 
-      <div className="bg-gradient-to-br from-black via-red-950/20 to-black/60 shadow-2xl p-8 hover:shadow-3xl transition-all duration-300 w-full max-w-md mx-auto border border-red-900/30 backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-black via-red-950/20 to-black/60 shadow-2xl p-8 rounded-2xl w-full max-w-md mx-auto border border-red-900/30 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -63,7 +66,7 @@ const FidelityCard = ({ totalSlots = 10, completed }: FidelityCardProps) => {
             <span className="text-sm font-medium text-slate-300">Progresso Prenotazioni</span>
             <span className="text-sm font-bold text-red-400">{Math.round(progressPercentage)}%</span>
           </div>
-          <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden" role="progressbar" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={totalSlots}>
             <div
               className="h-full bg-gradient-to-r from-red-600 to-rose-500 rounded-full transition-all duration-500 ease-out shadow-lg shadow-red-500/30"
               style={{ width: `${progressPercentage}%` }}
@@ -73,12 +76,13 @@ const FidelityCard = ({ totalSlots = 10, completed }: FidelityCardProps) => {
 
         {/* Slots Grid */}
         <div className="grid grid-cols-5 gap-3 mb-6">
-          {slots.map((slot, index) => (
+          {slots.map((slot, idx) => (
             <div
-              key={index}
-              className={`relative flex items-center justify-center w-12 h-12 rounded-xl text-lg font-bold transition-all duration-300 ${slot === "completed"
-                ? "bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg shadow-red-500/30 scale-105"
-                : "bg-slate-700 text-slate-500 hover:bg-slate-600"
+              key={idx}
+              className={`relative flex items-center justify-center w-12 h-12 rounded-xl text-lg font-bold transition-all duration-300
+                ${slot === "completed"
+                  ? "bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg shadow-red-500/30 scale-105"
+                  : "bg-slate-700 text-slate-500 hover:bg-slate-600"
                 }`}
             >
               {slot === "completed" ? <Check className="w-5 h-5" /> : <X className="w-4 h-4" />}

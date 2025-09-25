@@ -10,25 +10,34 @@ import { useState } from "react"
 import { updateReservation } from "@/src/lib/actions"
 import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
+import Error from "next/error"
 
 type ModalEditProps = {
     setShowReschedule: (show: boolean) => void
     reservation: Reservation
+    loading?: boolean
+    handleRescheduleConfirm: () => Promise<void> // callback da chiamare quando confermi la modifica
 }
 
 export default function ModalEditRes({ setShowReschedule, reservation }: ModalEditProps) {
-    const { services: allServices, timeResBarber } = useStaffContext()
+    const { services, timeResBarber } = useStaffContext()
     const queryClient = useQueryClient()
 
     const [loading, setLoading] = useState(false)
     const [newDate, setNewDate] = useState(reservation.date)
     const [newTime, setNewTime] = useState(reservation.start_time)
-    const [selectedServices, setSelectedServices] = useState<Service[]>(
-        reservation.services
-            .map(s => allServices.find(as => as.title === s) as Service)
-            .filter(Boolean)
-    )
-    const [activeTab, setActiveTab] = useState(allServices[0]?.category || "")
+    const [selectedServices, setSelectedServices] = useState<Service[]>(() => {
+        if (!services.data) return [] // se non ci sono servizi
+        return reservation.services
+            .map(title => services.data?.find(s => s.title === title))
+            .filter((s): s is Service => !!s) // type guard
+    })
+
+    // Stato della tab attiva
+    const [activeTab, setActiveTab] = useState<string>(() => {
+        if (!services.data || services.data.length === 0) return "tutti"
+        return services.data[0].category || "tutti"
+    })
 
     const handleToggleService = (service: Service) => {
         setSelectedServices(prev =>
@@ -62,23 +71,27 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
 
             // --- AGGIORNA RESERVATION ---
             await updateReservation(reservation.id, {
+                ...reservation, // copia tutti i campi esistenti
                 date: newDate,
                 start_time: newTime,
                 end_time: endTime,
                 services: selectedServices.map(s => s.title),
-                amount: selectedServices.reduce((acc, s) => acc + (s.price || 0), 0)
-            })
+                amount: selectedServices.reduce((acc, s) => acc + (s.price || 0), 0),
+            } as Reservation)
 
             // 🔄 Refresha i dati
             await queryClient.invalidateQueries({ queryKey: ["reservations"] })
 
             toast.success("Appuntamento aggiornato con successo!")
             setShowReschedule(false)
-        } catch (err: any) {
-            console.error("Errore update:", err)
-            toast.error(err.message || "Errore durante l'aggiornamento")
-        } finally {
-            setLoading(false)
+        } catch (err) {
+            if (err instanceof Error) {
+                toast.error('Errore durante l\'aggiornamento')
+                console.error("Errore update:", err)
+            } else {
+                toast.error("Errore durante l'aggiornamento")
+                console.error("Errore non standard:", err)
+            }
         }
     }
 
@@ -186,7 +199,6 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
                 {/* Data */}
                 <label className="flex flex-col gap-1 text-sm text-gray-700">
                     <DataChoise
-                        isStaff={true}
                         date={newDate}
                         onChange={setNewDate}
                         resBarber={[]}
@@ -216,7 +228,7 @@ export default function ModalEditRes({ setShowReschedule, reservation }: ModalEd
                     loading={false}
                     setActiveTab={setActiveTab}
                     activeTab={activeTab}
-                    allServices={allServices}
+                    allServices={services.data || []}
                 />
 
                 {/* Footer */}

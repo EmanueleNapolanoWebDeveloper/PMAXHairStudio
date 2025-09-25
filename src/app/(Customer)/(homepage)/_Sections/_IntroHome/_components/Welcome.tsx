@@ -47,7 +47,7 @@ export default function AboutUs() {
             {/* Story Text */}
             <div className="space-y-4">
               <p className="text-lg text-gray-300 leading-relaxed">
-                <span className="text-red-400 font-semibold text-xl">Dal 1985</span>, la nostra passione per l'arte del barbiere 
+                <span className="text-red-400 font-semibold text-xl">Dal 1985</span>, la nostra passione per l &apos; arte del barbiere 
                 si tramanda di generazione in generazione. Quello che è iniziato come un piccolo negozio di quartiere 
                 è diventato un punto di riferimento per chi cerca <span className="text-white font-semibold">stile, 
                 tradizione e innovazione</span>.
@@ -56,7 +56,7 @@ export default function AboutUs() {
               <p className="text-lg text-gray-300 leading-relaxed">
                 Ogni taglio racconta una storia, ogni cliente è parte della nostra famiglia. 
                 Utilizziamo <span className="text-red-400 font-semibold">tecniche tradizionali</span> unite 
-                alle più moderne tendenze per offrirti un'esperienza unica e personalizzata.
+                alle più moderne tendenze per offrirti un &apos; esperienza unica e personalizzata.
               </p>
             </div>
 
@@ -82,13 +82,13 @@ export default function AboutUs() {
             
             {/* Vintage Quote Box */}
             <div className="bg-gradient-to-br from-red-900/20 to-red-800/10 p-8 rounded-2xl border border-red-700/30 shadow-xl">
-              <div className="text-6xl text-red-600 font-serif mb-4">"</div>
+              <div className="text-6xl text-red-600 font-serif mb-4">&quot;</div>
               <blockquote className="text-xl text-gray-200 italic leading-relaxed mb-4">
                 Non tagliamo solo capelli, creiamo stile. 
                 Non facciamo solo la barba, coltiviamo fiducia.
               </blockquote>
               <cite className="text-red-400 font-semibold">— Massimo Polverino, Master Barber</cite>
-              <div className="text-6xl text-red-600 font-serif text-right">"</div>
+              <div className="text-6xl text-red-600 font-serif text-right">&quot;</div>
             </div>
 
             {/* Services Highlights */}

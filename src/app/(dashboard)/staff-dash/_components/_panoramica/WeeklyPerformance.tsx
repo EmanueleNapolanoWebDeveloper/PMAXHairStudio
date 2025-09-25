@@ -5,8 +5,14 @@ type WeeklyStatsInlineProps = {
   reservations: Reservation[]
 }
 
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+};
+
 // Custom Tooltip Component
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">

@@ -8,10 +8,6 @@ import Staffs from "./_Sections/_Staffs/Staffs";
 import Divider from "./_Sections/_PmaxDivider/Divider";
 import Saloon from "./_Sections/_Saloon/Saloon";
 import WhyChoose from "./_Sections/_WhyChoise/whyChose";
-import DecorativeDivider from "./_Sections/DecorativeDivider";
-
-
-
 
 
 export default function Home() {

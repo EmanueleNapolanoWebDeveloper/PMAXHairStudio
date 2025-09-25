@@ -7,7 +7,7 @@ import { updateReservationStatus } from '@/src/lib/actions';
 
 interface InProgressReservationProps {
   reservations?: Reservation[];
-  onCompleteAppointment?: (reservationId: string) => void;
+  onCompleteAppointment?: (reservationId: number) => void;
 }
 
 export default function InProgressReservation({
@@ -18,39 +18,34 @@ export default function InProgressReservation({
   const [elapsedTime, setElapsedTime] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  // Trova l'appuntamento in corso
-  const findInProgressAppointment = (): Reservation | null => {
-    const today = new Date().toISOString().split('T')[0];
-    return reservations.find(r => r.date === today && r.status === 'in_corso') || null;
-  };
-
-  // Calcola tempo trascorso
-  const calculateElapsedTime = (appointment: Reservation): string => {
-    const now = new Date();
-    const [hours, minutes] = appointment.start_time.split(':').map(Number);
-    const startTime = new Date();
-    startTime.setHours(hours, minutes, 0, 0);
-
-    const diffMs = now.getTime() - startTime.getTime();
-    if (diffMs <= 0) return '0m';
-
-    const diffMinutes = Math.floor(diffMs / 60000);
-    const h = Math.floor(diffMinutes / 60);
-    const m = diffMinutes % 60;
-    return h > 0 ? `${h}h ${m}m` : `${m}m`;
-  };
-
   useEffect(() => {
     const update = () => {
-      const current = findInProgressAppointment();
+      // Trova l'appuntamento in corso
+      const today = new Date().toISOString().split('T')[0];
+      const current = reservations.find(r => r.date === today && r.status === 'in_corso') || null;
+
       setInProgressAppointment(current);
-      if (current) setElapsedTime(calculateElapsedTime(current));
+
+      if (current) {
+        const [hours, minutes] = current.start_time.split(':').map(Number);
+        const startTime = new Date();
+        startTime.setHours(hours, minutes, 0, 0);
+
+        const diffMs = new Date().getTime() - startTime.getTime();
+        if (diffMs <= 0) return setElapsedTime('0m');
+
+        const diffMinutes = Math.floor(diffMs / 60000);
+        const h = Math.floor(diffMinutes / 60);
+        const m = diffMinutes % 60;
+        setElapsedTime(h > 0 ? `${h}h ${m}m` : `${m}m`);
+      }
     };
 
     update();
-    const interval = setInterval(update, 60000);
+    const interval = setInterval(update, 60000); // aggiorna ogni minuto
     return () => clearInterval(interval);
   }, [reservations]);
+
   const getCustomerInfo = (reservation: Reservation) => {
     if (reservation.logged_id) {
       return {
@@ -58,7 +53,7 @@ export default function InProgressReservation({
         phone: reservation.logged_id?.phone || ''
       };
     } else {
-      let guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : '';
+      const guest = reservation.guest_datas ? JSON.parse(reservation.guest_datas) : {};
       return {
         name: guest.name || 'Cliente ospite',
         surname: guest.surname || '',
@@ -66,7 +61,6 @@ export default function InProgressReservation({
       };
     }
   };
-
 
   const handleCompleteAppointment = async () => {
     if (!inProgressAppointment) return;

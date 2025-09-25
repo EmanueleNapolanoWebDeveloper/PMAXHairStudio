@@ -1,7 +1,4 @@
 'use client'
-
-import { useState } from 'react'
-import { Calendar, UserCheck, Euro, Star } from 'lucide-react'
 import WelcomeStaffSection from './WelcomeSection'
 import PreviewReservationsStaff from './PreviewReservationsStaff'
 import RecentlyReviews from './RecentlyReviews'
@@ -9,17 +6,16 @@ import WeeklyPerformance from './WeeklyPerformance'
 import { Reservation, Reviews } from '@/src/lib/types'
 import NextAppointment from './NextAppointment'
 import InProgressReservation from './ReservationInCorso'
+import { StatusKey } from '../../page'
 
-type DashBoardContentProps = {
-    getStatusIcon: (status: string) => React.ElementType;
-    getStatusColor: (status: string) => string;
+export type DashBoardContentProps = {
+    getStatusIcon: (status: StatusKey) => React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    getStatusColor: (status: StatusKey) => string;
     reservations: Reservation[] | undefined; // può essere undefined finché React Query carica
     reviews: Reviews[]
 }
 
 export default function DashboardContent({ getStatusIcon, getStatusColor, reservations, reviews }: DashBoardContentProps) {
-
-    const [nextAppointment, setNextAppointment] = useState<Reservation | null>(null);
 
     const today = new Date()
     const todayFormatted = today.toISOString().split('T')[0] // "2025-09-03"
@@ -36,7 +32,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
                 <WelcomeStaffSection todayAppointments={todayReservations?.length} />
 
                 {/* Appuntamento in corso */}
-                <InProgressReservation reservations={reservations}/>
+                <InProgressReservation reservations={reservations} />
 
                 {/* next appointment */}
                 <NextAppointment reservations={reservations} />
@@ -53,7 +49,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
 
                     <div className="col-span-6 lg:col-span-2 space-y-6">
                         <RecentlyReviews reviews={reviews} />
-                        <WeeklyPerformance reservations={reservations} />
+                        <WeeklyPerformance reservations={reservations || []} />
                     </div>
                 </div>
             </div>

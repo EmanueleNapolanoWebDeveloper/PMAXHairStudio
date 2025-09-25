@@ -1,6 +1,6 @@
 'use server'
 
-import { Profile, Reservation, Reviews, Service } from "@/src/lib/types"
+import { Profile, Reservation, Reviews, Service, StaffNotes } from "@/src/lib/types"
 import { createClient } from "@/src/utils/supabase/server"
 
 
@@ -80,8 +80,11 @@ export async function CompleteRegistration({ userID, data }: CompleteRegistratio
 
         return { success: true }
 
-    } catch (error: any) {
-        return { error: error.message || 'Errore durante la registrazione' }
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return { error: error.message }
+        }
+        return { error: 'Errore durante la registrazione' }
     }
 }
 
@@ -343,7 +346,7 @@ export async function createReservation({
     }
 
     if (existingReservations && existingReservations.length > 0) {
-        const hasOverlap = existingReservations.some((r: any) => {
+        const hasOverlap = existingReservations.some((r: { start_time: string; end_time: string }) => {
             const existingDuration = timeToMinutes(r.end_time) - timeToMinutes(r.start_time);
             const existingSlots = generateTimeSlots(r.start_time, existingDuration);
             return durationArray.some(slot => existingSlots.includes(slot));
@@ -363,10 +366,10 @@ export async function createReservation({
         // 🔥 LOGICA PRINCIPALE: logged_id vs guest_datas
         logged_id: isGuest ? null : logged_id || null,
         guest_datas: isGuest ? {
-            name: guest_datas!.name.trim(),
-            surname: guest_datas!.surname.trim(),
-            phone: guest_datas!.phone.replace(/\s/g, ''), // Rimuovi spazi dal telefono
-            email: guest_datas!.email?.trim() || '',
+            name: guest_datas?.name?.trim(),
+            surname: guest_datas?.surname?.trim(),
+            phone: guest_datas?.phone?.replace(/\s/g, ''), // Rimuovi spazi dal telefono
+            email: guest_datas?.email?.trim() || '',
         } : null,
 
         // Dati comuni
@@ -402,7 +405,10 @@ export async function createReservation({
 
 // UPDATE RESERVATION
 
-export async function updateReservation(id: number, data: any) {
+export async function updateReservation(
+    id: number,
+    data: Partial<Reservation> // permette di aggiornare solo alcuni campi
+) {
     const supabase = await createClient()
 
     try {
@@ -414,9 +420,9 @@ export async function updateReservation(id: number, data: any) {
         if (error) throw error
 
         return resUpdated
-    } catch (error) {
-        console.log(error)
-        return
+    } catch (err: unknown) {
+        console.error('Errore updateReservation:', err)
+        throw err // rilancio l'errore per gestirlo nel componente
     }
 }
 
@@ -462,7 +468,7 @@ export async function deleteReservation(id: number) {
 // update res da prenotato a in_corso
 
 export async function updateReservationStatus(
-    reservationId: string,
+    reservationId: number,
     newStatus: string = "completato"
 ): Promise<void> {
     if (!reservationId) throw new Error("reservationId è richiesto");
@@ -479,9 +485,14 @@ export async function updateReservationStatus(
         if (error) throw error;
 
         console.log(`Prenotazione ${reservationId} aggiornata a status "${newStatus}"`, data);
-    } catch (err: any) {
-        console.error("Errore updateReservationStatus:", err.message || err);
-        throw new Error(`Impossibile aggiornare lo status: ${err.message || err}`);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error("Errore updateReservationStatus:", err.message);
+            throw new Error(`Impossibile aggiornare lo status: ${err.message}`);
+        } else {
+            console.error("Errore updateReservationStatus:", err);
+            throw new Error("Impossibile aggiornare lo status: errore sconosciuto");
+        }
     }
 }
 
@@ -510,7 +521,7 @@ export async function addReview({ customer, reservation_id, rating, comment }: R
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile inserire la recensione: ${error.message || error}`)
     }
@@ -550,7 +561,7 @@ export async function fetchAllReviews() {
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
@@ -592,7 +603,7 @@ export async function fetchReviewById(id: string) {
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere la recensione: ${error.message || error}`)
     }
@@ -608,7 +619,7 @@ export async function fetchReviewsFromReservation(reservationId: string) {
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
@@ -663,7 +674,7 @@ export async function fetchReviewsForStaffID(staffId: string) {
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.error(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
@@ -674,19 +685,8 @@ export async function fetchReviewsForStaffID(staffId: string) {
 
 // -------------> STAFF NOTES
 
-type Notes = {
-    author: Profile['id'],
-    title: string,
-    content: string,
-    date: string,
-    time: string,
-    reference: string,
-    priority: 'bassa' | 'media' | 'alta'
-}
 
-export async function addNotes({ author, title, content, date, time, reference, priority }: Notes) {
-
-    console.log('dati entrati', author, title, content, date, time, reference, priority);
+export async function addNotes({ author, title, content, note_date, time, reference, priority }: StaffNotes) {
 
     const supabase = await createClient()
 
@@ -694,10 +694,16 @@ export async function addNotes({ author, title, content, date, time, reference, 
         const { data, error } = await supabase
             .from('staffnotes')
             .insert({
-                author,
+                author: {
+                    id: author.id,
+                    name: author.name,
+                    surname: author.surname,
+                    email: author.email,
+                    phone: author.phone
+                },
                 title,
                 content,
-                note_date: date,
+                note_date: note_date,
                 time,
                 reference,
                 priority
@@ -707,7 +713,7 @@ export async function addNotes({ author, title, content, date, time, reference, 
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
@@ -725,25 +731,29 @@ export async function fetchAllMemos(id: string) {
             author(
                 id,
                 name,
-                surname
+                surname,
+                email,
+                phone
             ),
             title,
             content,
             note_date,
             time,
             reference,
-            priority`
-            )
+            priority,
+            created_at
+            `)
             .or(`reference.eq.${'tutti'},reference.eq.${id}`)
 
         if (error) throw error
 
         return data
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }
 }
+
 
 export async function deleteNote(id: number) {
     const supabase = await createClient()
@@ -757,7 +767,7 @@ export async function deleteNote(id: number) {
         console.log('Nota eliminata con successo');
 
         return
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         throw new Error(`Impossibile ottenere le recensioni: ${error.message || error}`)
     }

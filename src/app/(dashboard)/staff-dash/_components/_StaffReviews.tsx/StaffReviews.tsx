@@ -1,12 +1,17 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Star, User, ThumbsUp, Filter, Search } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Star, Filter, Search } from 'lucide-react';
 import { Reviews } from '@/src/lib/types';
 
-// Componente per le stelle
-const StarRating = ({ rating, size = 16 }) => {
+
+// ⭐ Componente per le stelle
+type StarRatingProps = {
+    rating: number;
+    size?: number;
+};
+
+const StarRating: React.FC<StarRatingProps> = ({ rating, size = 16 }) => {
     return (
         <div className="flex">
             {Array.from({ length: 5 }, (_, i) => (
@@ -23,9 +28,15 @@ const StarRating = ({ rating, size = 16 }) => {
     );
 };
 
-// Componente per l'avatar
-const CustomerAvatar = ({ customer, reviewId }) => {
-    const getInitials = (name: string, surname: string) => {
+
+// 👤 Componente per l'avatar cliente
+type CustomerAvatarProps = {
+    customer: Reviews['customer'];
+    reviewId: number | string;
+};
+
+const CustomerAvatar: React.FC<CustomerAvatarProps> = ({ customer, reviewId }) => {
+    const getInitials = (name?: string, surname?: string) => {
         if (!name && !surname) return "??";
         return `${name?.charAt(0) || ""}${surname?.charAt(0) || ""}`.toUpperCase();
     };
@@ -63,42 +74,45 @@ const CustomerAvatar = ({ customer, reviewId }) => {
     );
 };
 
-// Componente per una singola recensione
-const ReviewCard = ({ review }) => {
+
+// 📝 Singola recensione
+type ReviewCardProps = {
+    review: Reviews;
+};
+
+const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group">
             <div className="flex gap-4">
                 <CustomerAvatar customer={review.customer} reviewId={review.id} />
 
                 <div className="flex-1 min-w-0">
-                    {/* Header della recensione */}
+                    {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3">
-
-                            <div className="flex flex-col items-start gap-1">
-                                <h3 className="font-semibold text-gray-900 text-lg group-hover:text-gray-700 transition-colors">
-                                    {review.customer.name} {review.customer.surname}
-                                </h3>
-                                <span className="text-sm text-gray-500 font-medium">
-                                    {review.created_at
-                                        ? new Date(review.created_at).toLocaleDateString("it-IT", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                            year: "numeric",
-                                        })
-                                        : ""}
-                                </span>
-                            </div>
-                            <StarRating rating={review.rating} size={14} />
-
+                        <div className="flex flex-col items-start gap-1">
+                            <h3 className="font-semibold text-gray-900 text-lg group-hover:text-gray-700 transition-colors">
+                                {review.customer.name} {review.customer.surname}
+                            </h3>
+                            <span className="text-sm text-gray-500 font-medium">
+                                {review.created_at
+                                    ? new Date(review.created_at).toLocaleDateString("it-IT", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                    })
+                                    : ""}
+                            </span>
+                        </div>
+                        <StarRating rating={review.rating} size={14} />
                     </div>
 
-                    {/* Contenuto della recensione */}
+                    {/* Contenuto */}
                     <div className="space-y-3">
                         <h4 className="font-semibold text-xl text-gray-900 leading-tight">
-                            {review.title}
+                            {review.customer?.name} {review.customer?.surname}
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-base">
-                            "{review.comment}"
+                            &quot;{review.comment}&quot;
                         </p>
                     </div>
                 </div>
@@ -107,8 +121,16 @@ const ReviewCard = ({ review }) => {
     );
 };
 
-// Componente per i filtri
-const ReviewFilters = ({ selectedFilter, setSelectedFilter, searchTerm, setSearchTerm }) => {
+
+// 🎛️ Filtri
+type ReviewFiltersProps = {
+    selectedFilter: string;
+    setSelectedFilter: React.Dispatch<React.SetStateAction<string>>;
+    searchTerm: string;
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const ReviewFilters: React.FC<ReviewFiltersProps> = ({ selectedFilter, setSelectedFilter }) => {
     return (
         <div className="flex flex-col lg:flex-row gap-4 mb-8">
             <div className="flex items-center gap-3">
@@ -131,8 +153,14 @@ const ReviewFilters = ({ selectedFilter, setSelectedFilter, searchTerm, setSearc
     );
 };
 
-// Componente per l'header delle recensioni
-const ReviewsHeader = ({ averageRating, totalReviews }) => {
+
+// 📌 Header recensioni
+type ReviewsHeaderProps = {
+    averageRating: number;
+    totalReviews: number;
+};
+
+const ReviewsHeader: React.FC<ReviewsHeaderProps> = ({ averageRating, totalReviews }) => {
     return (
         <div className="text-center mb-10">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -151,8 +179,9 @@ const ReviewsHeader = ({ averageRating, totalReviews }) => {
     );
 };
 
-// Componente per stato vuoto
-const EmptyState = () => {
+
+// 🚫 Stato vuoto
+const EmptyState: React.FC = () => {
     return (
         <div className="text-center py-16">
             <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
@@ -168,34 +197,54 @@ const EmptyState = () => {
     );
 };
 
-// Componente principale
-const ActivityReviews = ({ allReviews }: Reviews) => {
-    const [selectedFilter, setSelectedFilter] = useState('all');
-    const [searchTerm, setSearchTerm] = useState('');
 
-    const reviews2 = allReviews;
+// 🔥 Componente principale
+type ActivityReviewsProps = {
+    allReviews: Reviews[];
+};
 
-    const filteredReviews2 = reviews2.filter(review => {
-        const matchesFilter = selectedFilter === 'all' ||
+const ActivityReviews: React.FC<ActivityReviewsProps> = ({ allReviews }) => {
+    const [selectedFilter, setSelectedFilter] = useState<string>('all');
+    const [searchTerm, setSearchTerm] = useState<string>('');
+
+    const localReviews = allReviews.map((review) => ({
+        ...review,
+        created_at: new Date(review.created_at).toLocaleDateString("it-IT", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        }),
+    }));
+
+    const filteredReviews = localReviews.filter((review) => {
+        const matchesFilter =
+            selectedFilter === 'all' ||
             (selectedFilter === '5' && review.rating === 5) ||
             (selectedFilter === '4' && review.rating === 4) ||
             (selectedFilter === '3-' && review.rating <= 3);
 
-        const matchesSearch = review.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            review.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        const matchesSearch =
+            review.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            review.customer.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
             review.comment.toLowerCase().includes(searchTerm.toLowerCase());
 
         return matchesFilter && matchesSearch;
     });
 
-    const averageRating = (reviews2.reduce((sum, review) => sum + review.rating, 0) / reviews2.length).toFixed(1);
-    const totalReviews2 = reviews2.length;
+    const averageRating =
+        localReviews.length > 0
+            ? parseFloat(
+                (localReviews.reduce((sum, review) => sum + review.rating, 0) / localReviews.length).toFixed(1)
+            )
+            : 0;
+
+    const totalReviews = localReviews.length;
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-gray-50 to-white min-h-screen">
             <ReviewsHeader
                 averageRating={averageRating}
-                totalReviews={totalReviews2}
+                totalReviews={totalReviews}
             />
 
             <ReviewFilters
@@ -205,11 +254,11 @@ const ActivityReviews = ({ allReviews }: Reviews) => {
                 setSearchTerm={setSearchTerm}
             />
 
-            {filteredReviews2.length === 0 ? (
+            {filteredReviews.length === 0 ? (
                 <EmptyState />
             ) : (
                 <div className="space-y-6">
-                    {filteredReviews2.map((review) => (
+                    {filteredReviews.map((review) => (
                         <ReviewCard key={review.id} review={review} />
                     ))}
                 </div>

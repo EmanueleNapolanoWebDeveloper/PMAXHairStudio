@@ -1,16 +1,14 @@
 'use client'
 
-import { User } from 'lucide-react';
 import ClientInfo from './ClientInfo';
 import { Reservation } from '@/src/lib/types';
 import { deleteReservation } from '@/src/lib/actions';
 
 type ReservationSlotType = {
     appointment: Reservation;
-    appointmentsLenght: number;
 }
 
-export default function ReservationSlot({ appointment }: ReservationSlotType) {
+export default function ReservationSlot({ appointment}: ReservationSlotType) {
 
 
     return (
@@ -52,12 +50,15 @@ export default function ReservationSlot({ appointment }: ReservationSlotType) {
 
                     <ClientInfo
                         reservation={appointment}
-                        client={appointment.logged_id || JSON.parse(appointment.guest_datas)}
+                        client={
+                            appointment.logged_id || (appointment.guest_datas ? JSON.parse(appointment.guest_datas) : { name: '', surname: '', phone: '', email: '' })
+                        }
                         services={appointment.services}
-                        note={appointment.note}
+                        note={appointment.note || ''}
                         price={appointment.amount}
                         status={appointment.status}
                         onDelete={() => deleteReservation(appointment.id)}
+                        onReschedule={() => { }}
                     />
                 </div>
             </div>

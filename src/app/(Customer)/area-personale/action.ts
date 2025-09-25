@@ -5,10 +5,9 @@ type FormData = {
     name: string
     surname: string,
     phone: string,
-    user_id: string
 }
 
-export async function UpdateProfile({ name, surname, phone, user_id }: FormData) {
+export async function UpdateProfile({ name, surname, phone }: FormData) {
     const supabase = await createClient()
 
     const { data, error } = await supabase.auth.updateUser({

@@ -1,7 +1,6 @@
 import Image from "next/image"
 import HeroUserSection from "./HeroUserSection"
 import styles from "@/src/app/(Customer)/homepage.module.css"
-import ReservationModal from "@/src/components/Layout/ReservationModal"
 
 export default function HeroLeft() {
   return (

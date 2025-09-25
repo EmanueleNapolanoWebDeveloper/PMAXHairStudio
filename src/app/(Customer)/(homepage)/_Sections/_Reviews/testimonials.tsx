@@ -11,11 +11,27 @@ export default function Testimonials() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrent((prev) => (prev + 1) % recensioni.length)
-        }, 5000) // cambia recensione ogni 5s
+        }, 5000)
         return () => clearInterval(interval)
     }, [])
 
     const review = recensioni[current]
+
+    // funzione che genera le stelle
+    const renderStars = (rating: number) => {
+        return (
+            <div className="flex justify-center mt-2">
+                {Array.from({ length: 5 }, (_, i) => (
+                    <span
+                        key={i}
+                        className={i < rating ? "text-yellow-400 text-lg" : "text-gray-500 text-lg"}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
+        )
+    }
 
     return (
         <section className={`relative bg-cover bg-center bg-no-repeat py-20 px-6 text-center text-white ${styles.backgroundTestimonialsHome}`}>
@@ -51,7 +67,9 @@ export default function Testimonials() {
 
                         <div className="mt-10">
                             <h4 className="text-red-500 text-2xl font-bold">{review.user}</h4>
-                            <p className="text-sm text-gray-300">{review.from}</p>
+
+                            {/* qui stelle */}
+                            {renderStars(review.rating)}
                         </div>
                     </motion.div>
                 </AnimatePresence>

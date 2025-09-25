@@ -11,11 +11,9 @@ export default function RecentlyReviews({ reviews }: RecentlyReviewsProps) {
 
     const safeReviews = reviews || []
 
-    console.log('reviews:', safeReviews);
-
     // Calcolo rating medio
     const averageRating =
-        safeReviews.length > 0
+        safeReviews?.length > 0
             ? (safeReviews.reduce((sum, client) => sum + (client.rating || 0), 0) / safeReviews.length).toFixed(1)
             : 0
 

@@ -1,5 +1,4 @@
 'use client'
-import { MapPin, Phone, Mail, ExternalLink, Briefcase, ArrowRight } from 'lucide-react'
 import LogoPM from '@/public/assets/logos/P-MaxLogoNoBg.png'
 import OpeningHours from './_conmponents/TabellaOrari'
 import SocialSection from './_conmponents/SocialCard'

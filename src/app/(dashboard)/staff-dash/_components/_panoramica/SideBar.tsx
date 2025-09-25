@@ -1,50 +1,14 @@
 'use client'
 
-import React, { useState } from 'react';
-import {
-    Calendar,
-    Users,
-    Scissors,
-    UserCheck,
-    TrendingUp,
-    Euro,
-    Clock,
-    Star,
-    Package,
-    BarChart3,
-    Settings,
-    Bell,
-    Search,
-    Filter,
-    Plus,
-    Edit,
-    Trash2,
-    Eye,
-    ChevronRight,
-    Activity,
-    Menu,
-    X,
-    User,
-    Target,
-    Award,
-    MessageCircle,
-    CheckCircle,
-    AlertCircle,
-    Coffee,
-
-    DollarSign,
-    BookOpen,
-    Camera,
-    Heart
-} from 'lucide-react';
+import React from 'react';
+import { X, BarChart3, Calendar, Clock, UserCheck, Target, Euro, Camera, Star, BookOpen, User, Scissors } from 'lucide-react';
 
 type StaffSideBarType = {
-    isOpen: boolean,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-    activeSection: string,
-    setActiveSection: React.Dispatch<React.SetStateAction<string>>
-
-}
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    activeSection: string;
+    setActiveSection: React.Dispatch<React.SetStateAction<string>>;
+};
 
 const sidebarItems = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
@@ -70,11 +34,13 @@ export default function StaffSideBar({ isOpen, setIsOpen, activeSection, setActi
                 />
             )}
 
-            <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-gradient-to-b from-gray-900 to-black shadow-lg transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+            <aside
+                className={`
+                    fixed lg:static inset-y-0 left-0 z-50
+                    w-64 bg-gradient-to-b from-gray-900 to-black shadow-lg transform transition-transform duration-300 ease-in-out
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                `}
+            >
                 {/* Logo Header */}
                 <div className="p-6 border-b border-gray-700">
                     <div className="flex items-center justify-between">
@@ -139,6 +105,5 @@ export default function StaffSideBar({ isOpen, setIsOpen, activeSection, setActi
                 </nav>
             </aside>
         </>
-
-    )
+    );
 }

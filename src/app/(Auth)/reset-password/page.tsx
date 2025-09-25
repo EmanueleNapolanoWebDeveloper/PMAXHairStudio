@@ -1,27 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { updatePassword } from "./action"
-import { useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
 
 export default function ResetPasswordPage() {
-    const searchParams = useSearchParams()
     const router = useRouter()
     const [password, setPassword] = useState("")
     const [confirm, setConfirm] = useState("")
-    const [message, setMessage] = useState("")
     const [loading, setLoading] = useState(false)
-
-    const type = searchParams.get("type")
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (password !== confirm) {
-            setMessage("Le password non coincidono")
+
+        // Validazioni client
+        if (password.length < 6) {
+            toast.error("La password deve avere almeno 6 caratteri")
             return
         }
+
+        if (password !== confirm) {
+            toast.error("Le password non coincidono")
+            return
+        }
+
         setLoading(true)
         const res = await updatePassword(password)
 
@@ -31,34 +34,47 @@ export default function ResetPasswordPage() {
             return
         }
 
-        if (res.success) {
-            toast.success(res.message);
-            setTimeout(() => router.push("/"), 1500)
-        }
+        toast.success(res.message)
+        setTimeout(() => {
+            setLoading(false)
+            router.push("/")
+        }, 1500)
     }
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-slate-700 w-full">
             <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
-                <h2 className="text-xl font-bold mb-4 text-center">Imposta nuova password</h2>
-                <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto p-6 bg-white rounded-xl shadow-md">
-                    <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Reset Password</h2>
+                <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+                    Imposta nuova password
+                </h2>
 
-                    <input
-                        type="password"
-                        placeholder="Nuova password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
-                    />
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label htmlFor="password" className="sr-only">Nuova password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="Nuova password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={6}
+                            className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
+                        />
+                    </div>
 
-                    <input
-                        type="password"
-                        placeholder="Conferma password"
-                        value={confirm}
-                        onChange={(e) => setConfirm(e.target.value)}
-                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
-                    />
+                    <div>
+                        <label htmlFor="confirm" className="sr-only">Conferma password</label>
+                        <input
+                            id="confirm"
+                            type="password"
+                            placeholder="Conferma password"
+                            value={confirm}
+                            onChange={(e) => setConfirm(e.target.value)}
+                            required
+                            className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
+                        />
+                    </div>
 
                     <button
                         type="submit"
@@ -72,8 +88,6 @@ export default function ResetPasswordPage() {
                         Se non hai richiesto il reset, ignora questa email.
                     </p>
                 </form>
-
-                {message && <p className="text-sm mt-3 text-center">{message}</p>}
             </div>
         </div>
     )

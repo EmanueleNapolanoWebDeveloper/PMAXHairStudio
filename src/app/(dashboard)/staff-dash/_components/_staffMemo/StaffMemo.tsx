@@ -1,54 +1,52 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@/src/app/store/AuthContext'
+import { useStaffContext } from '@/src/app/store/StaffContext'
 import React, { useState, useEffect } from 'react'
-import { addNotes, fetchAllMemos, getEmployees, deleteNote } from '@/src/lib/actions'
-import { Calendar, Clock, User, Plus, X, Edit3, Trash2, Save } from 'lucide-react'
+import { addNotes, deleteNote } from '@/src/lib/actions'
 import FormAddNotes from './_components/FormAddNotes'
-import NoteSlot from './_components/NoteSlot'
 import toast from 'react-hot-toast'
 import { createClient } from '@/src/utils/supabase/client'
 import NotesList from './_components/NoteList'
+import { RealtimeChannel } from '@supabase/supabase-js'
+import { Plus } from 'lucide-react'
+import { StaffNotes, StaffNotesForm } from '@/src/lib/types'
 
-const StaffNotes = () => {
-    const { user } = useAuth()
+const StaffsNotes = () => {
+    const { user, profile } = useAuth()
+    const { staffNotes, employees } = useStaffContext()
     const queryClient = useQueryClient()
     const supabase = createClient()
 
     const today = new Date().toISOString().split('T')[0]
 
     const [showAddForm, setShowAddForm] = useState(false)
-    const [editingNote, setEditingNote] = useState(null)
+    const [editingNote, setEditingNote] = useState<StaffNotes | null>(null)
     const [filterDate, setFilterDate] = useState(today)
-    const [reference, setReference] = useState('tutti')
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<StaffNotes | StaffNotesForm>({
+        author: {
+            id: user?.id ?? '',
+            name: profile?.name ?? '',
+            surname: profile?.surname ?? '',
+            email: profile?.email ?? '',
+            phone: profile?.phone ?? ''
+        },
         title: '',
         content: '',
-        date: '',
+        note_date: today,
         time: '',
         reference: 'tutti',
-        priority: 'bassa'
+        priority: 'bassa',
+        created_at: new Date().toISOString(),
     })
 
-    // Fetch Memos
-    const { data: memos = [], isLoading, refetch } = useQuery({
-        queryKey: ['memos', user?.id],
-        queryFn: () => fetchAllMemos(user?.id),
-        enabled: !!user?.id,
-        refetchInterval: 5000, // Refetch ogni 5 secondi come fallback
-    })
-
-    console.log('memos:', memos);
-    
-
-    // Create Note Mutation
+    // Mutations
     const { mutate: createNote, isPending: isCreating } = useMutation({
         mutationFn: addNotes,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['memos', user?.id] })
             resetForm()
-            setShowAddForm(false)
             toast.success('Nota aggiunta con successo!')
         },
         onError: (error) => {
@@ -57,8 +55,7 @@ const StaffNotes = () => {
         },
     })
 
-    // Delete Note Mutation
-    const { mutate: deleteStaffNote, isPending: isDeleting } = useMutation({
+    const { mutate: deleteStaffNote } = useMutation({
         mutationFn: deleteNote,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['memos', user?.id] })
@@ -70,39 +67,20 @@ const StaffNotes = () => {
         }
     })
 
-    // Fetch Staff
-    const { data: staffs = [] } = useQuery({
-        queryKey: ['staff', user?.id],
-        queryFn: getEmployees,
-        enabled: !!user?.id,
-    })
-
-    // REALTIME SETUP
+    // Realtime
     useEffect(() => {
         if (!user?.id) return
-
-        let channel;
+        let channel: RealtimeChannel
 
         const setupRealtime = async () => {
             try {
-
                 channel = supabase
                     .channel('staffnotes-changes')
                     .on(
                         'postgres_changes',
-                        {
-                            event: '*',
-                            schema: 'public',
-                            table: 'staffnotes'
-                        },
+                        { event: '*', schema: 'public', table: 'staffnotes' },
                         (payload) => {
-
-                            // Ricarica i dati quando c'è un cambiamento
-                            queryClient.invalidateQueries({
-                                queryKey: ['memos', user.id]
-                            })
-
-                            // Mostra notifica se necessario
+                            queryClient.invalidateQueries({ queryKey: ['memos', user.id] })
                             if (payload.eventType === 'INSERT' && payload.new?.author !== user.id) {
                                 toast('Nuova nota aggiunta!', { icon: '📝' })
                             }
@@ -112,23 +90,16 @@ const StaffNotes = () => {
                         }
                     )
                     .subscribe()
-
             } catch (error) {
                 console.error('❌ Errore setup realtime:', error)
             }
         }
 
         setupRealtime()
-
-        return () => {
-            if (channel) {
-                console.log('🧹 Cleanup realtime')
-                supabase.removeChannel(channel)
-            }
-        }
+        return () => { if (channel) supabase.removeChannel(channel) }
     }, [user?.id, queryClient, supabase])
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = (field: keyof StaffNotesForm, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
@@ -137,14 +108,27 @@ const StaffNotes = () => {
             toast.error('Compila tutti i campi obbligatori')
             return
         }
+        const newNote: StaffNotes = {
+            author: {
+                id: profile?.id || '',
+                name: profile?.name || '',
+                surname: profile?.surname || '',
+                email: profile?.email || '',
+                phone: profile?.phone || ''
+            },
+            title: formData.title,
+            content: formData.content,
+            note_date: formData.note_date,
+            time: formData.time,
+            reference: formData.reference,
+            priority: formData.priority,
+            created_at: new Date().toISOString()
+        }
 
-        createNote({
-            ...formData,
-            author: user?.id,
-        })
+        createNote(newNote)
     }
 
-    const handleDelete = (id) => {
+    const handleDelete = (id: number) => {
         if (window.confirm('Sei sicuro di voler eliminare la nota?')) {
             deleteStaffNote(id)
         }
@@ -154,55 +138,32 @@ const StaffNotes = () => {
         setFormData({
             title: '',
             content: '',
-            date: '',
+            note_date: today,
             time: '',
             reference: 'tutti',
-            priority: 'bassa',
+            priority: 'bassa'
         })
         setShowAddForm(false)
         setEditingNote(null)
     }
 
-    const handleEdit = (note) => {
-        setFormData(note)
+    const handleEdit = (note: StaffNotes) => {
+        setFormData({
+            title: note.title,
+            content: note.content,
+            note_date: note.note_date,
+            time: note.time,
+            reference: note.reference,
+            priority: note.priority
+        })
         setEditingNote(note)
         setShowAddForm(true)
-    }
-
-
-    const formatDate = (dateString) => {
-        if (!dateString) return ''
-        return new Date(dateString).toLocaleDateString('it-IT')
-    }
-
-    // Manual refresh function
-    const handleRefresh = () => {
-        refetch()
-        toast.success('Dati aggiornati!')
     }
 
     return (
         <div className="w-full mx-3 p-6 bg-white min-h-screen">
             <div className="mb-6">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-gray-600">Gestisci le comunicazioni interne e i promemoria</p>
-                    </div>
-                    <button
-                        onClick={handleRefresh}
-                        className="bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        )}
-                        Aggiorna
-                    </button>
-                </div>
+                <p className="text-gray-600">Gestisci le comunicazioni interne e i promemoria</p>
             </div>
 
             {/* Filtri */}
@@ -210,9 +171,7 @@ const StaffNotes = () => {
                 <div className="flex flex-wrap items-end justify-between gap-6">
                     <div className="flex gap-6">
                         <div className="min-w-0">
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">
-                                Filtra per data
-                            </label>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2">Filtra per data</label>
                             <div className="flex gap-3">
                                 <input
                                     type="date"
@@ -220,26 +179,15 @@ const StaffNotes = () => {
                                     onChange={(e) => setFilterDate(e.target.value)}
                                     className="px-4 py-2.5 border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
                                 />
-                                <button
-                                    onClick={() => setFilterDate(new Date().toISOString().split('T')[0])}
-                                    className="px-4 py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-medium text-sm"
-                                >
-                                    Oggi
-                                </button>
+                                <button onClick={() => setFilterDate(today)} className="px-4 py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-medium text-sm">Oggi</button>
                             </div>
                         </div>
                     </div>
                     <button
                         onClick={() => setShowAddForm(true)}
-                        className="bg-blue-600 text-white px-6 py-2.5 hover:bg-blue-700 focus:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
-                        disabled={isCreating}
+                        className="bg-blue-600 text-white px-6 py-2.5 hover:bg-blue-700 flex items-center gap-2.5"
                     >
-                        {isCreating ? (
-                            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        ) : (
-                            <Plus className="w-4 h-4" />
-                        )}
-                        Nuova Nota
+                        <Plus className="w-4 h-4" /> Nuova Nota
                     </button>
                 </div>
             </div>
@@ -252,23 +200,21 @@ const StaffNotes = () => {
                     resetForm={resetForm}
                     editingNote={editingNote}
                     handleSubmit={handleSubmit}
-                    staffs={staffs}
+                    staffs={employees.data}
                 />
             )}
 
             {/* Lista Note */}
             <NotesList
-                memos={memos}
-                user={user}
-                isLoading={isLoading}
+                memos={staffNotes.data}
+                userID={user?.id || ''}
+                filterDate={filterDate}
+                isLoading={staffNotes.isLoading}
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}
-                formatDate={formatDate}
             />
-
-
         </div>
     )
 }
 
-export default StaffNotes
+export default StaffsNotes

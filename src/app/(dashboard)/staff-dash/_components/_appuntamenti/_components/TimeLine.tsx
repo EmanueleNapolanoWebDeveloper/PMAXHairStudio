@@ -32,7 +32,6 @@ export default function TimeLine({ appointment, date }: TimeLineType) {
                     <div key={index} className="flex">
                         <ReservationSlot
                             appointment={appointment}
-                            appointmentsLength={datingAppointments.length} // ✅ Riferimento variabile corretto
                         />
                     </div>
                 ))

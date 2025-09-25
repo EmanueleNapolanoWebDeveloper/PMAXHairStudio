@@ -36,7 +36,7 @@ export async function SignUpEmailPassword({
 
         const phoneRegex = /^\d{9,11}$/;
         if (!phoneRegex.test(phone)) {
-            return { error: "Il numero di telefono deve contenere esattamente 10 cifre" }
+            return { error: "Il numero di telefono deve contenere dalle 9 alle 11 cifre" }
         }
 
         const supabase = await createClient()
@@ -55,8 +55,6 @@ export async function SignUpEmailPassword({
         })
 
         if (error) {
-
-            console.log('ciao', error);
 
 
             // Gestisci errori specifici
@@ -78,7 +76,7 @@ export async function SignUpEmailPassword({
 
         if (!data.user) return { error: "Errore durante la creazione dell'utente" }
 
-        const { data: profile, error: profileError } = await supabase.from('profiles').insert({
+        const { data: profile, error: profileError } = await supabase.from('profiles').insert([{
             id: data.user.id,
             name: name.trim(),
             surname: surname.trim(),
@@ -87,14 +85,15 @@ export async function SignUpEmailPassword({
             role,
             reg_complete: true,
             is_Admin: false
-        })
+        }])
+            .select()
 
         if (profileError) return { error: profileError.message }
 
 
         return {
             success: true,
-            data,
+            profile: profile?.[0],
             message: data.user?.email_confirmed_at
                 ? "Registrazione completata con successo!"
                 : "Registrazione completata! Controlla la tua email per confermare l'account."

@@ -1,22 +1,18 @@
 'use client'
-import { Clock, User, Scissors, Calendar, Plus, Phone, MapPin, Car } from 'lucide-react';
+import {  Clock, User } from 'lucide-react';
 import DateHeader from './_components/DateHeader';
-import ReservationSlot from './_components/ReservationSlot';
-import CardStats from './_components/CardStats';
-import { getStaffIDAppointments } from '@/src/lib/actions';
 import { useAuth } from '@/src/app/store/AuthContext';
 import { useState } from 'react';
 import TimeLine from './_components/TimeLine';
-import { Profile, Reservation } from '@/src/lib/types';
-import { useQuery } from '@tanstack/react-query';
+import { Reservation } from '@/src/lib/types';
 
 
-const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservations: Reservation[]; isLoading: boolean; isError: boolean; error: any }) => {
+const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservations: Reservation[]; isLoading: boolean; isError: boolean; error: string | null }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    
+
     // Hook per auth
-    const { user, profile, refreshProfile } = useAuth();
-    
+    const { user, refreshProfile } = useAuth();
+
 
     // Loading state
     if (isLoading) {
@@ -40,7 +36,7 @@ const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservati
                         <Clock className="h-12 w-12 mx-auto mb-2" />
                         <p className="text-lg font-medium">Ops! Qualcosa è andato storto</p>
                         <p className="text-sm text-gray-600 mt-1">
-                            {error?.message || 'Errore nel caricamento degli appuntamenti'}
+                            {error || 'Errore nel caricamento degli appuntamenti'}
                         </p>
                     </div>
                     <div className="space-x-4">
@@ -83,9 +79,9 @@ const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservati
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-6xl mx-auto px-4 py-6">
                 {/* Date Header */}
-                <DateHeader 
-                    selectedDate={selectedDate} 
-                    setSelectedData={handleDateSelect} 
+                <DateHeader
+                    selectedDate={selectedDate}
+                    setSelectedData={handleDateSelect}
                 />
 
                 {/* Timeline */}

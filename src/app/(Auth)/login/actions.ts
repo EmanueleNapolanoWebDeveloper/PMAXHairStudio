@@ -8,15 +8,41 @@ import { createClient } from "@/src/utils/supabase/server"
 export async function LoginWithEmailPassword(email: string, password: string) {
 
     const supabase = await createClient()
+
+    if (!email || !password) {
+        return { success: false, message: "Inserisci email e password" }
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+        return { success: false, message: "Inserisci un indirizzo email valido" }
+    }
+
+    if (password.length < 6) {
+        return { success: false, message: "La password deve avere almeno 6 caratteri" }
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
     })
 
     if (error) {
-        return { success: false, message: error.message }
-    } else {
-        return { success: true, message: "Login effettuato con successo" }
+        switch (error.code) {
+            case "invalid_credentials":
+                return { success: false, message: "Email o password non validi" }
+            case "over_email_send_rate_limit":
+                return { success: false, message: "Troppi tentativi. Attendi un minuto e riprova." }
+            default:
+                return { success: false, message: error.message }
+        }
+    }
+
+    return {
+        success: true,
+        message: "Login effettuato con successo",
+        user: data.user,
+        session: data.session,
     }
 }
 

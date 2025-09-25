@@ -1,13 +1,18 @@
 'use client'
 
-import { Clock, User, Scissors, Calendar, Phone, Info, X } from 'lucide-react';
+import { User, Scissors, Phone, Info, X } from 'lucide-react';
 import { Profile, Reservation } from '@/src/lib/types';
 import { useState } from 'react';
 import ModalEditRes from './ModalEditRes';
 
 type ClientInfoType = {
     reservation: Reservation
-    client: Profile;
+    client: {
+        name: string;
+        surname: string;
+        phone: string;
+        email: string;
+    };
     services: string[];
     note: string;
     price: number;
@@ -141,7 +146,12 @@ export default function ClientInfo({ reservation, client, services, note, price,
 
             {/* Modale Sposta Appuntamento */}
             {showReschedule && (
-                <ModalEditRes setShowReschedule={setShowReschedule} reservation={reservation} loading={loading} handleRescheduleConfirm={handleRescheduleConfirm} />
+                <ModalEditRes
+                    setShowReschedule={setShowReschedule}
+                    reservation={reservation}
+                    loading={loading}
+                    handleRescheduleConfirm={handleRescheduleConfirm}
+                />
             )}
 
         </div>

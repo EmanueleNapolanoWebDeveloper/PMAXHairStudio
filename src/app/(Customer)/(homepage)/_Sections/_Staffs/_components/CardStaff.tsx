@@ -1,6 +1,22 @@
+'use client'
+
 import Image from "next/image"
 
-export default function StaffCard({ member }) {
+interface StaffMember {
+    id: string | number
+    name: string
+    role: string
+    image?: string
+    experience: string
+    specialties: string[]
+    bio?: string
+}
+
+interface StaffCardProps {
+    member: StaffMember
+}
+
+export default function StaffCard({ member }: StaffCardProps) {
     return (
         <div
             key={member.id}
@@ -12,7 +28,8 @@ export default function StaffCard({ member }) {
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
                     fill
-  className="object-cover object-[10%_10%] transition-transform duration-300 group-hover:scale-110"                />
+                    className="object-cover object-[10%_10%] transition-transform duration-300 group-hover:scale-110"
+                />
                 {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
             </div>
@@ -44,7 +61,7 @@ export default function StaffCard({ member }) {
                                 </span>
                             ))}
                         </div>
-                        <p className="text-sm text-gray-300 italic">{member.bio}</p>
+                        {member.bio && <p className="text-sm text-gray-300 italic">{member.bio}</p>}
                     </div>
                 </div>
             </div>

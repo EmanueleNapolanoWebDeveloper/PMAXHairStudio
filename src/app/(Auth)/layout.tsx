@@ -1,5 +1,4 @@
 import Navbar from "@/src/components/Layout/Navbar/Navbar";
-import { Toaster } from "react-hot-toast";
 
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

@@ -2,12 +2,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import styles from "../../../../homepage.module.css"
-import FlipText from "@/src/components/UI/FlipText"
-import { texts } from "@/src/lib/datas"
 import { useEffect, useState } from "react"
 import { createClient } from "@/src/utils/supabase/client"
-import ReservationForm from "@/src/app/(Customer)/reservation/_components/ReservationForm"
-import ReservationModal from "@/src/components/Layout/ReservationModal"
 
 interface Profile {
   id?: string

@@ -1,20 +1,37 @@
+'use client'
+
+import { useQuery } from "@tanstack/react-query";
+import { getServices } from "@/src/lib/actions";
+import { Service } from "@/src/lib/types";
 import AdditionalInfo from "./_components/AddintionalInfo";
 import ServiceCategory from "./_components/ServiceCategory";
 import OpeningHours from "./_components/OpeningHours";
-import { createClient } from "@/src/utils/supabase/server";
-import { Link } from "lucide-react";
 import CTA from "./_components/CTA";
 import Image from "next/image";
 
-export default async function Tariff() {
-    // Funzione richiamo supabase
-    const supabase = await createClient();
 
+
+type Category = {
+    category: string;
+    icon: string;
+    popular: boolean;
+    items: Service[];
+};
+
+export default function Tariff() {
     // Fetch dei servizi
-    const { data: services, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('category', { ascending: true });
+    const { data: services, error, isLoading } = useQuery<Service[], Error>({
+        queryKey: ["services"],
+        queryFn: getServices,
+    });
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Caricamento servizi...</p>
+            </div>
+        );
+    }
 
     if (error) {
         console.error("Error fetching services:", error);
@@ -48,7 +65,7 @@ export default async function Tariff() {
     }
 
     // Raggruppa i servizi per categoria
-    const groupedServices = services.reduce((acc: any, service: any) => {
+    const groupedServices: Record<string, Category> = services.reduce((acc, service) => {
         if (!acc[service.category]) {
             acc[service.category] = {
                 category: service.category,
@@ -58,43 +75,36 @@ export default async function Tariff() {
             };
         }
         acc[service.category].items.push({
-            name: service.title,
+            id: service.id,
+            title: service.title,
             price: service.price,
             duration: service.duration || service.time,
+            time: service.time,
+            category: service.category,
             description: service.description,
-            originalPrice: service.originalPrice
+            icon: service.icon,
+            popular: service.popular,
         });
         return acc;
-    }, {});
+    }, {} as Record<string, Category>);
 
-    // Converte l'oggetto in array e ordina i servizi per prezzo crescente
-    const categoriesArray = Object.values(groupedServices).map((category: any) => ({
+    // Converte in array e ordina per prezzo
+    const categoriesArray: Category[] = Object.values(groupedServices).map(category => ({
         ...category,
-        items: category.items.sort((a: any, b: any) => parseFloat(a.price) - parseFloat(b.price))
-    })) as any[];
+        items: category.items.sort((a, b) => a.price - b.price)
+    }));
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-white to-gray-100 py-16 px-6" id="tariffHome">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <h1 className="text-5xl font-bold text-gray-800 mb-4">
-                        LISTINO PREZZI
-                    </h1>
+                    <h1 className="text-5xl font-bold text-gray-800 mb-4">LISTINO PREZZI</h1>
                     <div className="flex items-center justify-center mb-6 gap-4">
-                        {/* Linea sinistra */}
                         <div className="flex-1 max-w-32 h-px bg-gradient-to-r from-transparent to-yellow-400"></div>
-
-                        {/* Spazio per l'icona che aggiungerai */}
                         <div className="w-20 h-24 flex items-center justify-center relative">
-                            {/* Placeholder - sostituisci con la tua icona */}
-                                <Image
-                                    src={'/assets/logos/IconBeard.png'}
-                                    fill
-                                    alt="P-Max Logo" />
+                            <Image src="/assets/logos/IconBeard.png" fill alt="P-Max Logo" />
                         </div>
-
-                        {/* Linea destra */}
                         <div className="flex-1 max-w-32 h-px bg-gradient-to-l from-transparent to-yellow-400"></div>
                     </div>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto fontSubtitlesHome">
@@ -120,7 +130,6 @@ export default async function Tariff() {
                 </div>
 
                 <CTA />
-
             </div>
         </div>
     );

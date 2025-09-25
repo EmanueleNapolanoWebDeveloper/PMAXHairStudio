@@ -15,6 +15,7 @@ type TimeChoiceProps = {
   onChange: (t: string) => void
   timeSlots?: ReservationSlot[]
   isWorkingDay: boolean
+  totalDuration?: number
 }
 
 export default function TimeChoice({ barber, date, time, onChange, timeSlots, isWorkingDay }: TimeChoiceProps) {

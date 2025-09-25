@@ -1,29 +1,19 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from "react"
 import { createClient } from "@/src/utils/supabase/client"
 import { User, Session } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
-
-export type ProfileType = {
-  id: string
-  name: string
-  surname: string
-  phone: string
-  email: string
-  auth_user_id: string
-  role: string
-  reg_complete: boolean
-}
+import { Profile } from "@/src/lib/types"
 
 type AuthContextType = {
   user: User | null
-  profile: ProfileType | null
+  profile: Profile | null
   loading: boolean
   isLoggedIn: boolean
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
-  updateProfile: (data: Partial<ProfileType>) => Promise<void>
+  updateProfile: (data: Partial<Profile>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -34,11 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
-  const [profile, setProfile] = useState<ProfileType | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Recupera il profilo dal DB
-  const fetchProfile = async (currentUser: User) => {
+  const authTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  // Fetch profile memoizzato per evitare warning
+  const fetchProfile = useCallback(async (currentUser: User) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -54,14 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null)
       return null
     }
-  }
+  }, [supabase])
 
-  // Aggiorna solo il context
-  const updateProfile = async (data: Partial<ProfileType>) => {
+  // Aggiorna solo il context e DB
+  const updateProfile = useCallback(async (data: Partial<Profile>) => {
     if (!profile) return
     setProfile({ ...profile, ...data })
 
-    // Aggiorna anche il DB
     try {
       const { error } = await supabase
         .from("profiles")
@@ -71,18 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error("Errore updateProfile:", err)
     }
-  }
+  }, [profile, supabase])
 
-  // Aggiorna il profilo dal DB
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (!user) return
     setLoading(true)
     await fetchProfile(user)
     setLoading(false)
-  }
+  }, [user, fetchProfile])
 
-  // Logout centralizzato
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       await supabase.auth.signOut()
       setUser(null)
@@ -92,12 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error("Errore logout:", err)
     }
-  }
+  }, [router, supabase])
 
-  // 🔥 SOLUZIONE SEMPLICE: Debounce per evitare chiamate multiple
-  let authTimeout: NodeJS.Timeout | null = null
-
-  // Inizializzazione e subscription auth
   useEffect(() => {
     const init = async () => {
       setLoading(true)
@@ -111,64 +96,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: subscription } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('🔥 Auth event:', event) // Per debug
+        if (authTimeout.current) clearTimeout(authTimeout.current)
 
-        // 🔥 Cancella il timeout precedente se esiste
-        if (authTimeout) {
-          clearTimeout(authTimeout)
-        }
-
-        // 🔥 Aspetta 500ms prima di processare l'evento
-        authTimeout = setTimeout(async () => {
+        authTimeout.current = setTimeout(async () => {
           const { data: { user: currentUser } } = await supabase.auth.getUser()
           setUser(currentUser)
           setSession(session ?? null)
 
           switch (event) {
             case "INITIAL_SESSION":
-              // Non fare nulla, già gestito in init()
               break
-
             case "SIGNED_IN":
             case "USER_UPDATED":
+            case "PASSWORD_RECOVERY":
               if (currentUser) {
                 setLoading(true)
                 await fetchProfile(currentUser)
                 setLoading(false)
               }
               break
-
-            case 'PASSWORD_RECOVERY':
-              if (currentUser) {
-                setLoading(true)
-                await fetchProfile(currentUser)
-                setLoading(false)
-              }
-              break
-
             case "SIGNED_OUT":
               setUser(null)
               setSession(null)
               setProfile(null)
               router.push("/")
               break
-
             case "TOKEN_REFRESHED":
               setUser(currentUser)
               break
-
             default:
-              console.log("Evento non gestito:", event)
+              break
           }
-        }, 500) // 🔥 500ms di delay
+        }, 500)
       }
     )
 
     return () => {
       subscription?.subscription?.unsubscribe()
-      if (authTimeout) clearTimeout(authTimeout) // 🔥 Cleanup
+      if (authTimeout.current) clearTimeout(authTimeout.current)
     }
-  }, [])
+  }, [router, supabase, fetchProfile])
 
   const value: AuthContextType = {
     user,

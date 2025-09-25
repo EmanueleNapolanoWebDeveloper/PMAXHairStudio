@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Calendar,
   Home,
   Star,
   BarChart3,
   Clock,
+  Lock,
   Info,
   User,
   Activity,
@@ -19,15 +20,12 @@ import StaffSideBar from './_components/SideBar'
 import HeaderDash from './_components/HeaderDash'
 import DashboardContent from './_components/_panoramica/DashboardContent'
 import BarberCalendar from './_components/_appuntamenti/Reservations'
-import { Reservation } from '@/src/lib/types'
 import { useAuth } from '@/src/app/store/AuthContext'
 import { useStaffContext } from '../../store/StaffContext'
-import { createClient } from '@/src/utils/supabase/client'
 import AddStaffReservation from './_components/_addReservation/_components/StaffFormReservation'
 import StaffNotes from './_components/_staffMemo/StaffMemo'
 import ActivityReviews from './_components/_StaffReviews.tsx/StaffReviews'
 import MonthlyDashboard from './_components/_managing/Managing'
-import toast from 'react-hot-toast'
 
 // ==============================
 // Costanti comuni
@@ -45,32 +43,54 @@ const sidebarItems = [
 // ==============================
 // Utils per status appuntamenti
 // ==============================
-const getStatusColor = (status: string) => {
-  const colors = {
-    completed: 'bg-green-100 text-green-800',
-    in_progress: 'bg-red-100 text-red-800',
-    pending: 'bg-orange-100 text-orange-800',
-    confirmed: 'bg-gray-100 text-gray-800',
-    denied: 'bg-red-200 text-red-900',
-  }
-  return colors[status] || 'bg-gray-100 text-gray-800'
-}
 
-const getStatusIcon = (status: string) => {
-  const icons = {
+// 1. Tipo delle chiavi
+export type StatusKey = "completed" | "in_progress" | "pending" | "confirmed" | "denied";
+
+// 2. Tipo dell'oggetto status (se ti serve altrove)
+export type Status = {
+  color: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  text: string;
+  status: StatusKey;
+};
+
+// 3. Funzione per i colori
+const getStatusColor = (status: StatusKey): string => {
+  const colors: Record<StatusKey, string> = {
+    completed: "bg-green-100 text-green-800",
+    in_progress: "bg-red-100 text-red-800",
+    pending: "bg-orange-100 text-orange-800",
+    confirmed: "bg-gray-100 text-gray-800",
+    denied: "bg-red-200 text-red-900",
+  };
+
+  return colors[status] ?? "bg-gray-100 text-gray-800";
+};
+
+// 4. Funzione per le icone
+const getStatusIcon = (status: StatusKey) => {
+  const icons: Record<StatusKey, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
     completed: CheckCircle,
     in_progress: Activity,
     pending: AlertCircle,
     confirmed: Calendar,
     denied: X,
-  }
-  return icons[status] || Calendar
-}
+  };
+
+  return icons[status] ?? Calendar;
+};
+
 
 // ==============================
 // Placeholder per sezioni non sviluppate
 // ==============================
-const PlaceholderContent = ({ name, icon: Icon }) => (
+type PlaceholderContentProps = {
+  name: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+};
+
+const PlaceholderContent: React.FC<PlaceholderContentProps> = ({ name, icon: Icon }) => (
   <div className="bg-white rounded-lg shadow p-6 text-center">
     <div className="text-gray-400 mb-4">
       <Icon className="w-12 h-12 mx-auto" />
@@ -83,7 +103,7 @@ const PlaceholderContent = ({ name, icon: Icon }) => (
       Sviluppa Sezione
     </button>
   </div>
-)
+);
 
 // ==============================
 // Main Dashboard
@@ -91,8 +111,8 @@ const PlaceholderContent = ({ name, icon: Icon }) => (
 const StaffDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { user } = useAuth()
-  const { reservations,  allReviews, staffReviews, isLoadingReservations, isLoadingReviews, isErrorReservations, errorReservations, refetchReservations } = useStaffContext()
+  const { user, profile } = useAuth()
+  const { reservations, allReviews, staffReviews } = useStaffContext()
 
 
   const currentSection = sidebarItems.find((item) => item.id === activeSection)
@@ -111,7 +131,7 @@ const StaffDashboard = () => {
     )
   }
 
-  if (isLoadingReservations) {
+  if (reservations.isLoading) {
     return (
       <div className="flex h-screen bg-gray-50 overflow-hidden">
         <StaffSideBar
@@ -137,7 +157,7 @@ const StaffDashboard = () => {
     )
   }
 
-  if (isErrorReservations) {
+  if (reservations.isError) {
     return (
       <div className="flex min-h-screen bg-gray-50 overflow-hidden">
         <StaffSideBar
@@ -155,7 +175,7 @@ const StaffDashboard = () => {
           <main className="flex-1 overflow-auto p-4 sm:p-6 flex items-center justify-center">
             <div className="text-center text-red-600">
               <AlertCircle className="w-12 h-12 mx-auto mb-4" />
-              <p>Errore nel caricamento: {error?.message || 'Errore sconosciuto'}</p>
+              <p>Errore nel caricamento: {reservations.error?.message || 'Errore sconosciuto'}</p>
             </div>
           </main>
         </div>
@@ -163,7 +183,7 @@ const StaffDashboard = () => {
     )
   }
 
-  const safeReservations = reservations || []
+  const safeReservations = reservations.data || []
 
 
   const renderContent = () => {
@@ -174,23 +194,45 @@ const StaffDashboard = () => {
             getStatusIcon={getStatusIcon}
             getStatusColor={getStatusColor}
             reservations={safeReservations}
-            reviews={staffReviews}
+            reviews={staffReviews.data || []}
           />
         )
       case 'my-appointments':
-        return <BarberCalendar reservations={safeReservations} isLoading={isLoadingReservations} isError={isErrorReservations} error={errorReservations?.message} />
+        return <BarberCalendar reservations={safeReservations} isLoading={reservations.isLoading} isError={reservations.isError} error={reservations.error?.message || ''} />
       case 'addReservation':
-        return <AddStaffReservation reservations={safeReservations} />
+        return <AddStaffReservation />
       case 'staff-notes':
         return <StaffNotes />
       case 'reviews':
-        return <ActivityReviews allReviews={allReviews} />
+        // Mostra ActivityReviews solo se l'utente è admin
+        if (profile?.is_Admin) {
+          return <ActivityReviews allReviews={allReviews.data || []} />
+        } else {
+          return (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+              <Lock className="w-12 h-12 mb-4" />
+              <p className="text-lg font-medium">Accesso Negato</p>
+              <p className="text-sm">Solo gli amministratori possono visualizzare le recensioni del personale.</p>
+            </div>
+          )
+        }
       case 'managing':
-        return <MonthlyDashboard />
+        // Mostra MonthlyDashboard solo se l'utente è admin
+        if (profile?.is_Admin) {
+          return <MonthlyDashboard />
+        } else {
+          return (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+              <Lock className="w-12 h-12 mb-4" />
+              <p className="text-lg font-medium">Accesso Negato</p>
+              <p className="text-sm">Solo gli amministratori possono visualizzare la dashboard di gestione.</p>
+            </div>
+          )
+        }
       default:
         return (
           <PlaceholderContent
-            name={currentSection?.name}
+            name={currentSection?.name || 'Dashboard'}
             icon={currentSection?.icon || Activity}
           />
         )
