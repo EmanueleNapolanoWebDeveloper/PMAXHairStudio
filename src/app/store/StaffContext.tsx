@@ -13,7 +13,7 @@ import {
     fetchReviewsForStaffID,
     fetchAllMemos
 } from "@/src/lib/actions"
-import { Reservation, Profile, Service, Reviews, StaffNotes } from "@/src/lib/types"
+import { Reservation, Profile, Service, Reviews, StaffNotes, ReservationFull } from "@/src/lib/types"
 import { TimeSlot } from "../(Customer)/reservation/page"
 import { RealtimeChannel } from "@supabase/supabase-js"
 
@@ -25,10 +25,10 @@ type QueryState<T> = {
 }
 
 type StaffContextValue = {
-    reservations: QueryState<Reservation[]>
+    reservations: QueryState<ReservationFull[]>
     allReviews: QueryState<Reviews[]>
     staffReviews: QueryState<Reviews[]>
-    barberRes: QueryState<Reservation[]>
+    barberRes: QueryState<ReservationFull[]>
     timeResBarber: TimeSlot[]
     customers: QueryState<Profile[]>
     employees: QueryState<Profile[]>
@@ -89,7 +89,7 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
     })
 
     // ------------------ Normalizzazione prenotazioni ------------------
-    const normalizedReservations: Reservation[] = reservations.map(r => ({
+    const normalizedReservations: ReservationFull[] = reservations.map(r => ({
         ...r,
         barber_id: Array.isArray(r.barber_id) ? r.barber_id[0] : r.barber_id,
         logged_id: Array.isArray(r.logged_id) ? r.logged_id[0] : r.logged_id
@@ -98,7 +98,7 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
     const normalizeReviews: Reviews[] = allReviews.map(r => ({
         ...r,
         customer: Array.isArray(r.customer) ? r.customer[0] : r.customer,
-        appuntamenti: Array.isArray(r.appuntamenti) ? r.appuntamenti[0] : r.appuntamenti
+        appuntamenti: Array.isArray(r.reservation_id) ? r.reservation_id[0] : r.reservation_id
     }))
 
     const normalizedStaffNotes: StaffNotes[] = staffNotes.map(n => ({
@@ -125,31 +125,49 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
 
     // ------------------ Realtime Supabase ------------------
     useEffect(() => {
-        if (!user?.id) return
+        if (!user?.id) return;
 
-        const supabase = createClient()
+        const supabase = createClient();
 
-        let channel: RealtimeChannel
+        let reservationsChannel: RealtimeChannel;
+        let memosChannel: RealtimeChannel;
+
         const subscribe = async () => {
-            channel = supabase
+            // ----------------- Appuntamenti -----------------
+            reservationsChannel = supabase
                 .channel('all_reservations_channel')
                 .on(
                     'postgres_changes',
                     { event: '*', schema: 'public', table: 'appuntamenti' },
                     () => {
-                        queryClient.invalidateQueries({ queryKey: ['reservations'] })
-                        queryClient.refetchQueries({ queryKey: ['reservations', user.id] })
+                        queryClient.invalidateQueries({ queryKey: ['reservations'] });
+                        queryClient.refetchQueries({ queryKey: ['reservations', user.id] });
                     }
-                )
-            await channel.subscribe()
-        }
+                );
+            await reservationsChannel.subscribe();
 
-        subscribe()
+            // ----------------- Memo dello staff -----------------
+            memosChannel = supabase
+                .channel('staffnotes_channel')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'staffnotes' },
+                    (payload) => {
+                        queryClient.invalidateQueries({ queryKey: ['staff-notes', user.id] });
+                        queryClient.refetchQueries({ queryKey: ['staff-notes', user.id] });
+                    }
+                );
+            await memosChannel.subscribe();
+        };
+
+        subscribe();
 
         return () => {
-            if (channel) channel.unsubscribe()
-        }
-    }, [user?.id, queryClient])
+            if (reservationsChannel) reservationsChannel.unsubscribe();
+            if (memosChannel) memosChannel.unsubscribe();
+        };
+    }, [user?.id, queryClient]);
+
 
     return (
         <StaffContext.Provider value={{

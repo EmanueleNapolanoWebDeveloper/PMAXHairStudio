@@ -13,13 +13,7 @@ body {
 }
 
 .fontTitlesHome {
-  font-family: var('--font-exo');
-  font-weight: 600;
+  font-family: var(--font-playfair-display);
+  font-weight: 700;
+  font-style: italic;
 }
-
-.fontSubtitlesHome{
-  font-family: var(--font-cormorant-garamond);
-  font-weight: 600;
-}
-
-

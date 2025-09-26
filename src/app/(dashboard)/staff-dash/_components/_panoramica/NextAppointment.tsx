@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react';
-import { Reservation } from '@/src/lib/types';
+import { Reservation, ReservationFull } from '@/src/lib/types';
 import { Clock, User, Scissors, Calendar, Phone, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { updateReservationStatus, deleteReservation } from '@/src/lib/actions';
 
@@ -22,7 +22,7 @@ export default function NextAppointment({
   // ===============================
   // Memo: calcola il prossimo appuntamento
   // ===============================
-  const nextAppointment = useMemo<Reservation | null>(() => {
+  const nextAppointment = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
 
     const todayReservations = reservations

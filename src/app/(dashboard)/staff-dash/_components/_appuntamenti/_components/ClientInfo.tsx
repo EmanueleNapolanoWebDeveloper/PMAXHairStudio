@@ -1,12 +1,12 @@
 'use client'
 
 import { User, Scissors, Phone, Info, X } from 'lucide-react';
-import { Profile, Reservation } from '@/src/lib/types';
+import { Profile, Reservation, ReservationFull } from '@/src/lib/types';
 import { useState } from 'react';
 import ModalEditRes from './ModalEditRes';
 
 type ClientInfoType = {
-    reservation: Reservation
+    reservation: ReservationFull
     client: {
         name: string;
         surname: string;

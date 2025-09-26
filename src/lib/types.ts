@@ -12,21 +12,24 @@ export type Profile = {
 
 export type Reservation = {
   id: number,
-  barber_id: {
-    id: string
-    name: string
-    surname: string
-    email: string
-    phone: string
-  } | null,
-  logged_id?: {
-    id: string
-    name: string
-    surname: string
-    email: string
-    phone: string
-  } | null
+  barber_id: string |null,
+  logged_id?: string | null
   guest_datas?: string // ⚠️ viene salvato come stringa JSON
+  services: string[]
+  date: string
+  start_time: string
+  end_time: string
+  amount: number
+  note?: string
+  status: "prenotato" | "completato" | "in_corso" | "confermato" | "annullato"
+  created_at: string
+}
+
+export type ReservationFull = {
+  id: number
+  barber_id: { id: string; name: string; surname: string; email: string; phone: string } | null
+  logged_id?: { id: string; name: string; surname: string; email: string; phone: string } | null
+  guest_datas?: string
   services: string[]
   date: string
   start_time: string
@@ -70,8 +73,8 @@ export type Reviews = {
     surname: string;
     email: string;
     phone: string;
-  };
-  appuntamenti: {
+  } | string;
+  reservation_id: {
     id: number,
     barber_id: {
       id: string
@@ -79,14 +82,14 @@ export type Reviews = {
       surname: string
       email: string
       phone: string
-    } | null,
+    }  | null,
     logged_id?: {
       id: string
       name: string
       surname: string
       email: string
       phone: string
-    } | null
+    } | string | null
     guest_datas?: string // ⚠️ viene salvato come stringa JSON
     services: string[]
     date: string

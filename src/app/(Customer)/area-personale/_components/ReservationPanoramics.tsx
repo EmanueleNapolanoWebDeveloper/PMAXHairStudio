@@ -23,6 +23,10 @@ const ReservationPanoramics = ({
   onDelete
 }: ReservationPanoramicProps) => {
 
+  console.log('2 - review:', reviews);
+  console.log('3 - reservations:', reservations);
+
+
   const [filter, setFilter] = useState<'all' | ReservationStatus>('all')
 
   const filteredReservations = useMemo(() =>
@@ -44,7 +48,9 @@ const ReservationPanoramics = ({
         <div className="space-y-4">
           <AnimatePresence>
             {filteredReservations.map(reservation => {
-              const review = reviews.find(r => r.appuntamenti.id === reservation.id)
+              const review = reviews.find(r => r.reservation_id?.id === reservation.id)
+              console.log('5 - review filtrate:', review);
+
               return (
                 <ReservationItem
                   key={reservation.id}
@@ -122,6 +128,9 @@ const ReservationItem = ({
   onOpenModal: (reservation: Reservation) => void
 }) => {
 
+  console.log('4 - review:', review);
+
+
   const getStatusIcon = () => {
     switch (reservation.status) {
       case 'completato': return <CheckCircle className="w-5 h-5 text-green-500" />
@@ -145,6 +154,8 @@ const ReservationItem = ({
       default: return reservation.status
     }
   }
+
+
 
   return (
     <motion.div

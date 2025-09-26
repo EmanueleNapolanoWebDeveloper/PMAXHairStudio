@@ -9,7 +9,7 @@ export type ReservationSlot = {
 }
 
 type TimeChoiceProps = {
-  barber: Profile | null
+  barber: Profile | string | null
   date: string
   time: string
   onChange: (t: string) => void
@@ -20,6 +20,8 @@ type TimeChoiceProps = {
 
 export default function TimeChoice({ barber, date, time, onChange, timeSlots, isWorkingDay }: TimeChoiceProps) {
   const [activeTab, setActiveTab] = useState<'morning' | 'afternoon'>('morning')
+
+
 
   if (!barber || !date || !isWorkingDay) {
     return (
@@ -51,7 +53,7 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
     return slots
   }
 
-  const morningSlots = generateSlots('08:30', '13:30')
+  const morningSlots = generateSlots('08:30', '14:00')
   const afternoonSlots = generateSlots('15:00', '20:00')
   const displayedSlots = activeTab === 'morning' ? morningSlots : afternoonSlots
 
@@ -72,7 +74,7 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
         return false
       }
     }
-    
+
     if (!timeSlots || timeSlots.length === 0) return true
     const slotTime = slot + ':00' // aggiungiamo secondi
     return !timeSlots.some(res => slotTime >= res.start_time && slotTime < res.end_time)
@@ -88,8 +90,8 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
           type="button"
           onClick={() => setActiveTab('morning')}
           className={`flex-1 py-2 font-semibold text-center transition ${activeTab === 'morning'
-              ? 'border-b-2 border-black text-black'
-              : 'text-gray-500'
+            ? 'border-b-2 border-black text-black'
+            : 'text-gray-500'
             }`}
         >
           Mattina
@@ -98,8 +100,8 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
           type="button"
           onClick={() => setActiveTab('afternoon')}
           className={`flex-1 py-2 font-semibold text-center transition ${activeTab === 'afternoon'
-              ? 'border-b-2 border-black text-black'
-              : 'text-gray-500'
+            ? 'border-b-2 border-black text-black'
+            : 'text-gray-500'
             }`}
         >
           Pomeriggio
@@ -117,10 +119,10 @@ export default function TimeChoice({ barber, date, time, onChange, timeSlots, is
               onClick={() => onChange(t)}
               disabled={!available}
               className={`p-2 rounded-lg border text-black transition ${time === t
-                  ? 'bg-black text-white border-black shadow'
-                  : available
-                    ? 'bg-white border-gray-300 hover:bg-gray-100'
-                    : 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
+                ? 'bg-black text-white border-black shadow'
+                : available
+                  ? 'bg-white border-gray-300 hover:bg-gray-100'
+                  : 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
                 }`}
             >
               {t}

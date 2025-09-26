@@ -78,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null)
       setProfile(null)
       router.push("/")
+      refreshProfile()
     } catch (err) {
       console.error("Errore logout:", err)
     }
@@ -107,7 +108,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             case "INITIAL_SESSION":
               break
             case "SIGNED_IN":
+              if (currentUser) {
+                setLoading(true)
+                await fetchProfile(currentUser)
+                setLoading(false)
+              }
+              break
             case "USER_UPDATED":
+              if (currentUser) {
+                setLoading(true)
+                await fetchProfile(currentUser)
+                setLoading(false)
+              }
+              break
             case "PASSWORD_RECOVERY":
               if (currentUser) {
                 setLoading(true)
@@ -146,7 +159,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshProfile,
     updateProfile,
   }
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

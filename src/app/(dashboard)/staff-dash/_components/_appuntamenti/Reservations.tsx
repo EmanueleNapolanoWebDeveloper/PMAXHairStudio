@@ -4,10 +4,10 @@ import DateHeader from './_components/DateHeader';
 import { useAuth } from '@/src/app/store/AuthContext';
 import { useState } from 'react';
 import TimeLine from './_components/TimeLine';
-import { Reservation } from '@/src/lib/types';
+import { Reservation, ReservationFull } from '@/src/lib/types';
 
 
-const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservations: Reservation[]; isLoading: boolean; isError: boolean; error: string | null }) => {
+const BarberCalendar = ({ reservations, isLoading, isError, error }: { reservations: ReservationFull[]; isLoading: boolean; isError: boolean; error: string | null }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     // Hook per auth

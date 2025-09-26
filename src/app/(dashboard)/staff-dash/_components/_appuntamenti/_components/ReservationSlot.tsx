@@ -1,11 +1,11 @@
 'use client'
 
 import ClientInfo from './ClientInfo';
-import { Reservation } from '@/src/lib/types';
+import { Reservation, ReservationFull } from '@/src/lib/types';
 import { deleteReservation } from '@/src/lib/actions';
 
 type ReservationSlotType = {
-    appointment: Reservation;
+    appointment: ReservationFull;
 }
 
 export default function ReservationSlot({ appointment}: ReservationSlotType) {

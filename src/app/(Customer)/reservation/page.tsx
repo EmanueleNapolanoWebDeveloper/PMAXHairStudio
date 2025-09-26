@@ -15,6 +15,7 @@ import { createClient } from '@/src/utils/supabase/client'
 import GuestForm from '../../(dashboard)/staff-dash/_components/_addReservation/_components/GuestForm'
 import { RealtimeChannel } from '@supabase/supabase-js'
 
+
 export type TimeSlot = { start_time: string; end_time: string; date: string }
 
 
@@ -50,14 +51,14 @@ export default function ReservationPage() {
   const [note, setNote] = useState<string>('')
   const [isWorkingDay, setIsWorkingDay] = useState(true)
 
+  console.log('ResBarber:', barberRes);
+
+
   // Queries
   const reservationsQuery = useQuery({
     queryKey: ['reservations'],
     queryFn: () => getAllReservations(),
   })
-
-
-
 
   const employeesQuery = useQuery({
     queryKey: ['employees'],
@@ -250,9 +251,16 @@ export default function ReservationPage() {
   // ✅ Aggiorna barberRes quando cambiano le reservations o il barbiere selezionato
   useEffect(() => {
     if (barber && reservationsQuery.data) {
+
+      console.log('1 - reservation entrate in page: ', reservationsQuery.data);
+      console.log('2 - barber selezionato: ', barber?.id);
+
       const filteredReservations = reservationsQuery.data
-        .filter(r => r.barber_id?.id === barber.id)
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .filter(r => r.barber_id === barber.id)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      console.log('3 - reservation filtrate in page: ', filteredReservations);
+
+
 
       setBarberRes(filteredReservations)
     } else {

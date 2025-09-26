@@ -50,6 +50,7 @@ export default function DataChoise({
 
   // ✅ Funzione per filtrare le prenotazioni
   const filterReservations = useCallback((barberId: string, date: string) => {
+
     const filtered = resBarber.filter(r => {
       if (!r.barber_id) return false; // sicurezza
 
@@ -57,9 +58,11 @@ export default function DataChoise({
 
       return id === barberId && r.date === date;
     });
-
     setTimeResBarber(filtered);
   }, [resBarber, setTimeResBarber]);
+
+
+
 
   // ✅ Filtro solo quando barberId o date cambiano
   useEffect(() => {

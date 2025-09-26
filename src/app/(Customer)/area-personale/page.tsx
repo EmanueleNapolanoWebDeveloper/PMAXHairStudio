@@ -43,28 +43,12 @@ const Dashboard = () => {
         queryKey: ['reviews', user?.id],
         queryFn: async () => {
             const res = await fetchReviewById(user!.id)
-
-            return (res || []).map(r => ({
-                id: r.id,
-                customer: r.customer?.[0] ?? { id: '', name: '', surname: '', email: '', phone: '' },
-                appuntamenti: r.appuntamenti?.[0] ?? {
-                    id: 0,
-                    barber_id: null,
-                    services: [],
-                    date: '',
-                    start_time: '',
-                    end_time: '',
-                    amount: 0,
-                    status: 'prenotato',
-                    created_at: new Date().toISOString()
-                },
-                rating: r.rating,
-                comment: r.comment,
-                created_at: r.created_at ?? new Date().toISOString()
-            }))
+            return res || []          
         },
         enabled: !!user?.id
     })
+
+
 
     // === Mutations ===
     const { mutate: createReview } = useMutation({
@@ -108,25 +92,10 @@ const Dashboard = () => {
     const handleSubmitReview = ({ rating, comment }: SubmitReviewParams) => {
         if (!selectedReservation || !user) return
 
-        createReview({
-            id: 0, // id temporaneo, backend lo sostituirà
-            customer: {
-                id: user.id,
-                name: profile?.name ?? "",
-                surname: profile?.surname ?? "",
-                email: profile?.email ?? "",
-                phone: profile?.phone ?? ""
-            },
-            appuntamenti: {
-                id: Number(selectedReservation.id),
-                barber_id: null,
-                services: selectedReservation.services,
-                date: selectedReservation.date,
-                start_time: selectedReservation.start_time,
-                end_time: selectedReservation.end_time,
-                amount: 0,
-                status: 'completato',
-                created_at: new Date().toISOString()
+        createReview({ // id temporaneo, backend lo sostituirà
+            customer: user?.id,
+            reservation_id: {
+                id: selectedReservation.id,
             },
             rating,
             comment,

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
+import { useAuth } from '@/src/app/store/AuthContext';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { type User as SupabaseUser } from '@supabase/supabase-js';
 import { Profile } from '@/src/lib/types';
@@ -8,12 +9,15 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AuthButton({ user, signOut, loading, profile }: { user: SupabaseUser | null, signOut: () => Promise<void>, loading: boolean, profile: Profile | null }) {
+export default function AuthButton({ user, signOut, loading }: { user: SupabaseUser | null, signOut: () => Promise<void>, loading: boolean, profile: Profile | null }) {
 
     const router = useRouter();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const { refreshProfile, profile } = useAuth();
+
 
     // Chiudi dropdown cliccando fuori
     useEffect(() => {
@@ -32,7 +36,8 @@ export default function AuthButton({ user, signOut, loading, profile }: { user: 
         try {
             await signOut();
             toast.success('Logout effettuato!');
-            router.replace('/login');
+            router.push('/login');
+            refreshProfile()
         } catch (err) {
             console.error('Errore durante il logout:', err);
             toast.error('Si è verificato un errore durante il logout.');

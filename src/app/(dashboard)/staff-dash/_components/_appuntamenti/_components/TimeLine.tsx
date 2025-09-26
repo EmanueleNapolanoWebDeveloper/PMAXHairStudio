@@ -1,22 +1,22 @@
 'use client'
-import { Reservation } from "@/src/lib/types"
+import { Reservation, ReservationFull } from "@/src/lib/types"
 import { useEffect, useState } from 'react'
 import { Calendar } from "lucide-react";
 import ReservationSlot from "./ReservationSlot";
 
 type TimeLineType = {
-    appointment: Reservation[];
+    appointment: ReservationFull[];
     date: Date;
 }
 
 export default function TimeLine({ appointment, date }: TimeLineType) {
-    const [datingAppointments, setDatingAppointments] = useState<Reservation[]>([]);
+    const [datingAppointments, setDatingAppointments] = useState<ReservationFull[]>([]);
 
     useEffect(() => {
         if (!date) return;
 
         const filteredAppointments = appointment
-            .filter((a: Reservation) => {
+            .filter((a: ReservationFull) => {
                 const aptDate = new Date(a.date);
                 return aptDate.toISOString().split("T")[0] === date.toISOString().split("T")[0];
             })
