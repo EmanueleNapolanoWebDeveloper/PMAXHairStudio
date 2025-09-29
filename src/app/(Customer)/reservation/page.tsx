@@ -9,7 +9,7 @@ import { createReservation, getAllReservations, getEmployees, getServices } from
 import { useAuth } from '@/src/app/store/AuthContext'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import { Profile, Reservation, Service, GuestType } from '@/src/lib/types'
+import { Profile, Reservation, Service, GuestType, ReservationFull } from '@/src/lib/types'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
 import GuestForm from '../../(dashboard)/staff-dash/_components/_addReservation/_components/GuestForm'
@@ -50,8 +50,6 @@ export default function ReservationPage() {
   const [time, setTime] = useState('')
   const [note, setNote] = useState<string>('')
   const [isWorkingDay, setIsWorkingDay] = useState(true)
-
-  console.log('ResBarber:', barberRes);
 
 
   // Queries
@@ -151,7 +149,9 @@ export default function ReservationPage() {
               schema: 'public',
               table: 'appuntamenti'
             },
-            (payload) => {
+            (payload : {
+              new : ReservationFull
+            }) => {
               console.log('📥 Nuova prenotazione ricevuta:', payload.new)
 
               // Aggiorna la cache delle reservations con la query key corretta
@@ -184,7 +184,9 @@ export default function ReservationPage() {
               schema: 'public',
               table: 'appuntamenti'
             },
-            (payload) => {
+            (payload : {
+              new : ReservationFull
+            }) => {
               console.log('📝 Prenotazione aggiornata:', payload.new)
 
               // Usa la query key corretta
@@ -204,7 +206,10 @@ export default function ReservationPage() {
               schema: 'public',
               table: 'appuntamenti'
             },
-            (payload) => {
+            (payload : {
+              new : ReservationFull
+              old: ReservationFull
+            }) => {
               console.log('🗑️ Prenotazione eliminata:', payload.old)
 
               // Usa la query key corretta
@@ -215,7 +220,7 @@ export default function ReservationPage() {
               setBarberRes(prev => prev.filter(r => r.id !== payload.old.id))
             }
           )
-          .subscribe((status) => {
+          .subscribe((status : string) => {
             console.log('Real-time status:', status)
             if (status === 'SUBSCRIBED') {
               console.log('✅ Real-time subscriptions attive!')

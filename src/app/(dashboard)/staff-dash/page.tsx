@@ -26,6 +26,7 @@ import AddStaffReservation from './_components/_addReservation/_components/Staff
 import StaffNotes from './_components/_staffMemo/StaffMemo'
 import ActivityReviews from './_components/_StaffReviews.tsx/StaffReviews'
 import MonthlyDashboard from './_components/_managing/Managing'
+import ServiceManaging from './_components/_servicesManaging/ServiceManaging'
 
 // ==============================
 // Costanti comuni
@@ -37,7 +38,7 @@ const sidebarItems = [
   { id: 'staff-notes', name: 'Note dello STAFF', icon: Info },
   { id: 'reviews', name: 'Recensioni P-Max', icon: Star },
   { id: 'managing', name: 'Panoramica Attività', icon: BarChart3 },
-  { id: 'profile', name: 'Il Mio Profilo', icon: User },
+  { id: 'services_management', name: 'Gestione Servizi', icon: Lock }, // { id: 'profile', name: 'Il Mio Profilo', icon: User },
 ]
 
 // ==============================
@@ -197,12 +198,20 @@ const StaffDashboard = () => {
             reviews={staffReviews.data || []}
           />
         )
+
+      // gestione calendario
       case 'my-appointments':
         return <BarberCalendar reservations={safeReservations} isLoading={reservations.isLoading} isError={reservations.isError} error={reservations.error?.message || ''} />
+
+      // gestione prenotazioni
       case 'addReservation':
         return <AddStaffReservation />
+
+      // gestione note
       case 'staff-notes':
         return <StaffNotes />
+
+      // gestione recensioni
       case 'reviews':
         // Mostra ActivityReviews solo se l'utente è admin
         if (profile?.is_Admin) {
@@ -216,6 +225,23 @@ const StaffDashboard = () => {
             </div>
           )
         }
+
+      // gestione servizi
+      case 'services_management':
+        // Mostra MonthlyDashboard solo se l'utente è admin
+        if (profile?.is_Admin) {
+          return <ServiceManaging />
+        } else {
+          return (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+              <Lock className="w-12 h-12 mb-4" />
+              <p className="text-lg font-medium">Accesso Negato</p>
+              <p className="text-sm">Solo gli amministratori possono visualizzare la dashboard di gestione.</p>
+            </div>
+          )
+        }
+
+      // rendimento mensile
       case 'managing':
         // Mostra MonthlyDashboard solo se l'utente è admin
         if (profile?.is_Admin) {
@@ -229,6 +255,7 @@ const StaffDashboard = () => {
             </div>
           )
         }
+
       default:
         return (
           <PlaceholderContent

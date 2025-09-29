@@ -105,10 +105,7 @@ export default function AboutUs() {
                                 ))}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Right Column - Stats & Quote */}
-                    <div className="space-y-8">
                         {/* Stats Grid */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
@@ -127,6 +124,11 @@ export default function AboutUs() {
                                 </div>
                             ))}
                         </div>
+                        
+                    </div>
+
+                    {/* Right Column - Stats & Quote */}
+                    <div className="space-y-8">
 
                         {/* Quote Card */}
                         <QuoteCard />

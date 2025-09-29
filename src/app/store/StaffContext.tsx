@@ -131,6 +131,7 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
 
         let reservationsChannel: RealtimeChannel;
         let memosChannel: RealtimeChannel;
+        let servicesChannel: RealtimeChannel;
 
         const subscribe = async () => {
             // ----------------- Appuntamenti -----------------
@@ -158,6 +159,19 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
                     }
                 );
             await memosChannel.subscribe();
+
+            servicesChannel = supabase
+                .channel('services_channel')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'services' },
+                    () => {
+                        queryClient.invalidateQueries({ queryKey: ['services'] });
+                        queryClient.refetchQueries({ queryKey: ['services'] });
+                    }
+                )
+
+            await servicesChannel.subscribe();
         };
 
         subscribe();
@@ -165,6 +179,7 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             if (reservationsChannel) reservationsChannel.unsubscribe();
             if (memosChannel) memosChannel.unsubscribe();
+            if (servicesChannel) servicesChannel.unsubscribe();
         };
     }, [user?.id, queryClient]);
 

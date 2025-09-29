@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Calendar, Filter, Clock, CheckCircle, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Reservation, Reviews } from '@/src/lib/types'
+import type { Reservation, ReservationFull, Reviews } from '@/src/lib/types'
 
 type ReservationStatus = 'prenotato' | 'completato'
 
@@ -15,60 +15,7 @@ type ReservationPanoramicProps = {
   onDelete: (id: number) => void
 }
 
-const ReservationPanoramics = ({
-  reservations = [],
-  setIsModalOpen,
-  setSelectedReservation,
-  reviews,
-  onDelete
-}: ReservationPanoramicProps) => {
 
-  console.log('2 - review:', reviews);
-  console.log('3 - reservations:', reservations);
-
-
-  const [filter, setFilter] = useState<'all' | ReservationStatus>('all')
-
-  const filteredReservations = useMemo(() =>
-    reservations?.filter(res => filter === 'all' ? true : res.status === filter)
-    , [reservations, filter])
-
-  const handleOpenModal = (reservation: Reservation) => {
-    setSelectedReservation(reservation)
-    setIsModalOpen(true)
-  }
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <HeaderFilter filter={filter} setFilter={setFilter} />
-
-      {!filteredReservations?.length ? (
-        <EmptyState filter={filter} />
-      ) : (
-        <div className="space-y-4">
-          <AnimatePresence>
-            {filteredReservations.map(reservation => {
-              const review = reviews.find(r => r.reservation_id?.id === reservation.id)
-              console.log('5 - review filtrate:', review);
-
-              return (
-                <ReservationItem
-                  key={reservation.id}
-                  reservation={reservation}
-                  review={review}
-                  onDelete={onDelete}
-                  onOpenModal={handleOpenModal}
-                />
-              )
-            })}
-          </AnimatePresence>
-        </div>
-      )}
-    </div>
-  )
-}
-
-export default ReservationPanoramics
 
 // ==================== COMPONENTI INTERNI ====================
 
@@ -127,8 +74,6 @@ const ReservationItem = ({
   onDelete: (id: number) => void
   onOpenModal: (reservation: Reservation) => void
 }) => {
-
-  console.log('4 - review:', review);
 
 
   const getStatusIcon = () => {
@@ -248,4 +193,56 @@ const ReservationItem = ({
 
     </motion.div>
   )
+  
 }
+
+const ReservationPanoramics = ({
+  reservations = [],
+  setIsModalOpen,
+  setSelectedReservation,
+  reviews,
+  onDelete
+}: ReservationPanoramicProps) => {
+
+  const [filter, setFilter] = useState<'all' | ReservationStatus>('all')
+
+  const filteredReservations = useMemo(() =>
+    reservations?.filter(res => filter === 'all' ? true : res.status === filter)
+    , [reservations, filter])
+
+  const handleOpenModal = (reservation: Reservation) => {
+    setSelectedReservation(reservation)
+    setIsModalOpen(true)
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <HeaderFilter filter={filter} setFilter={setFilter} />
+
+      {!filteredReservations?.length ? (
+        <EmptyState filter={filter} />
+      ) : (
+        <div className="space-y-4">
+          <AnimatePresence>
+            {filteredReservations.map(reservation => {
+              const review = reviews.find(r => r.reservation_id?.id === reservation.id)
+              console.log('5 - review filtrate:', review);
+
+              return (
+                <ReservationItem
+                  key={reservation.id}
+                  reservation={reservation}
+                  review={review}
+                  onDelete={onDelete}
+                  onOpenModal={handleOpenModal}
+                />
+              )
+            })}
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default ReservationPanoramics

@@ -41,7 +41,7 @@ export type ReservationFull = {
 }
 
 export type Service = {
-  id: number
+  id?: number
   title: string
   time: number // minuti come number
   price: number

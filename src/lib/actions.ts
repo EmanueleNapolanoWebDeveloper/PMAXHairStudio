@@ -140,6 +140,77 @@ export async function getServices(): Promise<Service[]> {
     return data || []
 }
 
+export async function addService(formData: Omit<Service, 'id'>) {
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase.from('services').insert({
+            title: formData.title,
+            time: formData.time,
+            price: formData.price,
+            category: formData.category,
+            description: formData.description
+        })
+
+        if (error) throw error
+        return data
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.log(error)
+            throw new Error(`Impossibile aggiungere il servizio: ${error.message}`)
+        } else {
+            console.log(error)
+            throw new Error(`Impossibile aggiungere il servizio: ${error}`)
+        }
+    }
+}
+
+export async function editService(formData: Service) {
+
+    const supabase = await createClient()
+
+    try {
+        const { data: resService, error } = await supabase.from('services').update({
+            title: formData.title,
+            time: formData.time,
+            price: formData.price,
+            category: formData.category,
+            description: formData.description
+        }).eq('id', formData.id)
+
+        if (error) throw error
+
+        console.log('Servizio aggiornato con successo');
+
+        return resService
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.log(error)
+            throw new Error(`Impossibile aggiornare il servizio: ${error.message}`)
+        } else {
+            console.log(error)
+            throw new Error(`Impossibile aggiornare il servizio: ${error}`)
+        }
+    }
+}
+
+export async function deleteService(id: number) {
+    const supabase = await createClient()
+
+    try {
+        const { error } = await supabase.from('services').delete().eq('id', id)
+        if (error) throw error
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.log(error)
+            throw new Error(`Impossibile eliminare il servizio: ${error.message}`)
+        } else {
+            console.log(error)
+            throw new Error(`Impossibile eliminare il servizio: ${error}`)
+        }
+    }
+}
+
 
 // ---------------->  RESERVATIONS
 
@@ -410,8 +481,6 @@ export async function updateReservation(
     data: Partial<Reservation> // permette di aggiornare solo alcuni campi
 ) {
     const supabase = await createClient()
-
-    console.log('dati entrati', id, data);
 
     const updatedData: Partial<Reservation> = {
         ...data,
@@ -727,7 +796,7 @@ export async function fetchReviewsForStaffID(staffId: string) {
 // -------------> STAFF NOTES
 
 type addNoteProps = {
-    note : StaffNotes
+    note: StaffNotes
 }
 
 
@@ -740,12 +809,12 @@ export async function addNotes(note: StaffNotes) {
             .from('staffnotes')
             .insert({
                 author: note.author.id,
-                title : note.title,
-                content : note.content,
+                title: note.title,
+                content: note.content,
                 note_date: note.note_date,
-                time : note.time,
-                reference : note.reference,
-                priority : note.priority
+                time: note.time,
+                reference: note.reference,
+                priority: note.priority
             })
             .select()
 
