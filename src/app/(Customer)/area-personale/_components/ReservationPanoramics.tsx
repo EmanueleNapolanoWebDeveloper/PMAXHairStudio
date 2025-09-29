@@ -5,12 +5,12 @@ import { Calendar, Filter, Clock, CheckCircle, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Reservation, ReservationFull, Reviews } from '@/src/lib/types'
 
-type ReservationStatus = 'prenotato' | 'completato'
+type ReservationStatus = 'all' | 'prenotato' | 'completato'
 
 type ReservationPanoramicProps = {
-  reservations: Reservation[] | null
+  reservations: ReservationFull[] | null
   setIsModalOpen: (value: boolean) => void
-  setSelectedReservation: (value: Reservation | null) => void
+  setSelectedReservation: (value: ReservationFull | null) => void
   reviews: Reviews[]
   onDelete: (id: number) => void
 }
@@ -19,11 +19,10 @@ type ReservationPanoramicProps = {
 
 // ==================== COMPONENTI INTERNI ====================
 
-const HeaderFilter = ({ filter, setFilter }: { filter: 'all' | ReservationStatus, setFilter: (value: 'all' | ReservationStatus) => void }) => {
-  const statusList: ('all' | ReservationStatus)[] = ['all', 'prenotato', 'completato']
+const HeaderFilter = ({ filter, setFilter }: { filter: 'prenotato' | ReservationStatus, setFilter: (value: 'prenotato' | ReservationStatus) => void }) => {
+  const statusList: (ReservationStatus)[] = ['prenotato', 'completato']
 
-  const getStatusText = (status: 'all' | ReservationStatus) => {
-    if (status === 'all') return 'Tutti'
+  const getStatusText = (status: ReservationStatus) => {
     if (status === 'prenotato') return 'Prenotato'
     if (status === 'completato') return 'Completata'
     return status
@@ -69,10 +68,10 @@ const ReservationItem = ({
   onDelete,
   onOpenModal
 }: {
-  reservation: Reservation
+  reservation: ReservationFull
   review?: Reviews
   onDelete: (id: number) => void
-  onOpenModal: (reservation: Reservation) => void
+  onOpenModal: (reservation: ReservationFull) => void
 }) => {
 
 
@@ -210,7 +209,7 @@ const ReservationPanoramics = ({
     reservations?.filter(res => filter === 'all' ? true : res.status === filter)
     , [reservations, filter])
 
-  const handleOpenModal = (reservation: Reservation) => {
+  const handleOpenModal = (reservation: ReservationFull) => {
     setSelectedReservation(reservation)
     setIsModalOpen(true)
   }

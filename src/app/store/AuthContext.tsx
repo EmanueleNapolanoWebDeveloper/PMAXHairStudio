@@ -52,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(async (data: Partial<Profile>) => {
     if (!profile) return
     setProfile({ ...profile, ...data })
-
     try {
       const { error } = await supabase
         .from("profiles")

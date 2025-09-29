@@ -41,6 +41,9 @@ const StaffsNotes = () => {
         created_at: new Date().toISOString(),
     })
 
+    console.log('staff notes', staffNotes);
+
+
     // Mutations
     const { mutate: createNote, isPending: isCreating } = useMutation({
         mutationFn: addNotes,
@@ -67,37 +70,6 @@ const StaffsNotes = () => {
         }
     })
 
-    // Realtime
-    useEffect(() => {
-        if (!user?.id) return
-        let channel: RealtimeChannel
-
-        const setupRealtime = async () => {
-            try {
-                channel = supabase
-                    .channel('staffnotes-changes')
-                    .on(
-                        'postgres_changes',
-                        { event: '*', schema: 'public', table: 'staffnotes' },
-                        (payload) => {
-                            queryClient.invalidateQueries({ queryKey: ['memos', user.id] })
-                            if (payload.eventType === 'INSERT' && payload.new?.author !== user.id) {
-                                toast('Nuova nota aggiunta!', { icon: '📝' })
-                            }
-                            if (payload.eventType === 'DELETE' && payload.old?.author !== user.id) {
-                                toast('Nota eliminata!', { icon: '🗑️' })
-                            }
-                        }
-                    )
-                    .subscribe()
-            } catch (error) {
-                console.error('❌ Errore setup realtime:', error)
-            }
-        }
-
-        setupRealtime()
-        return () => { if (channel) supabase.removeChannel(channel) }
-    }, [user?.id, queryClient, supabase])
 
     const handleInputChange = (field: keyof StaffNotesForm, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }))

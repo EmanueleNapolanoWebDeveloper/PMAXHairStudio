@@ -695,7 +695,16 @@ export async function fetchReviewById(id: string) {
 
         if (error) throw error
 
-        return data
+        const mapped = (data || []).map(r => ({
+            id: r.id,
+            customer: Array.isArray(r.customer) ? r.customer[0] : r.customer,
+            reservation_id: Array.isArray(r.reservation_id) ? r.reservation_id[0].id : r.reservation_id,
+            rating: r.rating,
+            comment: r.comment,
+            created_at: r.created_at
+        }))
+
+        return mapped
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.log(error)

@@ -16,6 +16,7 @@ import {
 import { Reservation, Profile, Service, Reviews, StaffNotes, ReservationFull } from "@/src/lib/types"
 import { TimeSlot } from "../(Customer)/reservation/page"
 import { RealtimeChannel } from "@supabase/supabase-js"
+import { toast } from "react-hot-toast"
 
 type QueryState<T> = {
     data: T
@@ -140,10 +141,19 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
                 .on(
                     'postgres_changes',
                     { event: '*', schema: 'public', table: 'appuntamenti' },
-                    () => {
+                    (payload) => {
                         queryClient.invalidateQueries({ queryKey: ['reservations'] });
                         queryClient.refetchQueries({ queryKey: ['reservations', user.id] });
+
+                        if (payload.eventType === 'INSERT' && payload.new?.barber_id === user.id) {
+                            toast.success('📅 Hai ricevuto una nuova prenotazione!');
+                        }
+
+                        if (payload.eventType === 'DELETE' && payload.old?.barber_id === user.id) {
+                            toast.success('📅 Una prenotazione è stata cancellata!');
+                        }
                     }
+
                 );
             await reservationsChannel.subscribe();
 
@@ -154,8 +164,13 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
                     'postgres_changes',
                     { event: '*', schema: 'public', table: 'staffnotes' },
                     (payload) => {
-                        queryClient.invalidateQueries({ queryKey: ['staff-notes', user.id] });
-                        queryClient.refetchQueries({ queryKey: ['staff-notes', user.id] });
+                        queryClient.invalidateQueries({ queryKey: ['memos', user.id] })
+                        if (payload.eventType === 'INSERT' && payload.new?.author !== user.id) {
+                            toast('Nuova nota aggiunta!', { icon: '📝' })
+                        }
+                        if (payload.eventType === 'DELETE' && payload.old?.author !== user.id) {
+                            toast('Nota eliminata!', { icon: '🗑️' })
+                        }
                     }
                 );
             await memosChannel.subscribe();

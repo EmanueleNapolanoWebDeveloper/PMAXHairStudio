@@ -13,7 +13,7 @@ import ReviewModal from "@/src/components/UI/ReviewModal"
 import { User } from "lucide-react"
 
 import { addReview, getUserReservations, fetchReviewById, deleteReservation } from "@/src/lib/actions"
-import { Reviews, Reservation } from "@/src/lib/types"
+import { Reviews, Reservation, ReservationFull } from "@/src/lib/types"
 
 
 
@@ -27,10 +27,10 @@ const Dashboard = () => {
     const queryClient = useQueryClient()
 
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
+    const [selectedReservation, setSelectedReservation] = useState<ReservationFull | null>(null)
 
     // === Queries ===
-    const { data: reservations = [], isLoading, isError } = useQuery<Reservation[]>({
+    const { data: reservations = [], isLoading, isError } = useQuery<ReservationFull[]>({
         queryKey: ['reservations', user?.id],
         queryFn: async () => {
             const res = await getUserReservations(user!.id)
@@ -39,7 +39,7 @@ const Dashboard = () => {
         enabled: !!user?.id
     })
 
-    const { data: userReviews = [] } = useQuery<Reviews[]>({
+    const { data: userReviews } = useQuery<Reviews[]>({
         queryKey: ['reviews', user?.id],
         queryFn: async () => {
             const res = await fetchReviewById(user!.id)
@@ -75,7 +75,7 @@ const Dashboard = () => {
     })
 
     // === Handlers ===
-    const handleOpenModal = (reservation: Reservation) => {
+    const handleOpenModal = (reservation: ReservationFull) => {
         setSelectedReservation(reservation)
         setIsModalOpen(true)
     }
@@ -162,7 +162,7 @@ const Dashboard = () => {
                         <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-slate-700/50">
                             <ReservationPanoramics
                                 reservations={reservations}
-                                reviews={userReviews}
+                                reviews={userReviews || []}
                                 onDelete={handleDeleteReservation}
                                 setIsModalOpen={setIsModalOpen}
                                 setSelectedReservation={setSelectedReservation}
