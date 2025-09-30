@@ -18,7 +18,7 @@ const NotesList = ({ memos, isLoading, userID, filterDate, handleEdit, handleDel
   const [activeTab, setActiveTab] = useState<'tutti' | 'per-me'>('tutti')
 
   const filteredNotes = memos?.filter(note => {
-    const matchesDate = filterDate || note.note_date === filterDate
+    const matchesDate = !filterDate || note.note_date === filterDate
     if (activeTab === 'tutti') return matchesDate && note.reference === 'tutti'
     return matchesDate && note.reference === userID
   }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -26,8 +26,8 @@ const NotesList = ({ memos, isLoading, userID, filterDate, handleEdit, handleDel
   console.log('filteredNotes', filteredNotes);
   
 
-  const allNotesCount = memos?.filter(n => (filterDate || n.note_date === filterDate) && n.reference === 'tutti').length
-  const myNotesCount = memos?.filter(n => (filterDate || n.note_date === filterDate) && n.reference === userID).length
+  const allNotesCount = memos?.filter(n => (!filterDate || n.note_date === filterDate) && n.reference === 'tutti').length
+  const myNotesCount = memos?.filter(n => (!filterDate || n.note_date === filterDate) && n.reference === userID).length
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {

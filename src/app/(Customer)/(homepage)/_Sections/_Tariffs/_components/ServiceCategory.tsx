@@ -1,56 +1,123 @@
-import ServiceItem from "./ServiceItem";
-import { Service } from "@/src/lib/types";
-
-
+import ServiceItem from "./ServiceItem"
+import type { Service } from "@/src/lib/types"
 
 type Category = {
-    category: string;
-    icon?: string;
-    popular: boolean;
-    items: Service[];
-};
+    category: string
+    icon?: string
+    popular: boolean
+    items: Service[]
+}
 
 type ServiceCategoryProps = {
-    category: Category;
-    categoryIndex: number;
-};
+    category: Category
+    categoryIndex: number
+}
 
 export default function ServiceCategory({ category, categoryIndex }: ServiceCategoryProps) {
-    const gradients = [
-        'from-red-950 via-red-800 to-red-600',
-        'from-zinc-950 via-gray-800 to-zinc-600',
-        'from-cyan-950 via-cyan-800 to-cyan-600',
-        'from-emerald-950 via-emerald-800 to-emerald-600',
-        'from-amber-600/90 via-yellow-800/70 to-yellow-950/50 backdrop-blur-lg',
-        'from-amber-600/80 via-orange-800/70 to-red-950/60 backdrop-blur-lg',
-    ];
 
-    const selectedGradient = gradients[categoryIndex % gradients.length];
+    
+    // Array di gradienti dark per le diverse categorie
+    const gradients = [
+        // Rosso Scuro
+        {
+            gradient: "bg-gradient-to-br from-red-950 via-red-900 to-black",
+            ring: "ring-red-600",
+            shadow: "shadow-red-600/30",
+            glow: "shadow-[0_0_50px_rgba(220,38,38,0.5)]"
+        },
+        // Oro Scuro
+        {
+            gradient: "bg-gradient-to-br from-yellow-950 via-yellow-900 to-amber-950",
+            ring: "ring-yellow-600",
+            shadow: "shadow-yellow-600/30",
+            glow: "shadow-[0_0_50px_rgba(202,138,4,0.5)]"
+        },
+        // Nero Profondo
+        {
+            gradient: "bg-gradient-to-br from-slate-950 via-slate-900 to-black",
+            ring: "ring-slate-600",
+            shadow: "shadow-slate-600/30",
+            glow: "shadow-[0_0_50px_rgba(71,85,105,0.5)]"
+        },
+        // Rosso Intenso
+        {
+            gradient: "bg-gradient-to-br from-red-900 via-red-800 to-slate-900",
+            ring: "ring-red-500",
+            shadow: "shadow-red-500/30",
+            glow: "shadow-[0_0_50px_rgba(239,68,68,0.5)]"
+        },
+        // Nero Grafite
+        {
+            gradient: "bg-gradient-to-br from-gray-950 via-gray-900 to-black",
+            ring: "ring-gray-600",
+            shadow: "shadow-gray-600/30",
+            glow: "shadow-[0_0_50px_rgba(75,85,99,0.5)]"
+        },
+        // Oro Ambrato
+        {
+            gradient: "bg-gradient-to-br from-amber-950 via-amber-900 to-yellow-950",
+            ring: "ring-amber-600",
+            shadow: "shadow-amber-600/30",
+            glow: "shadow-[0_0_50px_rgba(217,119,6,0.5)]"
+        },
+        // Rosso Cremisi
+        {
+            gradient: "bg-gradient-to-br from-rose-950 via-rose-900 to-black",
+            ring: "ring-rose-600",
+            shadow: "shadow-rose-600/30",
+            glow: "shadow-[0_0_50px_rgba(225,29,72,0.5)]"
+        },
+        // Oro Bronzo
+        {
+            gradient: "bg-gradient-to-br from-orange-950 via-amber-950 to-yellow-950",
+            ring: "ring-amber-700",
+            shadow: "shadow-amber-700/30",
+            glow: "shadow-[0_0_50px_rgba(180,83,9,0.5)]"
+        },
+        // Nero Carbone
+        {
+            gradient: "bg-gradient-to-br from-zinc-950 via-zinc-900 to-black",
+            ring: "ring-zinc-600",
+            shadow: "shadow-zinc-600/30",
+            glow: "shadow-[0_0_50px_rgba(82,82,91,0.5)]"
+        },
+    ]
+
+    const colorScheme = gradients[categoryIndex % gradients.length]
 
     return (
         <div
-            className={`group relative bg-white shadow-lg overflow-hidden
-                 transform transition-all duration-500 hover:-translate-y-2
-                 ${category.popular ? 'ring-2 ring-yellow-400 shadow-yellow-100' : ''}
-                 hover:shadow-2xl border border-gray-100`}
+            className={`group relative bg-card vintage-border overflow-hidden
+                 transform transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02]
+                 ${category.popular ? `ring-4 ${colorScheme.ring} shadow-2xl ${colorScheme.shadow} ${colorScheme.glow}` : "shadow-xl"}
+                 scroll-reveal`}
+            style={{ transitionDelay: `${categoryIndex * 100}ms` }}
         >
-            {category.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500
-                          text-white px-6 py-2 rounded-full text-sm font-bold
-                          shadow-lg animate-pulse">
-                        PIÙ RICHIESTO
-                    </div>
-                </div>
-            )}
+            <div className={`relative ${colorScheme.gradient} text-white py-6 px-8 overflow-hidden`}>
+                {/* Effetto overlay scuro */}
+                <div className="absolute inset-0 bg-black/20" />
 
-            <div className={`bg-gradient-to-r ${category.popular ? 'from-yellow-500 to-orange-600' : selectedGradient} text-white`}>
-                <div className="flex items-center justify-start">
-                    <h2 className="text-[3rem] p-0 m-0 font-black drop-shadow-lg tracking-wide uppercase">{category.category}</h2>
+                {/* Decorative corner flourishes */}
+                <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-white/40 z-10" />
+                <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-white/40 z-10" />
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-white/40 z-10" />
+                <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-white/40 z-10" />
+
+                {/* Effetto luce animato */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
+                </div>
+
+                <div className="relative z-10 flex items-center justify-center gap-4">
+                    <div className="flex-1 h-px bg-white/40 max-w-[60px]" />
+                    <h2 className="text-5xl font-serif font-black tracking-wider uppercase text-center drop-shadow-lg">
+                        {category.category}
+                    </h2>
+                    <div className="flex-1 h-px bg-white/40 max-w-[60px]" />
                 </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-8 bg-card flex flex-col gap-3">
                 {category.items && category.items.length > 0 ? (
                     category.items.map((service: Service, serviceIndex: number) => (
                         <ServiceItem
@@ -61,11 +128,11 @@ export default function ServiceCategory({ category, categoryIndex }: ServiceCate
                         />
                     ))
                 ) : (
-                    <p className="text-gray-500 text-center py-4">
+                    <p className="text-muted-foreground text-center py-8 italic">
                         Nessun servizio disponibile in questa categoria
                     </p>
                 )}
             </div>
         </div>
-    );
+    )
 }

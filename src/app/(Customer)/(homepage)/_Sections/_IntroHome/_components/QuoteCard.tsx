@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -9,7 +9,7 @@ const quotes = [
         author: "— Massimo Polverino, Master Barber",
     },
     {
-        text: "La tradizione è il nostro punto di partenza, l’innovazione la nostra firma.",
+        text: "La tradizione è il nostro punto di partenza, l'innovazione la nostra firma.",
         author: "— Team P-Max",
     },
     {
@@ -42,25 +42,50 @@ const quotes = [
     },
 ]
 
-
 export default function QuoteCard() {
     const [index, setIndex] = useState(0)
 
     useEffect(() => {
         const interval = setInterval(() => {
             setIndex((prev) => (prev + 1) % quotes.length)
-        }, 5000) // cambia ogni 5 secondi
+        }, 5000)
 
         return () => clearInterval(interval)
     }, [])
 
     return (
-        <div className="bg-red-600 p-8 rounded-2xl border border-red-700 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-red-600 p-8 rounded-2xl border border-red-700 relative overflow-hidden"
+        >
+            <motion.div
+                animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.1, 0.15, 0.1],
+                }}
+                transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
+                className="absolute top-0 right-0 w-32 h-32 bg-black/10 rounded-full blur-3xl"
+            />
+            <motion.div
+                animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.1, 0.2, 0.1],
+                }}
+                transition={{ duration: 5, repeat: Number.POSITIVE_INFINITY, delay: 1 }}
+                className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl"
+            />
 
             <div className="relative z-10">
-                <div className="text-6xl text-white/60 font-serif mb-4 leading-none">&quot;</div>
+                <motion.div
+                    animate={{ opacity: [0.6, 0.8, 0.6] }}
+                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                    className="text-6xl text-white/60 font-serif mb-4 leading-none"
+                >
+                    &quot;
+                </motion.div>
 
                 <AnimatePresence mode="wait">
                     <motion.blockquote
@@ -77,17 +102,23 @@ export default function QuoteCard() {
 
                 <motion.cite
                     key={`author-${index}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
                     className="text-white font-bold text-lg block"
                 >
                     {quotes[index].author}
                 </motion.cite>
 
-                <div className="text-6xl text-white/60 font-serif text-right leading-none mt-4">&quot;</div>
+                <motion.div
+                    animate={{ opacity: [0.6, 0.8, 0.6] }}
+                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 1 }}
+                    className="text-6xl text-white/60 font-serif text-right leading-none mt-4"
+                >
+                    &quot;
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     )
 }
