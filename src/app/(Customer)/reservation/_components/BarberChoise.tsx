@@ -1,12 +1,12 @@
 'use client'
-import { Profile, Reservation } from '@/src/lib/types'
+import { Profile, Reservation, ReservationFull } from '@/src/lib/types'
 
 export type BarberChoiseProps = {
   employees: Profile[] | null
   selecetedEmployee: Profile | null
   setBarber: (value: Profile | null) => void
-  reservations: Reservation[]
-  setReservations: (value: Reservation[]) => void
+  reservations: ReservationFull[]
+  setReservations: (value: ReservationFull[]) => void
   loading: boolean
 }
 

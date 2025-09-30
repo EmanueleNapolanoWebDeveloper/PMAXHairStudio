@@ -73,7 +73,7 @@ export type Reviews = {
     surname: string;
     email: string;
     phone: string;
-  } | string;
+  };
   reservation_id: {
     id: number,
     barber_id: {

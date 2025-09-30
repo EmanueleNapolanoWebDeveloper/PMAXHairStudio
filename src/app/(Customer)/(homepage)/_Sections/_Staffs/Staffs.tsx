@@ -2,7 +2,7 @@
 
 import StaffCard from "./_components/CardStaff"
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { motion, Variants } from "framer-motion"
 
 interface StaffMember {
     id: number
@@ -13,6 +13,17 @@ interface StaffMember {
     specialties: string[]
     bio: string
 }
+
+interface VariantsProps {
+    hidden: {
+        opacity: number
+    }
+    visible: {
+        opacity: number;
+        transition?: { duration: number }
+    }
+}
+
 
 const staffMembers: StaffMember[] = [
     {
@@ -26,7 +37,7 @@ const staffMembers: StaffMember[] = [
     },
 ]
 
-const containerVariants = {
+const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
@@ -37,7 +48,7 @@ const containerVariants = {
     },
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
         opacity: 1,
@@ -49,7 +60,7 @@ const itemVariants = {
     },
 }
 
-const headerVariants = {
+const headerVariants: Variants = {
     hidden: { opacity: 0, y: -20 },
     visible: {
         opacity: 1,

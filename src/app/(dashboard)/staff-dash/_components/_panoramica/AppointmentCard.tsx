@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Clock, User, Calendar, Play, CheckCircle, AlertCircle, Euro, Info } from 'lucide-react';
-import { Reservation } from '@/src/lib/types';
+import { Reservation, ReservationFull } from '@/src/lib/types';
 
 type AppointmentCardProp = {
-    reservation: Reservation
+    reservation: ReservationFull
 };
 
 

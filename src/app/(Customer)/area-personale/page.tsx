@@ -13,7 +13,7 @@ import ReviewModal from "@/src/components/UI/ReviewModal"
 import { User } from "lucide-react"
 
 import { addReview, getUserReservations, fetchReviewById, deleteReservation } from "@/src/lib/actions"
-import { Reviews, Reservation, ReservationFull } from "@/src/lib/types"
+import { Reviews, ReservationFull } from "@/src/lib/types"
 
 
 
@@ -43,7 +43,7 @@ const Dashboard = () => {
         queryKey: ['reviews', user?.id],
         queryFn: async () => {
             const res = await fetchReviewById(user!.id)
-            return res || []          
+            return res || []
         },
         enabled: !!user?.id
     })
@@ -93,7 +93,9 @@ const Dashboard = () => {
         if (!selectedReservation || !user) return
 
         createReview({ // id temporaneo, backend lo sostituirà
-            customer: user?.id,
+            customer: {
+                id: user?.id
+            },
             reservation_id: {
                 id: selectedReservation.id,
             },

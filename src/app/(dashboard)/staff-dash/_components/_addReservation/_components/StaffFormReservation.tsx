@@ -38,12 +38,16 @@ export default function AddStaffReservation() {
     const [activeTab, setActiveTab] = useState(servicesLocal[0]?.category || 'Barba')
     const [timeResBarber, setTimeResBarber] = useState<TimeSlot[]>([])
 
+    console.log('timeResBarber:', timeResBarber);
+
+
     useEffect(() => {
-        if (!tempoResBarber) {
-            return
-        }
-        setTimeResBarber(tempoResBarber)
-    }, [tempoResBarber])
+        if (!tempoResBarber) return;
+
+        // Filtra solo le prenotazioni del barber per la data selezionata
+        const filtered = tempoResBarber.filter(r => r.date === date);
+        setTimeResBarber(filtered);
+    }, [tempoResBarber, date]);
 
     // Toggle servizio
     const toggleService = (service: Service) => {

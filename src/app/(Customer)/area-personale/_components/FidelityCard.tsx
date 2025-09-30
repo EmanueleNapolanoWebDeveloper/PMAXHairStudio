@@ -14,32 +14,6 @@ interface FidelityCardProps {
 
 type SlotState = "completed" | "empty"
 
-const ActionCard = ({ onClick }: { onClick: () => void }) => (
-  <motion.button
-    whileHover={{ scale: 1.02, y: -5 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    aria-label="Nuova prenotazione"
-    className="w-full bg-gradient-to-br from-red-600 via-red-700 to-rose-700 hover:from-red-500 hover:via-red-600 hover:to-rose-600 rounded-2xl shadow-2xl hover:shadow-red-500/30 transition-all duration-300 p-8 text-white group border border-red-500/30 relative overflow-hidden"
-  >
-    {/* Animated background */}
-    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent animate-pulse" />
-
-    <div className="relative z-10 flex items-center gap-5">
-      <motion.div
-        whileHover={{ rotate: 90 }}
-        transition={{ duration: 0.3 }}
-        className="p-4 bg-white/20 rounded-xl group-hover:bg-white/30 transition-all backdrop-blur-sm shadow-lg"
-      >
-        <Plus className="w-8 h-8 text-white" />
-      </motion.div>
-      <div className="flex-1 text-left">
-        <h3 className="text-2xl font-bold mb-1">Nuova Prenotazione</h3>
-        <p className="text-red-100 text-sm leading-relaxed">Prenota il tuo prossimo appuntamento</p>
-      </div>
-    </div>
-  </motion.button>
-)
 
 const FidelityCard = ({ totalSlots = 10, completed, onActionClick }: FidelityCardProps) => {
   const router = useRouter()

@@ -194,7 +194,7 @@ const StaffDashboard = () => {
           <DashboardContent
             getStatusIcon={getStatusIcon}
             getStatusColor={getStatusColor}
-            reservations={safeReservations}
+            reservations={safeReservations || []}
             reviews={staffReviews.data || []}
           />
         )

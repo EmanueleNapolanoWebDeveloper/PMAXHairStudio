@@ -6,7 +6,7 @@ import { Clock, User, Scissors, Calendar, Phone, AlertCircle, CheckCircle, X } f
 import { updateReservationStatus, deleteReservation } from '@/src/lib/actions';
 
 interface NextAppointmentProps {
-  reservations?: Reservation[];
+  reservations: ReservationFull[];
   onStartAppointment?: (reservationId: number) => void;
   onRefreshData?: () => void;
 }

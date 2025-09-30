@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/src/utils/supabase/client'
 import GuestForm from '../../(dashboard)/staff-dash/_components/_addReservation/_components/GuestForm'
 import { RealtimeChannel } from '@supabase/supabase-js'
+import { filter } from 'framer-motion/client'
 
 
 export type TimeSlot = { start_time: string; end_time: string; date: string }
@@ -42,7 +43,7 @@ export default function ReservationPage() {
     email: ''
   })
   const [barber, setBarber] = useState<Profile | null>(null)
-  const [barberRes, setBarberRes] = useState<Reservation[]>([])
+  const [barberRes, setBarberRes] = useState<ReservationFull[]>([])
   const [timeResBarber, setTimeResBarber] = useState<TimeSlot[]>([])
   const [selectedServices, setSelectedServices] = useState<Service[]>([])
   const [activeTab, setActiveTab] = useState('Barba')
@@ -51,12 +52,12 @@ export default function ReservationPage() {
   const [note, setNote] = useState<string>('')
   const [isWorkingDay, setIsWorkingDay] = useState(true)
 
-
   // Queries
   const reservationsQuery = useQuery({
     queryKey: ['reservations'],
     queryFn: () => getAllReservations(),
   })
+
 
   const employeesQuery = useQuery({
     queryKey: ['employees'],
@@ -129,143 +130,110 @@ export default function ReservationPage() {
 
   const isFormValid = barber && selectedServices.length > 0 && date && time
 
-  // ✅ Setup Real-time subscriptions - VERSIONE CORRETTA
-  // Setup Real-time subscriptions - VERSIONE CORRETTA
+  // ✅ Setup Real-time subscriptions 
   useEffect(() => {
-    let channel: RealtimeChannel | null = null
+    let channel: RealtimeChannel | null = null;
 
-    const setupRealtime = async () => {
-      try {
-        const supabase = createClient() // Rimosso await - createClient() è sincrono
+    // Tipi corretti per i payload
+    type PayloadInsert = { new: ReservationFull };
+    type PayloadUpdate = { new: ReservationFull };
+    type PayloadDelete = { old: { id: string; barber_id: { id: string }; date: string } }; // ⚠️ DELETE restituisce solo i campi base
 
-        console.log('🔄 Configurazione real-time in corso...')
+    const updateQueryCache = (
+      mutation: 'insert' | 'update' | 'delete',
+      data: ReservationFull | { id: string }
+    ) => {
+      queryClient.setQueryData<ReservationFull[]>(['reservations'], (old = []) => {
+        switch (mutation) {
+          case 'insert':
+          case 'update':
+            const fullData = data as ReservationFull;
+            return mutation === 'insert'
+              ? old.some(r => r.id === fullData.id) ? old : [...old, fullData]
+              : old.map(r => (r.id === fullData.id ? fullData : r));
+          case 'delete':
+            return old.filter(r => r.id !== data.id);
+        }
+      });
+    };
 
-        channel = supabase
-          .channel('reservations_channel') // Nome univoco per il canale
-          .on(
-            'postgres_changes',
-            {
-              event: 'INSERT',
-              schema: 'public',
-              table: 'appuntamenti'
-            },
-            (payload : {
-              new : ReservationFull
-            }) => {
-              console.log('📥 Nuova prenotazione ricevuta:', payload.new)
-
-              // Aggiorna la cache delle reservations con la query key corretta
-              queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) => {
-                const exists = oldData.some(r => r.id === payload.new.id)
-                if (exists) return oldData
-
-                return [...oldData, payload.new as Reservation]
-              })
-
-              // Aggiorna lo stato locale se necessario
-              setBarberRes(prev => {
-                const exists = prev.some(r => r.id === payload.new.id)
-                if (exists) return prev
-
-                // Se la nuova prenotazione è dello stesso barbiere, aggiungila
-                if (barber && payload.new.barber_id === barber.id) {
-                  return [...prev, payload.new as Reservation].sort(
-                    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-                  )
-                }
-                return prev
-              })
+    const updateBarberRes = (
+      mutation: 'insert' | 'update' | 'delete',
+      data: ReservationFull | { id: string; barber_id?: string }
+    ) => {
+      setBarberRes(prev => {
+        switch (mutation) {
+          case 'insert':
+            const insertData = data as ReservationFull;
+            if (prev.some(r => r.id === insertData.id)) return prev;
+            if (barber && insertData.barber_id?.id === barber.id) {
+              return [...prev, insertData].sort((a, b) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+              );
             }
-          )
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'appuntamenti'
-            },
-            (payload : {
-              new : ReservationFull
-            }) => {
-              console.log('📝 Prenotazione aggiornata:', payload.new)
+            return prev;
+          case 'update':
+            const updateData = data as ReservationFull;
+            return prev.map(r => (r.id === updateData.id ? updateData : r));
+          case 'delete':
+            // ⚠️ Per DELETE usiamo solo l'ID
+            return prev.filter(r => r.id !== data.id);
+        }
+      });
+    };
 
-              // Usa la query key corretta
-              queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) =>
-                oldData.map(r => r.id === payload.new.id ? payload.new as Reservation : r)
-              )
+    const setupRealtime = () => {
+      const supabase = createClient();
 
-              setBarberRes(prev =>
-                prev.map(r => r.id === payload.new.id ? payload.new as Reservation : r)
-              )
-            }
-          )
-          .on(
-            'postgres_changes',
-            {
-              event: 'DELETE',
-              schema: 'public',
-              table: 'appuntamenti'
-            },
-            (payload : {
-              new : ReservationFull
-              old: ReservationFull
-            }) => {
-              console.log('🗑️ Prenotazione eliminata:', payload.old)
+      channel = supabase
+        .channel('reservations_channel')
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'appuntamenti' },
+          (payload: PayloadInsert) => {
+            console.log('📥 Nuova prenotazione:', payload.new);
+            updateQueryCache('insert', payload.new);
+            updateBarberRes('insert', payload.new);
+          }
+        )
+        .on('postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'appuntamenti' },
+          (payload: PayloadUpdate) => {
+            console.log('📝 Prenotazione aggiornata:', payload.new);
+            updateQueryCache('update', payload.new);
+            updateBarberRes('update', payload.new);
+          }
+        )
+        .subscribe(status => {
+          console.log('Real-time status:', status);
+        });
+    };
 
-              // Usa la query key corretta
-              queryClient.setQueryData<Reservation[]>(['reservations'], (oldData = []) =>
-                oldData.filter(r => r.id !== payload.old.id)
-              )
+    if (reservationsQuery.data) setupRealtime();
 
-              setBarberRes(prev => prev.filter(r => r.id !== payload.old.id))
-            }
-          )
-          .subscribe((status : string) => {
-            console.log('Real-time status:', status)
-            if (status === 'SUBSCRIBED') {
-              console.log('✅ Real-time subscriptions attive!')
-            } else if (status === 'CHANNEL_ERROR') {
-              console.error('❌ Errore nella subscription real-time')
-            } else if (status === 'TIMED_OUT') {
-              console.warn('⏰ Timeout nella subscription real-time')
-            } else if (status === 'CLOSED') {
-              console.log('🔌 Canale real-time chiuso')
-            }
-          })
-
-      } catch (error) {
-        console.error('❌ Errore setup real-time:', error)
-      }
-    }
-
-    // Configura real-time solo se i dati iniziali sono caricati
-    if (reservationsQuery.data) {
-      setupRealtime()
-    }
-
-    // Cleanup function
     return () => {
       if (channel) {
-        console.log('🔌 Chiusura canale real-time')
-        channel.unsubscribe()
-        channel = null
+        console.log('🔌 Chiusura canale real-time');
+        channel.unsubscribe();
+        channel = null;
       }
-    }
-  }, [queryClient, barber, reservationsQuery.data])
+    };
+  }, [queryClient, barber, reservationsQuery.data]);
+
 
   // ✅ Aggiorna barberRes quando cambiano le reservations o il barbiere selezionato
   useEffect(() => {
     if (barber && reservationsQuery.data) {
 
-      console.log('1 - reservation entrate in page: ', reservationsQuery.data);
-      console.log('2 - barber selezionato: ', barber?.id);
-
-      const filteredReservations = reservationsQuery.data
-        .filter(r => r.barber_id === barber.id)
+      const filteredReservations: ReservationFull[] = (reservationsQuery.data || [])
+        .filter(r => {
+          if (!barber) return false;               // nessun barber selezionato
+          if (!r.barber_id) return false;          // barber_id mancante
+          const barberId = typeof r.barber_id === 'string' ? r.barber_id : r.barber_id.id;
+          return barberId === barber.id;
+        })
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      console.log('3 - reservation filtrate in page: ', filteredReservations);
 
-
+      console.log('filteredReservations:', filteredReservations);
 
       setBarberRes(filteredReservations)
     } else {

@@ -99,8 +99,8 @@ export const StaffProvider = ({ children }: { children: ReactNode }) => {
     const normalizeReviews: Reviews[] = allReviews.map(r => ({
         ...r,
         customer: Array.isArray(r.customer) ? r.customer[0] : r.customer,
-        appuntamenti: Array.isArray(r.reservation_id) ? r.reservation_id[0] : r.reservation_id
-    }))
+        reservation_id: Array.isArray(r.reservation_id) ? r.reservation_id[0] : r.reservation_id,
+    }));
 
     const normalizedStaffNotes: StaffNotes[] = staffNotes.map(n => ({
         ...n,

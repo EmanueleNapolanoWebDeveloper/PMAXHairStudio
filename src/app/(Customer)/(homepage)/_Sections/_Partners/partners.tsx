@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { partners } from "@/src/lib/datas"
-import { motion } from "framer-motion"
+import { motion, easeOut } from "framer-motion"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,7 +23,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
+      ease: easeOut, // ✅ funzione invece di stringa
     },
   },
 }
@@ -35,7 +35,7 @@ const headerVariants = {
     y: 0,
     transition: {
       duration: 0.8,
-      ease: "easeOut",
+      ease: easeOut, // ✅ funzione invece di stringa
     },
   },
 }
@@ -81,7 +81,7 @@ export default function Partners() {
               initial={{ width: 0 }}
               whileInView={{ width: 96 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: easeOut }}
             ></motion.div>
           </div>
           {/* Decorative brush icon */}
@@ -108,11 +108,12 @@ export default function Partners() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: easeOut }}
           >
             <p className="text-2xl font-bold text-red-400">Servizi professionali per il tuo stile perfetto</p>
           </motion.div>
         </motion.div>
+
         {/* Partners Grid */}
         <motion.div
           className="flex flex-wrap items-center justify-around w-full gap-8 mx-auto mb-16"
@@ -129,7 +130,7 @@ export default function Partners() {
               whileHover={{
                 scale: 1.05,
                 y: -8,
-                transition: { duration: 0.3 },
+                transition: { duration: 0.3, ease: easeOut },
               }}
             >
               <div className="relative w-full h-24 flex items-center justify-center">

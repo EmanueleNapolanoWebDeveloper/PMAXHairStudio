@@ -14,6 +14,8 @@ import toast from "react-hot-toast"
 type ModalEditProps = {
     setShowReschedule: (show: boolean) => void
     reservation: ReservationFull
+    loading: boolean
+    handleRescheduleConfirm: () => void
 }
 
 type ReservationUpdatePayload = {

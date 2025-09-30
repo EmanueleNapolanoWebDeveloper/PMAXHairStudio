@@ -53,7 +53,7 @@ export default function Innovation() {
                 <br />
                 Oggi <span className="font-semibold text-red-600">P-Max</span> si è evoluto adottando un sistema digitale
                 avanzato: prenotazioni online, gestione smart del calendario e strumenti innovativi per offrire ai clienti
-                un'esperienza semplice, veloce e al passo coi tempi.
+                un&apos;esperienza semplice, veloce e al passo coi tempi.
             </motion.p>
 
             {/* Vantaggi Login */}

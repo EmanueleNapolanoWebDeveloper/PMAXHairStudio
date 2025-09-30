@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Reservation } from '@/src/lib/types';
+import { Reservation, ReservationFull } from '@/src/lib/types';
 import { Clock, User, Scissors, Phone, AlertCircle, Square } from 'lucide-react';
 import { updateReservationStatus } from '@/src/lib/actions';
 
 interface InProgressReservationProps {
-  reservations?: Reservation[];
+  reservations?: ReservationFull[];
   onCompleteAppointment?: (reservationId: number) => void;
 }
 
@@ -14,7 +14,7 @@ export default function InProgressReservation({
   reservations = [],
   onCompleteAppointment
 }: InProgressReservationProps) {
-  const [inProgressAppointment, setInProgressAppointment] = useState<Reservation | null>(null);
+  const [inProgressAppointment, setInProgressAppointment] = useState<ReservationFull | null>(null);
   const [elapsedTime, setElapsedTime] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
@@ -22,7 +22,7 @@ export default function InProgressReservation({
     const update = () => {
       // Trova l'appuntamento in corso
       const today = new Date().toISOString().split('T')[0];
-      const current = reservations.find(r => r.date === today && r.status === 'in_corso') || null;
+      const current : ReservationFull | null = reservations.find(r => r.date === today && r.status === 'in_corso') || null;
 
       setInProgressAppointment(current);
 
@@ -46,7 +46,7 @@ export default function InProgressReservation({
     return () => clearInterval(interval);
   }, [reservations]);
 
-  const getCustomerInfo = (reservation: Reservation) => {
+  const getCustomerInfo = (reservation: ReservationFull) => {
     if (reservation.logged_id) {
       return {
         name: `${reservation.logged_id?.name || ''} ${reservation.logged_id?.surname || ''}`.trim() || 'Cliente registrato',

@@ -3,7 +3,7 @@ import WelcomeStaffSection from './WelcomeSection'
 import PreviewReservationsStaff from './PreviewReservationsStaff'
 import RecentlyReviews from './RecentlyReviews'
 import WeeklyPerformance from './WeeklyPerformance'
-import { Reservation, Reviews } from '@/src/lib/types'
+import { Reservation, ReservationFull, Reviews } from '@/src/lib/types'
 import NextAppointment from './NextAppointment'
 import InProgressReservation from './ReservationInCorso'
 import { StatusKey } from '../../page'
@@ -11,7 +11,7 @@ import { StatusKey } from '../../page'
 export type DashBoardContentProps = {
     getStatusIcon: (status: StatusKey) => React.ComponentType<React.SVGProps<SVGSVGElement>>;
     getStatusColor: (status: StatusKey) => string;
-    reservations: Reservation[] | undefined; // può essere undefined finché React Query carica
+    reservations: ReservationFull[] | undefined; // può essere undefined finché React Query carica
     reviews: Reviews[]
 }
 
@@ -20,7 +20,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
     const today = new Date()
     const todayFormatted = today.toISOString().split('T')[0] // "2025-09-03"
 
-    const todayReservations = reservations?.filter((reservation: Reservation) =>
+    const todayReservations = reservations?.filter((reservation: ReservationFull) =>
         reservation.date === todayFormatted
     );
 
@@ -35,7 +35,7 @@ export default function DashboardContent({ getStatusIcon, getStatusColor, reserv
                 <InProgressReservation reservations={reservations} />
 
                 {/* next appointment */}
-                <NextAppointment reservations={reservations} />
+                <NextAppointment reservations={reservations || []} />
 
                 {/* Griglia principale */}
                 <div className="grid grid-cols-1 xl:grid-cols-6 gap-6">

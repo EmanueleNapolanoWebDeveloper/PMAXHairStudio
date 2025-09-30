@@ -51,11 +51,14 @@ export default function IntroHome() {
                                 whileInView={{ scale: 1, rotate: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                                 className="w-20 h-24 rounded-full flex items-center justify-center relative"
                             >
-                                <Image src={"/assets/logos/iconBeard.png"} fill alt="P-Max Logo" className="" />
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                    <Image src={"/assets/logos/iconBeard.png"} fill alt="P-Max Logo" />
+                                </motion.div>
                             </motion.div>
 
                             {/* Linea destra */}

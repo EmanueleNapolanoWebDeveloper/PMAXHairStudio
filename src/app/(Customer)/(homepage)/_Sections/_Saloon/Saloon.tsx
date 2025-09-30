@@ -1,7 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { motion, easeOut } from "framer-motion"
+
+type GalleryImage = {
+    title: string
+    path: string
+}
 
 const images: GalleryImage[] = [
     {
@@ -22,11 +27,6 @@ const images: GalleryImage[] = [
     },
 ]
 
-type GalleryImage = {
-    title: string
-    path: string
-}
-
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,7 +46,7 @@ const itemVariants = {
         y: 0,
         transition: {
             duration: 0.6,
-            ease: "easeOut",
+            ease: easeOut, // ✅ funzione invece che stringa
         },
     },
 }
@@ -58,7 +58,7 @@ const headerVariants = {
         y: 0,
         transition: {
             duration: 0.8,
-            ease: "easeOut",
+            ease: easeOut, // ✅ funzione invece che stringa
         },
     },
 }
@@ -88,10 +88,10 @@ export default function Saloon() {
                         initial={{ scaleX: 0 }}
                         whileInView={{ scaleX: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                        transition={{ duration: 0.6, delay: 0.3, ease: easeOut }}
                     ></motion.div>
 
-                    {/* Spazio per l'icona che aggiungerai */}
+                    {/* Icona centrale */}
                     <motion.div
                         className="w-15 h-24 rounded-full flex items-center justify-center relative"
                         initial={{ scale: 0, rotate: -180 }}
@@ -100,8 +100,7 @@ export default function Saloon() {
                         transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
                         whileHover={{ rotate: 360 }}
                     >
-                        {/* Placeholder - sostituisci con la tua icona */}
-                        <Image src={"/assets/logos/iconGira.png"} fill alt="P-Max Logo" className="" />
+                        <Image src={"/assets/logos/iconGira.png"} fill alt="P-Max Logo" />
                     </motion.div>
 
                     {/* Linea destra */}
@@ -110,7 +109,7 @@ export default function Saloon() {
                         initial={{ scaleX: 0 }}
                         whileInView={{ scaleX: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                        transition={{ duration: 0.6, delay: 0.3, ease: easeOut }}
                     ></motion.div>
                 </div>
             </motion.div>
@@ -120,14 +119,13 @@ export default function Saloon() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
+                transition={{ duration: 0.6, delay: 0.5, ease: easeOut }}
             >
                 <p className="text-lg md:text-xl font-light text-center text-gray-800 leading-relaxed">
                     Ogni dettaglio del nostro salone racconta chi siamo. <br />
                     Dalla poltrona al rasoio, dall&apos;arredamento urbano al tocco old school,
                     <span className="text-red-600 font-medium">
-                        {" "}
-                        ogni angolo è pensato per farti sentire a casa, ma con stile.
+                        {" "}ogni angolo è pensato per farti sentire a casa, ma con stile.
                     </span>
                 </p>
             </motion.div>
@@ -148,7 +146,7 @@ export default function Saloon() {
                             whileHover={{
                                 scale: 1.05,
                                 y: -8,
-                                transition: { duration: 0.3 },
+                                transition: { duration: 0.3, ease: easeOut },
                             }}
                         >
                             <Image

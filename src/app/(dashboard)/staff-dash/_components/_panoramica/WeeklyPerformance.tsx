@@ -1,8 +1,8 @@
-import { Reservation } from '@/src/lib/types'
+import { Reservation, ReservationFull } from '@/src/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from 'recharts'
 
 type WeeklyStatsInlineProps = {
-  reservations: Reservation[]
+  reservations: ReservationFull[]
 }
 
 type CustomTooltipProps = {

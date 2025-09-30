@@ -215,7 +215,7 @@ export async function deleteService(id: number) {
 // ---------------->  RESERVATIONS
 
 // tutte le res
-export async function getAllReservations(): Promise<Reservation[]> {
+export async function getAllReservations(): Promise<ReservationFull[]> {
     const supabase = await createClient()
 
     try {

@@ -1,5 +1,5 @@
 'use client'
-import { Reservation } from "@/src/lib/types"
+import { Reservation, ReservationFull } from "@/src/lib/types"
 import { useState, useEffect, useCallback } from "react"
 import { DayPicker, Matcher } from "react-day-picker"
 import "react-day-picker/dist/style.css"
@@ -14,8 +14,8 @@ const FESTIVALS = [
 export type DataChoiseType = {
   date: string
   onChange: (date: string) => void
-  setTimeResBarber: (timeResBarber: Reservation[]) => void
-  resBarber: Reservation[]
+  setTimeResBarber: (timeResBarber: ReservationFull[]) => void
+  resBarber: ReservationFull[]
   barberId?: { id: string; name: string; surname: string; email: string; phone: string } | string | null
   setIsWorkingDay: (isWorking: boolean) => void // ✅ Fixed: boolean invece di function
 }
@@ -51,13 +51,17 @@ export default function DataChoise({
   // ✅ Funzione per filtrare le prenotazioni
   const filterReservations = useCallback((barberId: string, date: string) => {
 
-    const filtered = resBarber.filter(r => {
-      if (!r.barber_id) return false; // sicurezza
+    console.log('resBarber:', resBarber);
+
+    const filtered: ReservationFull[] = resBarber.filter(r => {
+      if (!r.barber_id) return false;
 
       const id = typeof r.barber_id === 'string' ? r.barber_id : r.barber_id.id;
-
       return id === barberId && r.date === date;
     });
+
+    console.log('filtered:', filtered);
+
     setTimeResBarber(filtered);
   }, [resBarber, setTimeResBarber]);
 
