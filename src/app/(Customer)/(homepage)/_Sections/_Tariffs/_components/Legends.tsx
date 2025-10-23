@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 export default function LegendTarrif() {
     return (
         <div className="md:col-span-2">
@@ -6,11 +8,13 @@ export default function LegendTarrif() {
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Legenda Lunghezza Taglio Capelli</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {/* Capelli Corti */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/hair-short.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Capelli corti"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -19,11 +23,13 @@ export default function LegendTarrif() {
                     </div>
 
                     {/* Capelli Medi */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/hair-medium.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Capelli medi"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -32,11 +38,13 @@ export default function LegendTarrif() {
                     </div>
 
                     {/* Capelli Lunghi */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/hair-long.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Capelli lunghi"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -49,13 +57,15 @@ export default function LegendTarrif() {
             {/* Blocco Lunghezza Barba */}
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Legenda Lunghezza Barba</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-4">
                     {/* Barba Rasata */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/beard-shaved.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Barba rasata"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -64,11 +74,13 @@ export default function LegendTarrif() {
                     </div>
 
                     {/* Barba Corta */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/beard-short.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Barba corta"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -77,11 +89,13 @@ export default function LegendTarrif() {
                     </div>
 
                     {/* Barba Media */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/beard-medium.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Barba media"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -90,11 +104,13 @@ export default function LegendTarrif() {
                     </div>
 
                     {/* Barba Lunga */}
-                    <div className="flex flex-col">
-                        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                                src="/assets/beard-long.jpg"
+                    <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                            <Image
+                                src="#"
                                 alt="Barba lunga"
+                                height={70}
+                                width={70}
                                 className="w-full h-full object-cover"
                             />
                         </div>
