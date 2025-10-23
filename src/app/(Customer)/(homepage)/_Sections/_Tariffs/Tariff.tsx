@@ -8,6 +8,7 @@ import ServiceCategory from "./_components/ServiceCategory";
 import OpeningHours from "./_components/OpeningHours";
 import CTA from "./_components/CTA";
 import Image from "next/image";
+import LegendTarrif from "./_components/Legends";
 
 
 
@@ -125,6 +126,7 @@ export default function Tariff() {
 
                 {/* Info aggiuntive */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <LegendTarrif />
                     <OpeningHours />
                     <AdditionalInfo />
                 </div>

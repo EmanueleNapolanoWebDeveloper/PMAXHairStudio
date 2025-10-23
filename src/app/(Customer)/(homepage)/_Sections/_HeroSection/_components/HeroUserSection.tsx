@@ -2,8 +2,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import styles from "../../../../homepage.module.css"
-import { useEffect, useState } from "react"
-import { createClient } from "@/src/utils/supabase/client"
+import { useState } from "react"
+import { useAuth } from "@/src/app/store/AuthContext"
 
 interface Profile {
   id?: string
@@ -12,25 +12,8 @@ interface Profile {
 }
 
 export default function HeroUserSection() {
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const supabase = createClient()
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single()
-
-      setProfile(profileData || null)
-    }
-
-    fetchProfile()
-  }, [supabase])
+  const { profile, loading } = useAuth()
 
   const isLogged = !!profile
   const userName = profile?.name ?? "Utente"

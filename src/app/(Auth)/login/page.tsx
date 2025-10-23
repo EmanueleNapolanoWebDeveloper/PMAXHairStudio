@@ -3,7 +3,7 @@ import LoginGoogle from "./_components/LoginGoogle"
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden mt-[100px] py-3">
+    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden mt-[50px] py-3">
       {/* Black & White Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-red-900/80 to-white/80">
         {/* Floating orbs in grayscale */}

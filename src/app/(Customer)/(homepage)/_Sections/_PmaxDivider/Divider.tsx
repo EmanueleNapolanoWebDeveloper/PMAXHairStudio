@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Divider() {
     return (
-        <div className="w-full bg-black/70 h-[5rem] relative overflow-hidden">
+        <div className="w-full bg-black h-[5rem] relative overflow-hidden">
             {/* Container per l'animazione infinita */}
             <div className="absolute inset-0 flex items-center">
                 {/* Prima sequenza di loghi */}

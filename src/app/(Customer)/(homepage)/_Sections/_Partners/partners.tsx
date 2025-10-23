@@ -43,7 +43,7 @@ const headerVariants = {
 export default function Partners() {
   return (
     <section
-      className="relative min-h-[60vh] bg-gradient-to-br from-black via-gray-900 to-white/80 py-20 px-4 overflow-hidden"
+      className="relative min-h-[60vh] bg-black/50 py-20 px-4 overflow-hidden"
       id="partnersHome"
     >
       {/* Elegant background elements */}
@@ -85,23 +85,45 @@ export default function Partners() {
             ></motion.div>
           </div>
           {/* Decorative brush icon */}
-          <motion.div
-            className="flex justify-center mb-10"
-            initial={{ scale: 0, rotate: -180 }}
-            whileInView={{ scale: 1, rotate: 40 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-red-900 to-red-800 rounded-full flex items-center justify-center shadow-xl shadow-red-900/30 border border-red-700/50">
-              <Image
-                src="/assets/logos/IconSpazzola.png"
-                width={28}
-                height={28}
-                alt="Spazzola"
-                className="rotate-40 filter brightness-0 invert"
-              />
-            </div>
-          </motion.div>
+          <div className="w-full flex items-center justify-center gap-5">
+            {/* Linea sinistra */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex-1 max-w-64 h-px bg-gradient-to-r from-transparent to-red-600 origin-right"
+            />
+
+            {/* Icona */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
+              className="w-20 h-24 rounded-full flex items-center justify-center relative"
+            >
+              <motion.div
+                className="w-15 h-24 rounded-full flex items-center justify-center relative"
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
+                whileHover={{ rotate: 360 }}
+              >
+                <Image src={"/assets/logos/iconSpazzola.png"} fill alt="P-Max Logo" className="bg-black rounded-full rotate-35" />
+              </motion.div>
+            </motion.div>
+
+            {/* Linea destra */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex-1 max-w-64 h-px bg-gradient-to-l from-transparent to-red-600 origin-left"
+            />
+          </div>
           {/* Subtitle */}
           <motion.div
             className="max-w-2xl mx-auto"
@@ -138,7 +160,7 @@ export default function Partners() {
                   src={partner.path || "/placeholder.svg"}
                   alt={partner.title}
                   fill
-                  className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                  className="object-contain filter  transition-all duration-300"
                 />
               </div>
 

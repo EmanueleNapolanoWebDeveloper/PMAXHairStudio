@@ -17,7 +17,6 @@ export default function Logout() {
     try {
       await signOut()
       toast.success('Logout effettuato!')
-      router.replace('/login') // Redirect alla login
     } catch (err) {
       console.error('Errore durante il logout:', err)
       toast.error('Si è verificato un errore durante il logout.')

@@ -8,11 +8,12 @@ import Staffs from "./_Sections/_Staffs/Staffs";
 import Divider from "./_Sections/_PmaxDivider/Divider";
 import Saloon from "./_Sections/_Saloon/Saloon";
 import WhyChoose from "./_Sections/_WhyChoise/whyChose";
+import '../../globals.css'
 
 
 export default function Home() {
   return (
-    <main className="pt-[4rem] bg-black">
+    <main className="pt-[4rem] bg-black" id="homeBackground">
       {/* hero section */}
       <HeroSection />
 
