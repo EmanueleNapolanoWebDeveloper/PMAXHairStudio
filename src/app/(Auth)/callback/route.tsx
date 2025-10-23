@@ -34,13 +34,12 @@ export async function GET(request: Request) {
       }
 
       // ✅ Se prod: consenti solo il tuo dominio
-      if (forwardedHost && forwardedHost.endsWith("miosito.com")) {
+      if (forwardedHost && forwardedHost.endsWith("pmaxhairstudio.it")) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
       }
 
-      // ✅ Fallback sicuro
-      return NextResponse.redirect(`${origin}${next}`)
-    }
+      // ✅ redirect a complete registration
+        return NextResponse.redirect(`${origin}/complete-registration`)    }
 
     // Log sicuro solo in dev
     if (process.env.NODE_ENV === "development") {
