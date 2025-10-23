@@ -26,7 +26,7 @@ export default function LoginGoogle() {
     async function loginWithGoogle(): Promise<LoginWithGoogle> {
       const supabase = createClient()
 
-      const redirectURL = process.env.NODE_ENV === 'development' ? `${process.env.NEXT_PUBLIC_URL}/auth/callback` : `http://localhost:3000/auth/callback`
+      const redirectURL = process.env.NODE_ENV === 'development' ? `http://localhost:3000/auth/callback` : `${process.env.NEXT_PUBLIC_URL}/auth/callback`
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
