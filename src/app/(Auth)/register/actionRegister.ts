@@ -8,7 +8,6 @@ type LoginEmailPasswordProps = {
     name: string,
     surname: string,
     phone: string
-    role?: 'customer' | 'employee' | 'admin' // Rendi opzionale con default
 }
 
 export async function SignUpEmailPassword({
@@ -17,7 +16,6 @@ export async function SignUpEmailPassword({
     name,
     surname,
     phone,
-    role = 'customer' // Default value
 }: LoginEmailPasswordProps) {
     try {
         // Validazione input lato server
@@ -41,6 +39,27 @@ export async function SignUpEmailPassword({
 
         const supabase = await createClient()
 
+        // . Controlla se l’email o il telefono esistono già in `profiles`
+        const { data: existingProfile, error: existingError } = await supabase
+            .from('profiles')
+            .select('email, phone')
+            .or(`email.eq.${email},phone.eq.${phone}`) // controllo multiplo
+            .maybeSingle()
+
+        if (existingError) {
+            console.error("Errore nel controllo duplicati:", existingError)
+            return { error: "Errore nel controllo dei dati esistenti" }
+        }
+
+        if (existingProfile) {
+            if (existingProfile.email === email) {
+                return { error: "Un account con questa email esiste già" }
+            }
+            if (existingProfile.phone === phone) {
+                return { error: "Un account con questo numero di telefono esiste già" }
+            }
+        }
+
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -55,23 +74,7 @@ export async function SignUpEmailPassword({
         })
 
         if (error) {
-
-
-            // Gestisci errori specifici
-            switch (error.message) {
-                case 'Errore duplicate key value violates unique constraint "profiles_phone_key"':
-                    return { error: "Un account con questo numero di telefono esiste già" }
-                case 'user_already_exists':
-                    return { error: "Un account con questa email esiste già" }
-                case 'weak_password':
-                    return { error: "La password è troppo debole" }
-                case 'invalid_email':
-                    return { error: "Formato email non valido" }
-                case 'anonymous_provider_disabled':
-                    return { error: "Registrazione temporaneamente non disponibile. Riprova più tardi." }
-                default:
-                    return { error: error.message || "Errore durante la registrazione" }
-            }
+            return { error: error.message }
         }
 
         if (!data.user) return { error: "Errore durante la creazione dell'utente" }
@@ -82,9 +85,7 @@ export async function SignUpEmailPassword({
             surname: surname.trim(),
             email: email.trim(),
             phone: phone.trim(),
-            role,
             reg_complete: true,
-            is_Admin: false
         }])
             .select()
 

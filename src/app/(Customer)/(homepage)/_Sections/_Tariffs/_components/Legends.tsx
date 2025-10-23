@@ -11,7 +11,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Capelli corti"
                                 height={70}
                                 width={70}
@@ -26,7 +26,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Capelli medi"
                                 height={70}
                                 width={70}
@@ -41,7 +41,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Capelli lunghi"
                                 height={70}
                                 width={70}
@@ -62,7 +62,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Barba rasata"
                                 height={70}
                                 width={70}
@@ -77,7 +77,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Barba corta"
                                 height={70}
                                 width={70}
@@ -92,7 +92,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Barba media"
                                 height={70}
                                 width={70}
@@ -107,7 +107,7 @@ export default function LegendTarrif() {
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="h-45 w-45 bg-gray-200 rounded-lg overflow-hidden mb-3">
                             <Image
-                                src="#"
+                                src="/assets/legends/test.png"
                                 alt="Barba lunga"
                                 height={70}
                                 width={70}

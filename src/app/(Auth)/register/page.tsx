@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { SignUpEmailPassword } from "./action"
+import { SignUpEmailPassword } from "./actionRegister"
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -16,18 +16,22 @@ interface RegisterForm {
 }
 
 interface MutationResult {
+    success?: boolean
+    message?: string
     error?: string;
 }
 
+const initialForm = {
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+}
+
 export default function RegisterPage() {
-    const [form, setForm] = useState<RegisterForm>({
-        name: "",
-        surname: "",
-        email: "",
-        phone: "",
-        password: "",
-        confirmPassword: ""
-    });
+    const [form, setForm] = useState<RegisterForm>(initialForm);
     const [error, setError] = useState<string>("");
 
     const router = useRouter();
@@ -38,8 +42,21 @@ export default function RegisterPage() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+
+    // ------> VALIDAZIONI
     const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isValidPhone = (phone: string) => /^\d{10}$/.test(phone);
+
+    const validateForm = (): string | null => {
+        if (!form.name.trim()) return "Il nome è obbligatorio";
+        if (!form.surname.trim()) return "Il cognome è obbligatorio";
+        if (!isValidEmail(form.email)) return "Inserisci un'email valida";
+        if (!isValidPhone(form.phone)) return "Il telefono deve contenere 10 cifre";
+        if (form.password.length < 6) return "La password deve contenere almeno 6 caratteri";
+        if (form.password !== form.confirmPassword) return "Le password non coincidono";
+        return null;
+    };
+
     const isValid = () => {
         return (
             form.name.trim() &&
@@ -51,6 +68,9 @@ export default function RegisterPage() {
         );
     };
 
+    // ----> reset form
+    const resetForm = () => setForm(initialForm)
+
     const mutation = useMutation<MutationResult, Error>({
         mutationFn: async () => {
             return await SignUpEmailPassword({
@@ -59,30 +79,18 @@ export default function RegisterPage() {
                 name: form.name,
                 surname: form.surname,
                 phone: form.phone,
-                role: 'customer'
             });
         },
-        onSuccess: (result) => {
-            if (result.error) {
-                if (result.error.includes('profiles_phone_key')) {
-                    setError('Telefono esistente! Prego, inserisci un altro numero.');
-                }
-                if (result.error.includes('profiles_email_key')) {
-                    setError('Email esistente! Prego, inserisci un altra e-mail.');
-                }
-                return;
+        onSuccess: (res) => {
+            if (res.error) {
+                setError(res.error)
+                toast.error(res.error)
+                resetForm()
+                return
             }
-
-            setForm({
-                name: "",
-                surname: "",
-                email: "",
-                phone: "",
-                password: "",
-                confirmPassword: ""
-            });
-            toast.success("Registrazione avvenuta con successo! Conferma la tua email per completare la registrazione.");
-            router.push('/login');
+            toast.success(res.message || "Registrazione avvenuta con successo");
+            resetForm()
+            router.push("/login")
         },
         onError: (err) => {
             console.error('Mutation error:', err);
@@ -95,8 +103,12 @@ export default function RegisterPage() {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
-        if (!isValid()) {
-            setError("Compila correttamente tutti i campi.");
+        const validationError = validateForm();
+        if (validationError) {
+            setError(validationError);
+            toast.error(validationError);
+            // Resetta il form in caso di errore di validazione
+            setForm(initialForm);
             return;
         }
         mutation.mutate();
@@ -111,7 +123,7 @@ export default function RegisterPage() {
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full" />
 
             <div className="relative z-10">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold mb-6 text-gray-800/80 text-center bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 bg-clip-text">
                     Registrati
                 </h2>
 
