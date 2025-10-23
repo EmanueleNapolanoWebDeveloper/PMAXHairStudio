@@ -72,7 +72,7 @@ export default function CompleteProfile() {
         if (!data.email.trim()) errors.email = 'L\'email è obbligatoria'
         else if (!EMAIL_REGEX.test(data.email)) errors.email = 'Email non valida'
         if (!data.phone.trim()) errors.phone = 'Il telefono è obbligatorio'
-        else if (!PHONE_REGEX.test(data.phone)) errors.phone = 'Formato telefono: +39 123 456 7890'
+        else if (!PHONE_REGEX.test(data.phone)) errors.phone = 'Il numero deve contenere dalle 9 alle 10 cifre!'
 
         return errors
     }

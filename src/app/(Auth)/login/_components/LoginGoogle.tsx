@@ -26,10 +26,12 @@ export default function LoginGoogle() {
     async function loginWithGoogle(): Promise<LoginWithGoogle> {
       const supabase = createClient()
 
+      const redirectURL = process.env.NODE_ENV === 'development' ? `${process.env.NEXT_PUBLIC_URL}/auth/callback` : `http://localhost:3000/auth/callback`
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+          redirectTo: redirectURL,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -50,12 +52,6 @@ export default function LoginGoogle() {
       toast.error(res.message || "Errore durante il login")
       setLoading(false)
       return
-    }
-
-    if (res.data?.url) {
-      router.push('/complete-registration')
-    } else {
-      setLoading(false)
     }
   }
 

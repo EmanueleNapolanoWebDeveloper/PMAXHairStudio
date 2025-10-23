@@ -28,12 +28,16 @@ export async function GET(request: Request) {
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', data?.user.id).single()
 
       if (!profile || !profile.reg_complete) {
+        console.log('niente profilo');        
         return NextResponse.redirect(`${origin}/complete-registration`)
       }
 
       // Recupera host forwarding (utile su Vercel/Netlify dietro proxy)
       const forwardedHost = request.headers.get("x-forwarded-host")
-      const isLocalEnv = process.env.NODE_MODALITY_ENV === "development"
+      const isLocalEnv = process.env.NODE_ENV === "development"
+
+      console.log('forewaredHost' , forwardedHost);
+      
 
       // ✅ Se locale: usa origin
       if (isLocalEnv) {
@@ -41,7 +45,7 @@ export async function GET(request: Request) {
       }
 
       // ✅ Se prod: consenti solo il tuo dominio
-      if (forwardedHost && forwardedHost.endsWith("pmaxhairstudio.it")) {
+      if (!isLocalEnv && forwardedHost && forwardedHost.endsWith("pmaxhairstudio.it")) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
       }
 
@@ -50,7 +54,7 @@ export async function GET(request: Request) {
     }
 
     // Log sicuro solo in dev
-    if (process.env.NODE_MODALITY_ENV === "development") {
+    if (process.env.NODE_ENV === "development") {
       console.error("OAuth Exchange Error:", error)
     }
   }
