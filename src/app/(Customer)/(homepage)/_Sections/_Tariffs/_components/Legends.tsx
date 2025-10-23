@@ -70,7 +70,7 @@ export default function LegendTarrif() {
                             />
                         </div>
                         <h3 className="text-lg font-bold mb-1 text-gray-800">Rasata</h3>
-                        <p className="text-sm text-gray-600">Rasatura completa o effetto "ombra delle 5".</p>
+                        <p className="text-sm text-gray-600">Rasatura completa o effetto &quot; ombra delle 5 &quot;.</p>
                     </div>
 
                     {/* Barba Corta */}
