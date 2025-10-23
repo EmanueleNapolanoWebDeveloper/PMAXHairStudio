@@ -28,15 +28,12 @@ export async function GET(request: Request) {
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', data?.user.id).single()
 
       if (!profile || !profile.reg_complete) {
-        console.log('niente profilo');        
         return NextResponse.redirect(`${origin}/complete-registration`)
       }
 
       // Recupera host forwarding (utile su Vercel/Netlify dietro proxy)
       const forwardedHost = request.headers.get("x-forwarded-host")
       const isLocalEnv = process.env.NODE_ENV === "development"
-
-      console.log('forewaredHost' , forwardedHost);
       
 
       // ✅ Se locale: usa origin
