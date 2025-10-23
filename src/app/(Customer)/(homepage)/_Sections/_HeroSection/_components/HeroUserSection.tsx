@@ -107,7 +107,7 @@ export default function HeroUserSection() {
           ) : (
             <>
               <ActionButton href="/login" label="Accedi" />
-              <ActionButton href="/#tariff" label="Esplora Menu" />
+              <ActionButton href="/#tariffHome" label="Esplora Menu" />
             </>
           )}
         </div>

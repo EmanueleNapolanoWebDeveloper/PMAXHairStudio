@@ -21,7 +21,7 @@ export default function IntroHome() {
                     initial={{ opacity: 0, y: -30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
                     <div className="inline-block">
@@ -29,7 +29,7 @@ export default function IntroHome() {
                             initial={{ scale: 0.8, opacity: 0 }}
                             whileInView={{ scale: 1, opacity: 1 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                            transition={{ duration: 0.4 }}
                             className="text-5xl md:text-7xl font-black text-black mb-4 text-balance tracking-tight"
                         >
                             CHI <span className="text-red-600">SIAMO</span>

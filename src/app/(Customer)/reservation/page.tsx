@@ -261,7 +261,7 @@ export default function ReservationPage() {
 
 
   return (
-    <section className="min-h-screen py-5">
+    <section className="min-h-screen py-5 bg-black">
       <div className="bg-white rounded-2xl p-6 shadow-md max-w-3xl mx-auto mt-[7rem]">
         <h2 className="text-2xl font-bold text-center text-black mb-6">
           {profile ? (
