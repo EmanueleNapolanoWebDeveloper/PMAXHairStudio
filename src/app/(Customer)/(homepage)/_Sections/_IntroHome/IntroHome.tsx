@@ -54,8 +54,12 @@ export default function IntroHome() {
                                 className="w-20 h-24 rounded-full flex items-center justify-center relative"
                             >
                                 <motion.div
-                                    animate={{ y: [0, -10, 0] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="w-15 h-24 rounded-full flex items-center justify-center relative"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    whileInView={{ scale: 1, rotate: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
+                                    whileHover={{ rotate: 360 }}
                                 >
                                     <Image src={"/assets/logos/iconBeard.png"} fill alt="P-Max Logo" />
                                 </motion.div>

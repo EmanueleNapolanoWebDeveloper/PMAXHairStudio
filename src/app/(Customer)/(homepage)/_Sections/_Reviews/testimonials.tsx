@@ -34,7 +34,7 @@ export default function Testimonials() {
     }
 
     return (
-        <section className={`relative bg-cover bg-center bg-no-repeat py-20 px-6 text-center text-white ${styles.backgroundTestimonialsHome}`}>
+        <section className={`relative bg-cover bg-center bg-no-repeat py-20 px-6 text-center text-white ${styles.backgroundTestimonialsHome}`} id='reviewsHome'>
             <h2 className="text-center text-[2.5rem] font-light">DICONO DI NOI</h2>
 
             {/* decorazione top */}

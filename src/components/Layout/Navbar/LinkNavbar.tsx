@@ -43,6 +43,7 @@ export default function LinkMenuDesktop() {
       const element = document.querySelector(anchor)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        setIsDropdownOpen(false)
       }
     } else {
       // Naviga alla homepage con anchor
@@ -80,6 +81,7 @@ export default function LinkMenuDesktop() {
               <Link href="/">
                 <button
                   className="w-full text-left px-5 py-3 text-gray-300 hover:text-white hover:bg-red-900/20 transition-all duration-200 font-medium text-sm border-l-2 border-transparent hover:border-red-500 group"
+                  onClick={() => setIsDropdownOpen(false)}
                 >
                   <span className="flex items-center justify-between">
                     Torna alla Home

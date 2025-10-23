@@ -75,7 +75,7 @@ export default function ServicesHome() {
     return (
         <section
             className="relative min-h-screen bg-gradient-to-b from-red-950 via-red-900 to-black py-24 px-6 overflow-hidden"
-            id="servicehome"
+            id="serviceHome"
         >
             {/* Header Section */}
             <div className="max-w-6xl mx-auto relative z-10">
