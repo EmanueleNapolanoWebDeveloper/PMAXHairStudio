@@ -321,16 +321,18 @@ export default function RootLayout({
         />
 
         {/* google tag */}
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-FRLCJ027JZ"></Script>
-        <Script>
-          {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-FRLCJ027JZ');
-          `}
-        </Script>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-FRLCJ027JZ" />
+        <Script
+          id="google-analytics"
+          dangerouslySetInnerHTML={{
+            __html: `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FRLCJ027JZ');
+    `
+          }}
+        />
 
         <Script
           id="iubenda-loader"
