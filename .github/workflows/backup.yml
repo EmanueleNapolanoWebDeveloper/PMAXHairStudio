@@ -1,0 +1,57 @@
+name: Supabase Backup
+
+on:
+  # Backup automatico ogni giorno alle 2 AM (UTC)
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Permette esecuzione manuale dalla tab Actions
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm install @supabase/supabase-js
+
+      - name: 🔄 Run backup
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.NEXT_SERVER_SUPABASE_ROLE_KEY}}
+        run: node scripts/backup-supabase.js
+
+      - name: 📊 Display backup info
+        run: |
+          echo "Backup completed at $(date)"
+          ls -lah backups/
+
+      - name: 💾 Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-${{ github.run_number }}
+          path: backups/
+          retention-days: 30 # Conserva per 30 giorni
+
+      - name: 📌 Create backup release (opzionale)
+        if: github.event_name == 'schedule' # Solo per backup automatici
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: backup-${{ github.run_number }}
+          name: Backup ${{ github.run_number }}
+          body: |
+            Automated Supabase backup
+            Date: ${{ github.event.head_commit.timestamp }}
+          files: backups/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

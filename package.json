@@ -2,11 +2,14 @@
   "name": "p-max",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "backup": "node scripts/backup-supabase.js",
+    "restore": "node scripts/restore-supabase.js"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.18",
@@ -19,7 +22,7 @@
     "@tanstack/react-query": "^5.87.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "dotenv": "^17.2.0",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.525.0",
     "motion": "^12.23.7",

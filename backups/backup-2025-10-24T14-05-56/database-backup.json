@@ -1,0 +1,116 @@
+{
+  "profiles": [
+    {
+      "id": "dcf38541-00d7-4471-9fce-fe0541f2fcf3",
+      "name": "Emanuele",
+      "surname": "napolano",
+      "phone": "3286208187",
+      "email": "emanuelepolpo@gmail.com",
+      "role": "customer",
+      "reg_complete": true,
+      "is_Admin": false,
+      "created_at": "2025-10-23T17:09:56.643536+00:00"
+    },
+    {
+      "id": "7e160cfb-857c-4a30-8c87-77793be12c65",
+      "name": "Massimo",
+      "surname": "Polverino",
+      "phone": "3881154473",
+      "email": "massimopolverino364@gmail.com",
+      "role": "employee",
+      "reg_complete": true,
+      "is_Admin": true,
+      "created_at": "2025-10-24T09:36:00.085352+00:00"
+    },
+    {
+      "id": "734af55c-20c5-4864-87bd-42d04cb03de6",
+      "name": "Christian",
+      "surname": "Perrotta",
+      "phone": "3713362788",
+      "email": "christianperrotta436@gmail.com",
+      "role": "employee",
+      "reg_complete": true,
+      "is_Admin": false,
+      "created_at": "2025-10-24T10:19:44.440765+00:00"
+    },
+    {
+      "id": "34c126bc-267f-45b7-ac63-d9e496e8d8d8",
+      "name": "Emanuele",
+      "surname": "Maimone",
+      "phone": "3345839569",
+      "email": "man6789@hotmail.com",
+      "role": "customer",
+      "reg_complete": true,
+      "is_Admin": false,
+      "created_at": "2025-10-24T10:21:12.549099+00:00"
+    }
+  ],
+  "appuntamenti": [],
+  "reviews": [],
+  "services": [
+    {
+      "id": 12,
+      "title": "Shampoo",
+      "price": 5,
+      "time": 3,
+      "created_at": "2025-10-24T10:33:54.12587+00:00",
+      "category": "Trattamento",
+      "description": "Shampoo"
+    },
+    {
+      "id": 3,
+      "title": " Barba a pelle",
+      "price": 5,
+      "time": 20,
+      "created_at": "2025-09-29T19:36:55.866239+00:00",
+      "category": "Barba",
+      "description": "pennello e schiuma per ammorbidire la barba, rasoio per tagliare ogni pelo alla radice, acqua fredda e dopobarba per concludere. \n* vedere legenda"
+    },
+    {
+      "id": 9,
+      "title": "Rasatura Barba",
+      "price": 5,
+      "time": 20,
+      "created_at": "2025-10-23T18:30:57.606605+00:00",
+      "category": "Barba",
+      "description": "Rasatura completa Barba unica misura no sfumata"
+    },
+    {
+      "id": 8,
+      "title": "Taglio Barba Lunga",
+      "price": 5,
+      "time": 20,
+      "created_at": "2025-10-23T18:29:35.638244+00:00",
+      "category": "Barba",
+      "description": "Taglio Barba Lunga \n* vedere legenda"
+    },
+    {
+      "id": 4,
+      "title": "Barba sfumata",
+      "price": 5,
+      "time": 20,
+      "created_at": "2025-09-29T19:39:45.542343+00:00",
+      "category": "Barba",
+      "description": "Barba sfumata\n*vedere legenda"
+    },
+    {
+      "id": 2,
+      "title": "Taglio Capelli Bambino",
+      "price": 10,
+      "time": 30,
+      "created_at": "2025-09-29T19:31:30.872572+00:00",
+      "category": "Taglio",
+      "description": "Taglio per bambini da 0-10anni"
+    },
+    {
+      "id": 10,
+      "title": "Taglio ",
+      "price": 17,
+      "time": 30,
+      "created_at": "2025-10-23T18:31:44.480581+00:00",
+      "category": "Taglio",
+      "description": "Taglio capelli\n*vedere legenda"
+    }
+  ],
+  "staffnotes": []
+}

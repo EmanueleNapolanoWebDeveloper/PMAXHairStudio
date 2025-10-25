@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-10-24T14-05-56",
+  "date": "2025-10-24T14:05:57.542Z",
+  "tables": [
+    "profiles",
+    "appuntamenti",
+    "reviews",
+    "services",
+    "staffnotes"
+  ],
+  "rowCounts": {
+    "profiles": 4,
+    "appuntamenti": 0,
+    "reviews": 0,
+    "services": 7,
+    "staffnotes": 0
+  }
+}
