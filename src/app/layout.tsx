@@ -319,6 +319,19 @@ export default function RootLayout({
           strategy="beforeInteractive"
           src="https://cs.iubenda.com/autoblocking/4175108.js"
         />
+
+        {/* google tag */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-FRLCJ027JZ"></Script>
+        <Script>
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-FRLCJ027JZ');
+          `}
+        </Script>
+
         <Script
           id="iubenda-loader"
           strategy="beforeInteractive"
